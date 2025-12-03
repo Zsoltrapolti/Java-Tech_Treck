@@ -42,7 +42,7 @@ mvn clean install
 mvn spring-boot:run
 ```
 Backend runs on port:
-http://localhost:8080
+http://localhost:8081
 
 ## Frontend 
 
