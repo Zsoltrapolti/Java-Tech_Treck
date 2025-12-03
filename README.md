@@ -40,13 +40,15 @@ mvn clean install
 
 # Run the backend
 mvn spring-boot:run
-
+```
 Backend runs on port:
 http://localhost:8080
 
 ## Frontend 
 
 ## Data Base
+
+```bash
 # Connect as postgres user
 psql -U postgres
 
@@ -57,11 +59,8 @@ psql -U postgres
 \c krumpi_db
 You are now connected to database "krumpi_db" as user "postgres". (you have to see this msg)
 
-
-
-
 # Exit psql
 \q
-
+```
 **<img width="309" height="224" alt="image" src="https://github.com/user-attachments/assets/9ba93b83-3e66-4e5f-8744-9ffd01a1f776" />
 
