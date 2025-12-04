@@ -24,6 +24,11 @@ This project wants to digitalize the internal workflows of the company *Krumpi, 
 - Spring Boot
 - PostgreSQL
 - Maven
+- React: 19.2.0
+- TypeScript: 5.9.3
+- Vite: 7.2.6
+- Material UI: 7.3.6
+- Node.js: 20+
 
 ---
 
@@ -45,6 +50,20 @@ Backend runs on port:
 http://localhost:8081
 
 ## Frontend 
+
+Location: `frontend/`
+
+Commands:
+
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Run the application
+npm run dev
+```
 
 ## Data Base
 
