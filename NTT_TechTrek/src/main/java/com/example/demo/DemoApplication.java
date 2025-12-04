@@ -42,7 +42,7 @@ public class DemoApplication {
         };
     }
 
-    // ================= FUNCTIONS (Like Controller Methods) =================
+
 
     private void createEmployee(EmployeeService service, String firstName, String lastName, String role) {
         Employee employee = new Employee();
@@ -105,7 +105,7 @@ public class DemoApplication {
     private void deleteEmployee(EmployeeService service, Long id) {
         try {
             service.deleteEmployee(id);
-            System.out.println("✅ Employee ID " + id + " deleted");
+            System.out.println(" Employee ID " + id + " deleted");
         } catch (Exception e) {
             System.out.println(" Could not delete employee with id " + id);
         }
