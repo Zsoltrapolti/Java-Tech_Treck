@@ -1,5 +1,5 @@
 export interface ModuleType {
-    id: string;
+    id: number;
     name: string;
     description: string;
 }
