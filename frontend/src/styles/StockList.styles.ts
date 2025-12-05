@@ -63,3 +63,9 @@ export const StockPageTitle = styled(Typography)(({ theme }) => ({
     color: "#2C6E49",
     textAlign: "center",
 }));
+
+export const EditButton = styled(Button)(() => ({
+    padding: "4px 4px",
+    fontSize: "0.9rem",
+    backgroundColor: "#2C6E49",
+}));
