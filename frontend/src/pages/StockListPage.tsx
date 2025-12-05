@@ -21,7 +21,7 @@ export default function StockListPage() {
 
     return (
         <StockPageContainer>
-            <BackButton variant="contained" onClick={() => navigate("/")}>
+            <BackButton variant="contained" onClick={() => navigate("/home")}>
                 Back to Home
             </BackButton>
             <StockPaper>
