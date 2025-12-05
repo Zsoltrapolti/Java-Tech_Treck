@@ -17,11 +17,12 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public Product createProduct(String name, String type, String unitOfMeasure) {
+    public Product createProduct(String name, String type, String unitOfMeasure, Double quantity) {
         Product product = new Product();
         product.setName(name);
         product.setType(type);
         product.setUnitOfMeasure(unitOfMeasure);
+        product.setQuantity(quantity);
         return productRepository.save(product);
     }
 
@@ -31,7 +32,7 @@ public class ProductService {
 
     public Product getProductById(Long id) {
         return productRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Product not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Product not found with id : " + id));
     }
 
     public Product getProductByName(String name) {
@@ -48,7 +49,6 @@ public class ProductService {
 
     public Product updateProduct(Long id, Product productDetails) {
         Product product = getProductById(id);
-
         if (productDetails.getName() != null) {
             product.setName(productDetails.getName());
         }
@@ -58,17 +58,18 @@ public class ProductService {
         if (productDetails.getUnitOfMeasure() != null) {
             product.setUnitOfMeasure(productDetails.getUnitOfMeasure());
         }
-
+        if (productDetails.getQuantity() != null) {
+            product.setQuantity(productDetails.getQuantity());
+        }
         return productRepository.save(product);
     }
 
-    public Product updateProduct(Long id, String name, String type, String unitOfMeasure) {
+    public Product updateProduct(Long id, String name, String type, String unitOfMeasure, Double quantity) {
         Product product = getProductById(id);
-
         if (name != null) product.setName(name);
         if (type != null) product.setType(type);
         if (unitOfMeasure != null) product.setUnitOfMeasure(unitOfMeasure);
-
+        if (quantity != null) product.setQuantity(quantity);
         return productRepository.save(product);
     }
 
