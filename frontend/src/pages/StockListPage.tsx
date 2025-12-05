@@ -3,7 +3,7 @@ import { fetchStockEntries } from "../api/backend";
 import type { StockEntryType } from "../types/StockEntry";
 import { useNavigate } from "react-router-dom";
 import {
-    BackButton, StockBodyRow,
+    BackButton, EditButton, StockBodyRow,
     StockPageContainer,
     StockPageTitle,
     StockPaper, StockTableCell,
@@ -32,8 +32,9 @@ export default function StockListPage() {
                     <Table>
                         <TableHead>
                             <TableRow>
-                                <StockTableHeader>Nr.</StockTableHeader>
                                 <StockTableHeader>Name</StockTableHeader>
+                                <StockTableHeader>Type</StockTableHeader>
+                                <StockTableHeader>Unit of Measure</StockTableHeader>
                                 <StockTableHeader>Quantity</StockTableHeader>
                                 <StockTableHeader>Edit</StockTableHeader>
                             </TableRow>
@@ -46,13 +47,9 @@ export default function StockListPage() {
                                     <StockTableCell>{entry.product.unitOfMeasure}</StockTableCell>
                                     <StockTableCell>{entry.quantity}</StockTableCell>
                                     <StockTableCell>
-                                        <BackButton variant="contained" onClick={() => navigate(`/stock/${entry.id}/edit`)}  sx={{
-                                            padding: "4px 12px",
-                                            fontSize: "0.9rem",
-                                            backgroundColor: "#2C6E49",
-                                        }}>
+                                        <EditButton variant="contained" onClick={() => navigate(`/stock/${entry.id}/edit`)}>
                                             Edit
-                                        </BackButton>
+                                        </EditButton>
                                     </StockTableCell>
                                 </StockBodyRow>
                             ))}
