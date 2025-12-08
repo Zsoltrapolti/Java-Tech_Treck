@@ -23,35 +23,27 @@ export function setAuthHeader(username: string, password: string) {
 }
 
 export async function login(username: string, password: string) {
-    const VALID_USER = "admin";
-    const VALID_PASS = "password";
-    if (username !== VALID_USER || password !== VALID_PASS) {
+    const resp = await fetch(`${BACKEND_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+    });
+
+    if (!resp.ok) {
         throw new Error("Invalid credentials");
     }
 
     const token = btoa(`${username}:${password}`);
-
     window.localStorage.setItem("authToken", token);
     authHeader = { Authorization: `Basic ${token}` };
 
     return true;
-
-    // const token = btoa(`${username}:${password}`);
-    //
-    // const resp = await fetch(`${BACKEND_URL}/auth/login`, {
-    //     method: "GET",
-    //     headers: {
-    //         "Authorization": `Basic ${token}`
-    //     }
-    // });
-    //
-    // if (!resp.ok) {
-    //     throw new Error("Invalid credentials");
-    // }
-    //
-    // window.localStorage.setItem("authToken", token);
-    // authHeader = { Authorization: `Basic ${token}` };
 }
+
+
+
 
 export function logout() {
     window.localStorage.removeItem("authToken");
