@@ -15,7 +15,7 @@ export const LoginCard = styled(Paper)(({ theme }) => ({
   width: "100%",
   padding: theme.spacing(5),
   borderRadius: 20,
-  backgroundColor: "#2C6E49",
+  backgroundColor: "#d5e3ca",
   boxShadow: theme.shadows[10],
   display: "flex",
   flexDirection: "column",
@@ -24,25 +24,25 @@ export const LoginCard = styled(Paper)(({ theme }) => ({
 }));
 
 export const LoginTitle = styled(Typography)(() => ({
-  color: "#E0ECD6",
+  color: "#2C6E49",
   fontWeight: 700,
   textAlign: "center",
 }));
 
 export const LoginSubtitle = styled(Typography)(() => ({
-  color: "#E0ECD6",
+  color: "#2C6E49",
   textAlign: "center",
 }));
 
 export const FieldLabel = styled(Typography)(() => ({
-  color: "#E0ECD6",
+  color: "#2C6E49",
   fontWeight: 600,
   fontSize: "0.95rem",
 }));
 
 export const StyledTextField = styled(TextField)(() => ({
   "& .MuiInputBase-root": {
-    backgroundColor: "#E0ECD6",
+    backgroundColor: "#edf5e9",
     borderRadius: 10,
     color: "#072d18",
   },
@@ -61,15 +61,16 @@ export const StyledTextField = styled(TextField)(() => ({
 }));
 
 export const StyledButton = styled(Button)(() => ({
-  backgroundColor: "#072d18",
   color: "#E0ECD6",
   fontWeight: 700,
-  "&:hover": {
-    backgroundColor: "#0b4726",
-  },
+  backgroundColor: "#2C6E49",
+  "&:hover": { backgroundColor: "#244d38" },
 }));
 
-export const ErrorText = styled(Typography)(() => ({
-  color: "#ffd3d3",
-  textAlign: "center",
-}));
+export const ErrorText = styled(Typography)(() => {
+  return ({
+    color: "#9d2626",
+    textAlign: "center",
+    fontSize: "1rem",
+  });
+});

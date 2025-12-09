@@ -14,8 +14,8 @@ public class DemoApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
+        System.out.println("Anwendung unter: http://localhost:8081/api/products");
     }
-
 //    @Bean
 //    public CommandLineRunner run(EmployeeService employeeService) {
 //        return args -> {

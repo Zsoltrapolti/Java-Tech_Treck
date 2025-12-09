@@ -5,6 +5,7 @@ import LoginPage from "./pages/LoginPage.tsx";
 import EmployeesPage from "./pages/EmployeesPage.tsx";
 import OrdersPage from "./pages/OrdersPage.tsx";
 import {Routes, Route, BrowserRouter} from "react-router-dom";
+import OrdersEditPage from "./pages/OrdersEditPage.tsx";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
                 <Route path="/stock/:id/edit" element={<StockEditPage/>} />
                 <Route path="/employees" element={<EmployeesPage />} />
                 <Route path="/orders" element={<OrdersPage />} />
+                <Route path="/orders/:id/edit" element={<OrdersEditPage/>} />
             </Routes>
         </BrowserRouter>
     </>

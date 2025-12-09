@@ -50,4 +50,9 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/test")
+    public String test() {
+        return "✅ Product API is working! Time: " + new java.util.Date();
+    }
+
 }
