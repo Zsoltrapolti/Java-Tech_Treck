@@ -45,7 +45,6 @@ export default function EmployeesAddPage() {
                 }}
                 onCancel={() => navigate("/employees")}
             />
-
         </EditFormPage>
     );
 }
