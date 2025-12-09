@@ -34,12 +34,14 @@ class ProductServiceTest {
         product.setName("Test");
         product.setType("Type");
         product.setUnitOfMeasure("Unit");
+        product.setQuantity(0.0); // Ensure quantity is initialized
 
         Product savedProduct = new Product();
         savedProduct.setId(1L);
         savedProduct.setName("Test");
         savedProduct.setType("Type");
         savedProduct.setUnitOfMeasure("Unit");
+        savedProduct.setQuantity(0.0);
 
         when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
 
@@ -54,9 +56,9 @@ class ProductServiceTest {
 
     @Test
     void getAllProducts() {
-        // Given
-        Product p1 = new Product(1L, "Product1", "Type1", "Unit1");
-        Product p2 = new Product(2L, "Product2", "Type2", "Unit2");
+        // Given: CORRECTED CONSTRUCTOR CALL (must include quantity as Double)
+        Product p1 = new Product(1L, "Product1", "Type1", "Unit1", 1.0);
+        Product p2 = new Product(2L, "Product2", "Type2", "Unit2", 5.0);
         List<Product> products = Arrays.asList(p1, p2);
 
         when(productRepository.findAll()).thenReturn(products);
@@ -64,15 +66,15 @@ class ProductServiceTest {
         // When
         List<Product> result = productService.getAllProducts();
 
+        System.out.println(result.getFirst().getId());
         // Then
         assertEquals(2, result.size());
-        assertEquals("Product1", result.get(0).getName());
+        assertEquals(1L, result.getFirst().getId());
     }
 
     @Test
     void getProductById_found() {
-        // Given
-        Product product = new Product(1L, "Test", "Type", "Unit");
+        Product product = new Product(1L, "Test", "Type", "Unit", 10.0);
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
         // When

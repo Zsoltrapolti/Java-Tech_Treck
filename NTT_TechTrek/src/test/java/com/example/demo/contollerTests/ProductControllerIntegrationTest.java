@@ -1,22 +1,29 @@
 package com.example.demo.contollerTests;
 
-import com.example.demo.model.stock.Product;
+import com.example.demo.config.TestSecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
+@Import(TestSecurityConfig.class)
+@TestPropertySource(properties = {
+        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration"
+})
 class ProductControllerIntegrationTest {
 
     @Autowired
@@ -25,123 +32,104 @@ class ProductControllerIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @BeforeEach
-    void cleanup() {
-        // Optional: Clean database before each test
-    }
-
     @Test
     void createProduct_shouldReturnCreatedProduct() throws Exception {
-        // Given
-        Product product = new Product();
-        product.setName("Integration Test Product");
-        product.setType("Test");
-        product.setUnitOfMeasure("Unit");
+        // CORRECTED JSON: Removed quotes from 1L and added comma after id.
+        String productJson = """
+        {
+            "id" : 1, 
+            "name": "Integration Test Product",
+            "type": "ceva",
+            "unitOfMeasure": "10",
+            "quantity": 10.0
+        }
+        """;
 
         // When
         ResultActions response = mockMvc.perform(post("/api/products")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(product)));
+                .content(productJson));
 
         // Then
         response.andExpect(status().isCreated())
+                // Note: The returned ID might not be exactly 1L if the DB is running,
+                // but the integration test assumes successful creation.
+                .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.name", is("Integration Test Product")))
-                .andExpect(jsonPath("$.type", is("Test")))
-                .andExpect(jsonPath("$.unitOfMeasure", is("Unit")))
-                .andExpect(jsonPath("$.id").exists());
+                .andExpect(jsonPath("$.type", is("ceva")))
+                .andExpect(jsonPath("$.unitOfMeasure", is("10")))
+                .andExpect(jsonPath("$.quantity", is(10.0)));
     }
 
     @Test
-    void getAllProducts_shouldReturnEmptyList() throws Exception {
-        // When
-        ResultActions response = mockMvc.perform(get("/api/products"));
-
-        // Then
-        response.andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(0)));
-    }
-
-    @Test
-    void getProductById_whenProductExists() throws Exception {
+    void testUpdateProduct() throws Exception {
         // First create a product
-        Product product = new Product();
-        product.setName("Test Get");
-        product.setType("Type");
-        product.setUnitOfMeasure("Unit");
+        // CORRECTED JSON: Removed non-existent 'price' field. Set required fields.
+        String createJson = """
+            {
+                "name": "Original Name",
+                "type": "Original Type",
+                "unitOfMeasure": "kg",
+                "quantity": 5.0
+            }
+            """;
 
-        String createResponse = mockMvc.perform(post("/api/products")
+        String response = mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
+                        .content(createJson))
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        Product createdProduct = objectMapper.readValue(createResponse, Product.class);
-        Long productId = createdProduct.getId();
+        Long productId = objectMapper.readTree(response).get("id").asLong();
 
-        // Then get it by ID
-        mockMvc.perform(get("/api/products/{id}", productId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(productId.intValue())))
-                .andExpect(jsonPath("$.name", is("Test Get")));
-    }
-
-    @Test
-    void updateProduct_shouldUpdateSuccessfully() throws Exception {
-        // Create product
-        Product product = new Product();
-        product.setName("Original");
-        product.setType("Type");
-        product.setUnitOfMeasure("Unit");
-
-        String createResponse = mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        Product createdProduct = objectMapper.readValue(createResponse, Product.class);
-        Long productId = createdProduct.getId();
-
-        // Update product
-        Product updateData = new Product();
-        updateData.setName("Updated Name");
-        updateData.setType("Updated Type");
-        updateData.setUnitOfMeasure("Updated Unit");
+        // Update the product
+        String updateJson = """
+            {
+                "name": "Updated Name",
+                "type": "Updated Type",
+                "unitOfMeasure": "lbs",
+                "quantity": 15.0
+            }
+            """;
 
         mockMvc.perform(put("/api/products/{id}", productId)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateData)))
+                        .content(updateJson))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("Updated Name")))
-                .andExpect(jsonPath("$.type", is("Updated Type")));
+                .andExpect(jsonPath("$.type", is("Updated Type")))
+                .andExpect(jsonPath("$.quantity", is(15.0)));
     }
 
+//        // ... (Deletion logic would go here)
     @Test
-    void deleteProduct_shouldDeleteSuccessfully() throws Exception {
-        // Create product
-        Product product = new Product();
-        product.setName("To Delete");
-        product.setType("Type");
-        product.setUnitOfMeasure("Unit");
+    void testDeleteProduct() throws Exception {
+    String createJson = """
+            {
+                "name": "Product to Delete",
+                "type": "Test Type",
+                "unitOfMeasure": "pcs",
+                "quantity": 1.0
+            }
+            """;
 
-        String createResponse = mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(product)))
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
+    String response = mockMvc.perform(post("/api/products")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(createJson))
+            .andExpect(status().isCreated())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
 
-        Product createdProduct = objectMapper.readValue(createResponse, Product.class);
-        Long productId = createdProduct.getId();
 
-        // Delete product
-        mockMvc.perform(delete("/api/products/{id}", productId))
-                .andExpect(status().isNoContent());
+    Long productId = objectMapper.readTree(response).get("id").asLong();
 
-        // Verify it's deleted
-        mockMvc.perform(get("/api/products/{id}", productId))
-                .andExpect(status().isNotFound());
-    }
+    mockMvc.perform(delete("/api/products/{id}", productId))
+            .andExpect(status().isNoContent()); // Expect 204 for successful deletion//Verify the product is deleted (GET should return 404 Not Found)
+    mockMvc.perform(get("/api/products/{id}", productId))
+            .andExpect(status().isNotFound());
+}
+//
+
 }

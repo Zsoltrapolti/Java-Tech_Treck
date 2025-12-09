@@ -26,6 +26,7 @@ class ProductRepositoryTest {
         Product product = new Product();
         product.setName("Test");
         product.setType("Type");
+        product.setQuantity(1.2);
         product.setUnitOfMeasure("Unit");
 
         Product saved = productRepository.save(product);
