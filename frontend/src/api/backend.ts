@@ -1,8 +1,8 @@
-import type { AppInfoType } from "../types/AppInfo";
 import type { ModuleType } from "../types/Module";
 import type { StockEntryType } from "../types/StockEntry";
 import type { ProductType } from "../types/Product";
 import type {OrderType} from "../types/Order.ts";
+import type {EmployeeType} from "../types/Employee.ts";
 
 const BACKEND_URL = "http://localhost:8081/api";
 
@@ -43,8 +43,6 @@ export async function login(username: string, password: string) {
 }
 
 
-
-
 export function logout() {
     window.localStorage.removeItem("authToken");
     window.location.href = "/";
@@ -70,13 +68,6 @@ async function authFetch(url: string, options: RequestInit = {}) {
     return resp;
 }
 
-
-export async function fetchAppInformation(): Promise<AppInfoType> {
-    return {
-        name: "Krumpi Management System",
-        version: "1.0.0",
-    };
-}
 
 export async function fetchModules(): Promise<ModuleType[]> {
     return [
@@ -105,22 +96,6 @@ export async function fetchProducts(): Promise<ProductType[]> {
     return resp.json();
 }
 
-export async function fetchProductById(id: number): Promise<ProductType> {
-    const resp = await authFetch(`${BACKEND_URL}/products/${id}`);
-    if (!resp.ok) throw new Error(`Failed to fetch product ${id}`);
-    return resp.json();
-}
-
-export async function updateProduct(product: ProductType) {
-    const resp = await authFetch(`${BACKEND_URL}/products/${product.id}`, {
-        method: "PUT",
-        body: JSON.stringify(product),
-    });
-
-    if (!resp.ok) throw new Error(`Failed to update product ${product.id}`);
-    return resp.json();
-}
-
 export async function fetchStockEntries(): Promise<StockEntryType[]> {
     const products = await fetchProducts();
 
@@ -130,7 +105,6 @@ export async function fetchStockEntries(): Promise<StockEntryType[]> {
         quantity: p.quantity,
     }));
 }
-
 
 export async function fetchEmployees() {
     const resp = await authFetch(`${BACKEND_URL}/employees`);
@@ -144,11 +118,28 @@ export async function fetchOrders() {
     return resp.json();
 }
 
+
+
 export async function fetchOrderById(id: number) {
     const resp = await authFetch(`${BACKEND_URL}/orders/${id}`);
     if (!resp.ok) throw new Error("Failed to fetch order");
     return resp.json();
 }
+
+export async function fetchProductById(id: number): Promise<ProductType> {
+    const resp = await authFetch(`${BACKEND_URL}/products/${id}`);
+    if (!resp.ok) throw new Error(`Failed to fetch product ${id}`);
+    return resp.json();
+}
+
+export async function fetchEmployeeById(id: number): Promise<EmployeeType> {
+    const resp = await authFetch(`${BACKEND_URL}/employees/${id}`);
+    if (!resp.ok) throw new Error(`Failed to fetch employee ${id}`);
+    return resp.json();
+}
+
+
+
 
 export async function updateOrder(order: OrderType) {
     const resp = await authFetch(`${BACKEND_URL}/orders/${order.id}`, {
@@ -158,3 +149,83 @@ export async function updateOrder(order: OrderType) {
     if (!resp.ok) throw new Error("Failed to update order");
     return resp.json();
 }
+
+export async function updateProduct(product: ProductType) {
+    const resp = await authFetch(`${BACKEND_URL}/products/${product.id}`, {
+        method: "PUT",
+        body: JSON.stringify(product),
+    });
+
+    if (!resp.ok) throw new Error(`Failed to update product ${product.id}`);
+    return resp.json();
+}
+
+export async function updateEmployee(employee: EmployeeType) {
+    const resp = await authFetch(`${BACKEND_URL}/employees/${employee.id}`, {
+        method: "PUT",
+        body: JSON.stringify(employee),
+    });
+
+    if (!resp.ok) throw new Error(`Failed to update employee ${employee.id}`);
+    return resp.json();
+}
+
+
+
+
+export async function deleteProduct(id: number) {
+    const resp = await authFetch(`${BACKEND_URL}/products/${id}`, {
+        method: "DELETE",
+    });
+
+    if (!resp.ok) throw new Error("Failed to delete product");
+}
+
+export async function deleteOrder(id: number) {
+    const resp = await authFetch(`${BACKEND_URL}/orders/${id}`, {
+        method: "DELETE",
+    });
+
+    if (!resp.ok) throw new Error("Failed to delete order");
+}
+
+export async function deleteEmployee(id: number) {
+    const resp = await authFetch(`${BACKEND_URL}/employees/${id}`, {
+        method: "DELETE",
+    });
+
+    if (!resp.ok) throw new Error("Failed to delete employee");
+}
+
+
+
+export async function createProduct(product: ProductType) {
+    const resp = await authFetch(`${BACKEND_URL}/products`, {
+        method: "POST",
+        body: JSON.stringify(product)
+    });
+
+    if (!resp.ok) throw new Error("Failed to create product");
+    return resp.json();
+}
+
+export async function createOrder(order: OrderType) {
+    const resp = await authFetch(`${BACKEND_URL}/orders`, {
+        method: "POST",
+        body: JSON.stringify(order),
+    });
+
+    if (!resp.ok) throw new Error("Failed to create order");
+    return resp.json();
+}
+
+export async function createEmployee(employee: EmployeeType) {
+    const resp = await authFetch(`${BACKEND_URL}/employees`, {
+        method: "POST",
+        body: JSON.stringify(employee),
+    });
+
+    if (!resp.ok) throw new Error("Failed to create employee");
+    return resp.json();
+}
+

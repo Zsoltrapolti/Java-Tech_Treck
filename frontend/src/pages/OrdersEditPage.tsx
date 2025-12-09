@@ -1,21 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchOrderById, updateOrder, fetchEmployees } from "../api/backend";
 
-import {
-    EditContainer,
-    EditCard,
-    EditTitle,
-    EditLabel,
-    EditInput,
-    SaveButton,
-    BackButton,
-    EditSelect
-} from "../styles/StockEdit.styles";
+import { fetchOrderById, updateOrder, fetchEmployees } from "../api/backend.ts";
 
+import { EditFormPage } from "../components/EditFormPage.tsx";
+import { EditFormField } from "../components/EditFormField.tsx";
+import { EditFormActions } from "../components/EditFormActions.tsx";
+
+import { EditSelect } from "../styles/ModulePageEdit.styles.ts";
+
+import type { OrderType } from "../types/Order.ts";
+import type { EmployeeType } from "../types/Employee.ts";
 import { MenuItem } from "@mui/material";
-import type { OrderType } from "../types/Order";
-import type { EmployeeType } from "../types/Employee";
 
 export default function OrdersEditPage() {
     const { id } = useParams();
@@ -31,73 +27,53 @@ export default function OrdersEditPage() {
         }
     }, [id]);
 
-    function handleChange(field: keyof OrderType, value: any) {
-        if (!order) return;
-        setOrder({ ...order, [field]: value });
-    }
-
-    async function handleSave() {
-        if (!order) return;
-
-        try {
-            await updateOrder(order);
-            navigate("/orders");
-        } catch {
-            alert("Failed to update order");
-        }
-    }
-
-    if (!order) {
-        return <p>Loading...</p>;
-    }
+    if (!order) return <p>Loading...</p>;
 
     return (
-        <EditContainer>
-            <EditCard elevation={6}>
-                <EditTitle>Edit Order</EditTitle>
+        <EditFormPage title="Edit Order">
 
-                <EditLabel>Customer Name</EditLabel>
-                <EditInput
-                    value={order.customerName}
-                    onChange={(e) => handleChange("customerName", e.target.value)}
-                />
+            <EditFormField
+                label="Customer Name"
+                value={order.customerName}
+                onChange={(v) => setOrder({ ...order, customerName: v })}
+            />
 
-                <EditLabel>Status</EditLabel>
-                <EditInput
-                    value={order.status}
-                    onChange={(e) => handleChange("status", e.target.value)}
-                />
+            <EditFormField
+                label="Status"
+                value={order.status}
+                onChange={(v) => setOrder({ ...order, status: v })}
+            />
 
-                <EditLabel>Responsible Employee</EditLabel>
-
+            <>
+                <label style={{ fontWeight: 600, color: "#1c3d2c" }}>Responsible Employee</label>
                 <EditSelect
                     select
                     value={order.responsibleEmployee?.id || ""}
                     onChange={(e) => {
-                        const selectedId = Number(e.target.value);
-                        const selected = employees.find(emp => emp.id === selectedId);
-                        handleChange("responsibleEmployee", selected || null);
+                        const selected = employees.find(emp => emp.id === Number(e.target.value));
+                        setOrder({ ...order, responsibleEmployee: selected || null });
                     }}
                 >
                 <MenuItem value="">
                         <em>Select employee</em>
                     </MenuItem>
 
-                    {employees.map((emp) => (
+                    {employees.map(emp => (
                         <MenuItem key={emp.id} value={emp.id}>
                             {emp.firstName} {emp.lastName}
                         </MenuItem>
                     ))}
                 </EditSelect>
+            </>
 
-                <SaveButton variant="contained" onClick={handleSave}>
-                    Save
-                </SaveButton>
+            <EditFormActions
+                onSave={async () => {
+                    await updateOrder(order);
+                    navigate("/orders");
+                }}
+                onCancel={() => navigate("/orders")}
+            />
 
-                <BackButton variant="contained" onClick={() => navigate("/orders")}>
-                    Cancel
-                </BackButton>
-            </EditCard>
-        </EditContainer>
+        </EditFormPage>
     );
 }

@@ -10,7 +10,7 @@ import {
     FieldLabel,
     StyledTextField,
     StyledButton,
-    ErrorText
+    ErrorText, LoginForm
 } from "../styles/LoginPage.styles";
 
 export default function LoginPage() {
@@ -34,7 +34,7 @@ export default function LoginPage() {
     return (
         <LoginContainer>
             <LoginCard elevation={6}>
-                <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <LoginForm onSubmit={handleSubmit}>
                     <LoginTitle variant="h4">Krumpi Management System</LoginTitle>
                     <LoginSubtitle variant="subtitle1">Please sign in to continue</LoginSubtitle>
 
@@ -58,7 +58,7 @@ export default function LoginPage() {
                     </StyledButton>
 
                     {error && <ErrorText variant="body2">{error}</ErrorText>}
-                </form>
+                </LoginForm>
             </LoginCard>
         </LoginContainer>
     );
