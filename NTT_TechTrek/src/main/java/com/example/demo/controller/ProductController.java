@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 import com.example.demo.model.stock.Product;
 import com.example.demo.service.ProductService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,9 +51,11 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
-    @GetMapping("/test")
-    public String test() {
-        return "✅ Product API is working! Time: " + new java.util.Date();
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(EntityNotFoundException.class)
+    public String handleNotFoundException(EntityNotFoundException ex) {
+        return ex.getMessage();
     }
 
 }

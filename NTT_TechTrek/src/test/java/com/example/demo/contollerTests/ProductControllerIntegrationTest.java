@@ -17,13 +17,26 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-@Import(TestSecurityConfig.class)
-@TestPropertySource(properties = {
+@SpringBootTest(properties = {
+        // 1. Force H2 in-memory URL and driver
+        "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1",
+        "spring.datasource.driver-class-name=org.h2.Driver",
+        "spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect",
+
+        // 2. Disable Flyway/Liquibase to prevent interference and checksum errors
+        "spring.flyway.enabled=false",
+        "spring.liquibase.enabled=false", // Add this if Liquibase is a dependency
+
+        // 3. Force Hibernate to build the schema from entities for the test run
+        "spring.jpa.hibernate.ddl-auto=create-drop",
+
+        // 4. Exclude Security auto-config
         "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration"
 })
+@AutoConfigureMockMvc
+// REMOVE @ActiveProfiles("test") and @TestPropertySource annotations entirely
+// to avoid conflicts with properties defined directly in @SpringBootTest(properties=...)
+@Import(TestSecurityConfig.class)
 class ProductControllerIntegrationTest {
 
     @Autowired
@@ -124,6 +137,7 @@ class ProductControllerIntegrationTest {
 
 
     Long productId = objectMapper.readTree(response).get("id").asLong();
+
 
     mockMvc.perform(delete("/api/products/{id}", productId))
             .andExpect(status().isNoContent()); // Expect 204 for successful deletion//Verify the product is deleted (GET should return 404 Not Found)

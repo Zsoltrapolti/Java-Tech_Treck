@@ -5,6 +5,7 @@ import com.example.demo.repository.UserAccountRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -60,6 +61,7 @@ public class SecurityConfig {
     }
 
     @Bean
+
     public CommandLineRunner seedDefaultUser(UserAccountRepository userRepo, PasswordEncoder encoder) {
         return args -> {
             if (!userRepo.existsByUsername("admin")) {
@@ -89,4 +91,5 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
 }

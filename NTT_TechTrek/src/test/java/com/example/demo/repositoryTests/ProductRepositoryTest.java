@@ -13,7 +13,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestPropertySource(properties = {
+        // 1. Force Hibernate to create/drop tables for the test's transactional scope.
         "spring.jpa.hibernate.ddl-auto=create-drop",
+        // 2. Disable Flyway to prevent interference/checksum validation errors.
+        "spring.flyway.enabled=false",
         "spring.jpa.show-sql=true"
 })
 class ProductRepositoryTest {
