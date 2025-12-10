@@ -83,3 +83,9 @@ You are now connected to database "krumpi_db" as user "postgres". (you have to s
 ```
 **<img width="309" height="224" alt="image" src="https://github.com/user-attachments/assets/9ba93b83-3e66-4e5f-8744-9ffd01a1f776" />
 
+## 📌 Trello Board
+
+We are using Trello to manage tasks, track progress, and organize the project workflow.
+
+Access the board here:  
+https://trello.com/b/fDtMqXC2/krumpi
