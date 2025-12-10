@@ -5,5 +5,5 @@ export interface OrderType {
     customerName: string;
     creationDate: Date;
     status: string;
-    responsibleEmployee: EmployeeType;
+    responsibleEmployee: EmployeeType | null;
 }

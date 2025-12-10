@@ -1,62 +1,59 @@
 import { useEffect, useState } from "react";
-import { fetchEmployees } from "../api/backend";
+import { deleteEmployee, fetchEmployees } from "../api/backend.ts";
 import { useNavigate } from "react-router-dom";
 
 import {
-    BackButton,
-    StockPageContainer,
-    StockPageTitle,
-    StockPaper,
-    StockTableContainer,
-    StockTableHeader,
-    StockBodyRow,
-    StockTableCell,
-} from "../styles/StockList.styles";
+    ModulePageContainer,
+    ModuleTableContainer
+} from "../styles/ModulePage.styles.ts";
 
-import { Table, TableHead, TableBody, TableRow } from "@mui/material";
+import { ModuleHeader } from "../components/ModuleHeader.tsx";
+import { ModuleDataTable } from "../components/ModuleDataTable.tsx";
+import type { EmployeeType } from "../types/Employee.ts";
 
 export default function EmployeesPage() {
-    const [employees, setEmployees] = useState<any[]>([]);
+    const [employees, setEmployees] = useState<EmployeeType[]>([]);
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchEmployees()
-            .then(setEmployees)
+        fetchEmployees().then(setEmployees);
     }, []);
 
+    function handleDelete(id: number) {
+        deleteEmployee(id);
+        setEmployees(prev => prev.filter(e => e.id !== id));
+    }
+
     return (
-        <StockPageContainer>
-            <BackButton variant="contained" onClick={() => navigate("/home")}>
-                Back to Home
-            </BackButton>
+        <ModulePageContainer>
 
-            <StockPaper>
-                <StockPageTitle>Employees</StockPageTitle>
+            <ModuleHeader
+                title="Employees"
+                addLabel="Add Employee"
+                onAdd={() => navigate("/employees/new")}
+            />
 
-                <StockTableContainer>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <StockTableHeader>ID</StockTableHeader>
-                                <StockTableHeader>First Name</StockTableHeader>
-                                <StockTableHeader>Last Name</StockTableHeader>
-                                <StockTableHeader>Role</StockTableHeader>
-                            </TableRow>
-                        </TableHead>
+            <ModuleTableContainer>
+                <ModuleDataTable
+                    rows={employees.map(e => ({
+                        id: e.id,
+                        firstName: e.firstName,
+                        lastName: e.lastName,
+                        role: e.role
+                    }))}
 
-                        <TableBody>
-                            {employees.map((emp) => (
-                                <StockBodyRow key={emp.id}>
-                                    <StockTableCell>{emp.id}</StockTableCell>
-                                    <StockTableCell>{emp.firstName}</StockTableCell>
-                                    <StockTableCell>{emp.lastName}</StockTableCell>
-                                    <StockTableCell>{emp.role}</StockTableCell>
-                                </StockBodyRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </StockTableContainer>
-            </StockPaper>
-        </StockPageContainer>
+                    columns={[
+                        { label: "ID", key: "id" },
+                        { label: "First Name", key: "firstName" },
+                        { label: "Last Name", key: "lastName" },
+                        { label: "Role", key: "role" },
+                    ]}
+
+                    onEdit={id => navigate(`/employees/${id}/edit`)}
+                    onDelete={handleDelete}
+                />
+            </ModuleTableContainer>
+
+        </ModulePageContainer>
     );
 }
