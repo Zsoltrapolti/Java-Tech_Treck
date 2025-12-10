@@ -1,6 +1,6 @@
-package com.example.demo.contollerTests;
+package ro.krumpi.demo.contollerTests;
 
-import com.example.demo.config.TestSecurityConfig;
+import ro.krumpi.demo.config.TestSecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
