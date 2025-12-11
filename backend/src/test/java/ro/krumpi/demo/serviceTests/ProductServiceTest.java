@@ -1,8 +1,8 @@
-package com.example.demo.serviceTests;
+package ro.krumpi.demo.serviceTests;
 
-import com.example.demo.model.stock.Product;
-import com.example.demo.repository.ProductRepository;
-import com.example.demo.service.ProductService;
+import ro.krumpi.demo.model.stock.Product;
+import ro.krumpi.demo.repository.ProductRepository;
+import ro.krumpi.demo.service.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
