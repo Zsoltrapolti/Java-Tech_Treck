@@ -1,6 +1,6 @@
-package com.example.demo.contollerTests;
+package ro.krumpi.demo.contollerTests;
 
-import com.example.demo.config.TestSecurityConfig;
+import ro.krumpi.demo.config.TestSecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,10 +102,10 @@ class ProductControllerIntegrationTest {
                 .andExpect(jsonPath("$.quantity", is(15.0)));
     }
 
-//        // ... (Deletion logic would go here)
+    //        // ... (Deletion logic would go here)
     @Test
     void testDeleteProduct() throws Exception {
-    String createJson = """
+        String createJson = """
             {
                 "name": "Product to Delete",
                 "type": "Test Type",
@@ -114,22 +114,22 @@ class ProductControllerIntegrationTest {
             }
             """;
 
-    String response = mockMvc.perform(post("/api/products")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(createJson))
-            .andExpect(status().isCreated())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
+        String response = mockMvc.perform(post("/api/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(createJson))
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
 
-    Long productId = objectMapper.readTree(response).get("id").asLong();
+        Long productId = objectMapper.readTree(response).get("id").asLong();
 
-    mockMvc.perform(delete("/api/products/{id}", productId))
-            .andExpect(status().isNoContent()); // Expect 204 for successful deletion//Verify the product is deleted (GET should return 404 Not Found)
-    mockMvc.perform(get("/api/products/{id}", productId))
-            .andExpect(status().isNotFound());
-}
+        mockMvc.perform(delete("/api/products/{id}", productId))
+                .andExpect(status().isNoContent()); // Expect 204 for successful deletion//Verify the product is deleted (GET should return 404 Not Found)
+        mockMvc.perform(get("/api/products/{id}", productId))
+                .andExpect(status().isNotFound());
+    }
 //
 
 }

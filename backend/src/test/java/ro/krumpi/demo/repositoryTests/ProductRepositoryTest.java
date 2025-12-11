@@ -1,7 +1,8 @@
-package com.example.demo.repositoryTests; // FIX PACKAGE FIRST!
 
-import com.example.demo.model.stock.Product;
-import com.example.demo.repository.ProductRepository;
+package ro.krumpi.demo.repositoryTests;
+
+import ro.krumpi.demo.model.stock.Product;
+import ro.krumpi.demo.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;

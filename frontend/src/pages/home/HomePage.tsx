@@ -1,9 +1,9 @@
-import HomeList from "../components/HomeList.tsx";
+import HomeList from "./HomeList.tsx";
 import {
     HomeContainer,
     PageTitle,
     ModulesWrapper
-} from "../styles/HomePage.styles";
+} from "../../ui/HomePage.styles.ts";
 
 export default function HomePage() {
     return (

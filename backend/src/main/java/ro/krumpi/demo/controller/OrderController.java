@@ -4,6 +4,7 @@ import ro.krumpi.demo.model.order.Order;
 import ro.krumpi.demo.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,19 +20,28 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    // CREATE
+    @Operation(
+            summary = "Create a new order",
+            description = "Adds a new order to the system"
+    )
     @PostMapping
     public Order addOrder(@RequestBody Order order) {
         return orderService.addOrder(order);
     }
 
-    // READ all
+    @Operation(
+            summary = "Get all orders",
+            description = "Returns a list of all orders"
+    )
     @GetMapping
     public List<Order> getAllOrders() {
         return orderService.getAllOrders();
     }
 
-    // READ by ID
+    @Operation(
+            summary = "Get order by ID",
+            description = "Returns the order that matches the given ID"
+    )
     @GetMapping("/{id}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
         Optional<Order> order = orderService.getOrderById(id);
@@ -43,7 +53,10 @@ public class OrderController {
         }
     }
 
-    // UPDATE
+    @Operation(
+            summary = "Update order",
+            description = "Updates the order with the given ID"
+    )
     @PutMapping("/{id}")
     public ResponseEntity<Order> updateOrder(@PathVariable Long id,
                                              @RequestBody Order updatedOrder) {
@@ -55,7 +68,10 @@ public class OrderController {
         }
     }
 
-    // DELETE
+    @Operation(
+            summary = "Delete order",
+            description = "Deletes the order with the given ID"
+    )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
         orderService.deleteOrder(id);

@@ -1,27 +1,25 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { fetchProductById, updateProduct } from "../api/backend.ts";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { EditFormPage } from "../components/EditFormPage.tsx";
-import { EditFormField } from "../components/EditFormField.tsx";
-import { EditFormActions } from "../components/EditFormActions.tsx";
+import { createProduct } from "../../api/backend.ts";
 
-import type { ProductType } from "../types/Product.ts";
+import { EditFormPage } from "../../components/form/EditFormPage.tsx";
+import { EditFormField } from "../../components/form/EditFormField.tsx";
+import { EditFormActions } from "../../components/form/EditFormActions.tsx";
 
-export default function StockEditPage() {
-    const { id } = useParams();
+export default function StockAddPage() {
     const navigate = useNavigate();
 
-    const [product, setProduct] = useState<ProductType | null>(null);
-
-    useEffect(() => {
-        if (id) fetchProductById(Number(id)).then(setProduct);
-    }, [id]);
-
-    if (!product) return <p>Loading...</p>;
+    const [product, setProduct] = useState({
+        id: 0,
+        name: "",
+        type: "",
+        unitOfMeasure: "",
+        quantity: 0
+    });
 
     return (
-        <EditFormPage title="Edit Product">
+        <EditFormPage title="Add Product">
 
             <EditFormField
                 label="Name"
@@ -49,7 +47,10 @@ export default function StockEditPage() {
             />
 
             <EditFormActions
-                onSave={async () => { await updateProduct(product); navigate("/stock"); }}
+                onSave={async () => {
+                    await createProduct(product);
+                    navigate("/stock");
+                }}
                 onCancel={() => navigate("/stock")}
             />
 

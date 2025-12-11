@@ -1,4 +1,4 @@
-import { EditLabel, EditInput } from "../styles/ModulePageEdit.styles.ts";
+import { EditLabel, EditInput } from "../../ui/ModulePageEdit.styles.ts";
 
 export function EditFormField({ label, value, onChange, type = "text" }: {
     label: string;

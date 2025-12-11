@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { createEmployee } from "../api/backend.ts";
+import { createEmployee } from "../../api/backend.ts";
 
-import { EditFormPage } from "../components/EditFormPage.tsx";
-import { EditFormField } from "../components/EditFormField.tsx";
-import { EditFormActions } from "../components/EditFormActions.tsx";
+import { EditFormPage } from "../../components/form/EditFormPage.tsx";
+import { EditFormField } from "../../components/form/EditFormField.tsx";
+import { EditFormActions } from "../../components/form/EditFormActions.tsx";
 
 export default function EmployeesAddPage() {
     const navigate = useNavigate();

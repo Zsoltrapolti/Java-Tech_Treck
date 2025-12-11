@@ -6,6 +6,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
+import io.swagger.v3.oas.annotations.Operation;
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -16,6 +18,10 @@ public class AuthController {
     public AuthController(AuthenticationManager authenticationManager) {
         this.authenticationManager = authenticationManager;}
 
+    @Operation(
+            summary = "Login user",
+            description = "Authenticates a user and returns a JWT token"
+    )
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {

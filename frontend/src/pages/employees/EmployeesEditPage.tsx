@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchEmployeeById, updateEmployee } from "../api/backend.ts";
+import { fetchEmployeeById, updateEmployee } from "../../api/backend.ts";
 
-import { EditFormPage } from "../components/EditFormPage.tsx";
-import { EditFormField } from "../components/EditFormField.tsx";
-import { EditFormActions } from "../components/EditFormActions.tsx";
+import { EditFormPage } from "../../components/form/EditFormPage.tsx";
+import { EditFormField } from "../../components/form/EditFormField.tsx";
+import { EditFormActions } from "../../components/form/EditFormActions.tsx";
 
-import type { EmployeeType } from "../types/Employee.ts";
+import type { EmployeeType } from "../../types/Employee.ts";
 
 export default function EmployeesEditPage() {
     const { id } = useParams();

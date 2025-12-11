@@ -1,4 +1,4 @@
-package com.example.demo.config;
+package ro.krumpi.demo.config;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;

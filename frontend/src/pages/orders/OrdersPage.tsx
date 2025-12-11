@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-import { deleteOrder, fetchOrders } from "../api/backend.ts";
+import { deleteOrder, fetchOrders } from "../../api/backend.ts";
 import { useNavigate } from "react-router-dom";
 
 import {
     ModulePageContainer,
     ModuleTableContainer
-} from "../styles/ModulePage.styles.ts";
+} from "../../ui/ModulePage.styles.ts";
 
-import { ModuleHeader } from "../components/ModuleHeader.tsx";
-import { ModuleDataTable } from "../components/ModuleDataTable.tsx";
-import type { OrderType } from "../types/Order.ts";
+import { ModuleHeader } from "../../components/table/ModuleHeader.tsx";
+import { ModuleDataTable } from "../../components/table/ModuleDataTable.tsx";
+import type { OrderType } from "../../types/Order.ts";
 
 export default function OrdersPage() {
     const [orders, setOrders] = useState<OrderType[]>([]);
