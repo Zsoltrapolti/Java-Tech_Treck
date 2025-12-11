@@ -1,51 +1,61 @@
 import { useEffect, useState } from "react";
-import { fetchOrders } from "../api/backend";
+import { deleteOrder, fetchOrders } from "../api/backend.ts";
+import { useNavigate } from "react-router-dom";
+
 import {
-    StockPageContainer,
-    StockTableContainer,
-    StockTableHeader,
-    StockBodyRow,
-    StockTableCell,
-    StockPageTitle,
-} from "../styles/StockList.styles";
-import { Table, TableHead, TableBody, TableRow } from "@mui/material";
+    ModulePageContainer,
+    ModuleTableContainer
+} from "../styles/ModulePage.styles.ts";
+
+import { ModuleHeader } from "../components/ModuleHeader.tsx";
+import { ModuleDataTable } from "../components/ModuleDataTable.tsx";
+import type { OrderType } from "../types/Order.ts";
 
 export default function OrdersPage() {
-    const [orders, setOrders] = useState<any[]>([]);
-    const [error, setError] = useState<string | null>(null);
+    const [orders, setOrders] = useState<OrderType[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetchOrders()
-            .then(setOrders)
-            .catch(() => setError("Could not load orders"));
+        fetchOrders().then(setOrders);
     }, []);
 
+    function handleDelete(id: number) {
+        deleteOrder(id);
+        setOrders(prev => prev.filter(o => o.id !== id));
+    }
+
     return (
-        <StockPageContainer>
-            <StockPageTitle>Orders</StockPageTitle>
-            <StockTableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <StockTableHeader>ID</StockTableHeader>
-                            <StockTableHeader>Customer</StockTableHeader>
-                            <StockTableHeader>Status</StockTableHeader>
-                            <StockTableHeader>Responsible Employee</StockTableHeader>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {orders.map((order) => (
-                            <StockBodyRow key={order.id}>
-                                <StockTableCell>{order.id}</StockTableCell>
-                                <StockTableCell>{order.customerName}</StockTableCell>
-                                <StockTableCell>{order.status}</StockTableCell>
-                                <StockTableCell>{order.responsibleEmployee?.firstName} {order.responsibleEmployee?.lastName}</StockTableCell>
-                            </StockBodyRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </StockTableContainer>
-            {error && <p style={{ textAlign: "center", color: "#a00" }}>{error}</p>}
-        </StockPageContainer>
+        <ModulePageContainer>
+
+            <ModuleHeader
+                title="Orders"
+                addLabel="Add Order"
+                onAdd={() => navigate("/orders/new")}
+            />
+
+            <ModuleTableContainer>
+                <ModuleDataTable
+                    rows={orders.map(o => ({
+                        id: o.id,
+                        customerName: o.customerName,
+                        status: o.status,
+                        responsibleEmployee: o.responsibleEmployee
+                            ? `${o.responsibleEmployee.firstName} ${o.responsibleEmployee.lastName}`
+                            : "—"
+                    }))}
+
+                    columns={[
+                        { label: "ID", key: "id" },
+                        { label: "Customer", key: "customerName" },
+                        { label: "Status", key: "status" },
+                        { label: "Responsible Employee", key: "responsibleEmployee" },
+                    ]}
+
+                    onEdit={id => navigate(`/orders/${id}/edit`)}
+                    onDelete={handleDelete}
+                />
+            </ModuleTableContainer>
+
+        </ModulePageContainer>
     );
 }

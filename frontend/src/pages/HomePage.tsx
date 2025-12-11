@@ -1,13 +1,21 @@
-import AppInformation from '../components/AppInformation'
-import ModuleList from '../components/ModuleList.tsx'
-import {HomeContainer, PageTitle} from "../styles/HomePage.styles.ts";
+import HomeList from "../components/HomeList.tsx";
+import {
+    HomeContainer,
+    PageTitle,
+    ModulesWrapper
+} from "../styles/HomePage.styles";
 
 export default function HomePage() {
     return (
         <HomeContainer>
-            <PageTitle>Home</PageTitle>
-            <AppInformation />
-            <ModuleList />
+            <PageTitle>
+                Home
+            </PageTitle>
+
+            <ModulesWrapper>
+                <HomeList />
+            </ModulesWrapper>
+
         </HomeContainer>
-    )
+    );
 }

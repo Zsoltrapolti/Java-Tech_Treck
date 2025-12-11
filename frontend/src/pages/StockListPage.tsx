@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-import { fetchStockEntries } from "../api/backend";
-import type { StockEntryType } from "../types/StockEntry";
+import { fetchStockEntries, deleteProduct } from "../api/backend.ts";
+import type { StockEntryType } from "../types/StockEntry.ts";
 import { useNavigate } from "react-router-dom";
+
 import {
-    BackButton, EditButton, StockBodyRow,
-    StockPageContainer,
-    StockPageTitle,
-    StockPaper, StockTableCell,
-    StockTableContainer, StockTableHeader
-} from "../styles/StockList.styles.ts";
-import {Table, TableBody, TableHead, TableRow} from "@mui/material";
+    ModulePageContainer,
+    ModuleTableContainer,
+} from "../styles/ModulePage.styles.ts";
+import {ModuleHeader} from "../components/ModuleHeader.tsx";
+import {ModuleDataTable} from "../components/ModuleDataTable.tsx";
+
 
 export default function StockListPage() {
     const [stocks, setStocks] = useState<StockEntryType[]>([]);
@@ -19,44 +19,41 @@ export default function StockListPage() {
         fetchStockEntries().then(setStocks);
     }, []);
 
+    function handleDelete(id: number) {
+        deleteProduct(id);
+        setStocks(prev => prev.filter(s => s.id !== id));
+    }
+
     return (
-        <StockPageContainer>
-            <BackButton variant="contained" onClick={() => navigate("/")}>
-                Back to Home
-            </BackButton>
-            <StockPaper>
-                <StockPageTitle>
-                    Stock Products
-                </StockPageTitle>
-                <StockTableContainer>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <StockTableHeader>Name</StockTableHeader>
-                                <StockTableHeader>Type</StockTableHeader>
-                                <StockTableHeader>Unit of Measure</StockTableHeader>
-                                <StockTableHeader>Quantity</StockTableHeader>
-                                <StockTableHeader>Edit</StockTableHeader>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {stocks.map((entry) => (
-                                <StockBodyRow key={entry.id}>
-                                    <StockTableCell>{entry.product.name}</StockTableCell>
-                                    <StockTableCell>{entry.product.type}</StockTableCell>
-                                    <StockTableCell>{entry.product.unitOfMeasure}</StockTableCell>
-                                    <StockTableCell>{entry.quantity}</StockTableCell>
-                                    <StockTableCell>
-                                        <EditButton variant="contained" onClick={() => navigate(`/stock/${entry.id}/edit`)}>
-                                            Edit
-                                        </EditButton>
-                                    </StockTableCell>
-                                </StockBodyRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </StockTableContainer>
-            </StockPaper>
-        </StockPageContainer>
+        <ModulePageContainer>
+
+            <ModuleHeader
+                title="Stock Products"
+                addLabel="Add Product"
+                onAdd={() => navigate("/stock/new")}
+            />
+
+            <ModuleTableContainer>
+                <ModuleDataTable
+                    rows={stocks.map(s => ({
+                        id: s.id,
+                        name: s.product.name,
+                        type: s.product.type,
+                        unitOfMeasure: s.product.unitOfMeasure,
+                        quantity: s.quantity
+                    }))}
+                    columns={[
+                        { label: "ID", key: "id" },
+                        { label: "Name", key: "name" },
+                        { label: "Type", key: "type" },
+                        { label: "Unit", key: "unitOfMeasure" },
+                        { label: "Quantity", key: "quantity" }
+                    ]}
+                    onEdit={id => navigate(`/stock/${id}/edit`)}
+                    onDelete={handleDelete}
+                />
+            </ModuleTableContainer>
+
+        </ModulePageContainer>
     );
 }

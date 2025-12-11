@@ -1,12 +1,14 @@
-import type { AppInfoType } from "../types/AppInfo.ts";
-import type { ModuleType } from "../types/Module.ts";
-import type { StockEntryType } from "../types/StockEntry.ts";
-import type { ProductType } from "../types/Product.ts";
+import type { ModuleType } from "../types/Module";
+import type { StockEntryType } from "../types/StockEntry";
+import type { ProductType } from "../types/Product";
+import type {OrderType} from "../types/Order.ts";
+import type {EmployeeType} from "../types/Employee.ts";
 
 const BACKEND_URL = "http://localhost:8081/api";
+
+
 let authHeader: Record<string, string> = {};
 
-// restore auth header(avoids 401 after refresh) - de eliminat mai tarziu
 if (typeof window !== "undefined") {
     const saved = window.localStorage.getItem("authToken");
     if (saved) {
@@ -17,10 +19,35 @@ if (typeof window !== "undefined") {
 export function setAuthHeader(username: string, password: string) {
     const token = btoa(`${username}:${password}`);
     authHeader = { Authorization: `Basic ${token}` };
-    if (typeof window !== "undefined") {
-        window.localStorage.setItem("authToken", token);
-    }
+    window.localStorage.setItem("authToken", token);
 }
+
+export async function login(username: string, password: string) {
+    const resp = await fetch(`${BACKEND_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ username, password })
+    });
+
+    if (!resp.ok) {
+        throw new Error("Invalid credentials");
+    }
+
+    const token = btoa(`${username}:${password}`);
+    window.localStorage.setItem("authToken", token);
+    authHeader = { Authorization: `Basic ${token}` };
+
+    return true;
+}
+
+
+export function logout() {
+    window.localStorage.removeItem("authToken");
+    window.location.href = "/";
+}
+
 
 async function authFetch(url: string, options: RequestInit = {}) {
     const resp = await fetch(url, {
@@ -31,112 +58,52 @@ async function authFetch(url: string, options: RequestInit = {}) {
             ...authHeader,
         },
     });
+
     if (resp.status === 401) {
-        // clear auth + relogin ... de eliminat mai tarziu 
-        if (typeof window !== "undefined") {
-            window.localStorage.removeItem("authToken");
-            if (!window.location.pathname.startsWith("/")) {
-                window.location.href = "/";
-            } else if (window.location.pathname !== "/") {
-                window.location.href = "/";
-            }
-        }
+        window.localStorage.removeItem("authToken");
+        window.location.href = "/";
         throw new Error("Unauthorized");
     }
+
     return resp;
 }
 
-export async function fetchAppInformation(): Promise<AppInfoType> {
-    return {
-        name: "Krumpi Management System",
-        version: "Krumpi Version 1.0.0",
-    };
-}
 
 export async function fetchModules(): Promise<ModuleType[]> {
     return [
         {
             id: 1,
             name: "Raw Material Management",
-            description: "Manage raw material stock and warehouse inventory.",
+            description: "Manage raw material stock and warehouse inventory."
         },
         {
             id: 2,
             name: "Employee Management",
-            description: "Manage employee records, roles, and assignments.",
+            description: "Manage employee records, roles, and assignments."
         },
         {
             id: 3,
             name: "Order Management",
-            description: "Manage customer orders, processing, and delivery status.",
-        },
+            description: "Manage customer orders, processing, and delivery status."
+        }
     ];
 }
 
-export async function fetchStockEntries(): Promise<StockEntryType[]> {
-    const resp = await authFetch(`${BACKEND_URL}/products`); // GET /api/products
-    if (!resp.ok) {
-        throw new Error("Failed to fetch products");
-    }
-    const products: ProductType[] = await resp.json();
-    return products.map((p) => ({
-        id: p.id,
-        product: {
-            id: p.id,
-            name: p.name,
-            type: p.type,
-            unitOfMeasure: p.unitOfMeasure,
-            quantity: p.quantity,
-        },
-        quantity: p.quantity,
-    }));
-}
 
-export async function fetchStockEntryById(id: number) {
-    const resp = await authFetch(`${BACKEND_URL}/products/${id}`); // GET /api/products/{id}
-    if (!resp.ok) {
-        throw new Error(`Failed to fetch product with id ${id}`);
-    }
-    const p: ProductType = await resp.json();
-    return {
-        id: p.id,
-        product: {
-            id: p.id,
-            name: p.name,
-            type: p.type,
-            unitOfMeasure: p.unitOfMeasure,
-            quantity: p.quantity,
-        },
-        quantity: p.quantity,
-    } as StockEntryType;
-}
-
-export async function updateStockEntryQuantity(id: number, quantity: number) {
-    const resp = await authFetch(`${BACKEND_URL}/products/${id}`, {
-        method: "PUT",
-        body: JSON.stringify({ quantity }),
-    });
-    if (!resp.ok) {
-        throw new Error(`Failed to update product with id ${id}`);
-    }
-    const p: ProductType = await resp.json();
-    return {
-        id: p.id,
-        product: {
-            id: p.id,
-            name: p.name,
-            type: p.type,
-            unitOfMeasure: p.unitOfMeasure,
-            quantity: p.quantity,
-        },
-        quantity: p.quantity,
-    } as StockEntryType;
-}
-
-export async function fetchProducts() {
+export async function fetchProducts(): Promise<ProductType[]> {
     const resp = await authFetch(`${BACKEND_URL}/products`);
     if (!resp.ok) throw new Error("Failed to fetch products");
     return resp.json();
+}
+
+export async function fetchStockEntries(): Promise<StockEntryType[]> {
+    const products = await fetchProducts();
+
+    return products.map((p) => ({
+        id: p.id,
+        product: p,
+        quantity: p.quantity,
+    }));
 }
 
 export async function fetchEmployees() {
@@ -150,3 +117,115 @@ export async function fetchOrders() {
     if (!resp.ok) throw new Error("Failed to fetch orders");
     return resp.json();
 }
+
+
+
+export async function fetchOrderById(id: number) {
+    const resp = await authFetch(`${BACKEND_URL}/orders/${id}`);
+    if (!resp.ok) throw new Error("Failed to fetch order");
+    return resp.json();
+}
+
+export async function fetchProductById(id: number): Promise<ProductType> {
+    const resp = await authFetch(`${BACKEND_URL}/products/${id}`);
+    if (!resp.ok) throw new Error(`Failed to fetch product ${id}`);
+    return resp.json();
+}
+
+export async function fetchEmployeeById(id: number): Promise<EmployeeType> {
+    const resp = await authFetch(`${BACKEND_URL}/employees/${id}`);
+    if (!resp.ok) throw new Error(`Failed to fetch employee ${id}`);
+    return resp.json();
+}
+
+
+
+
+export async function updateOrder(order: OrderType) {
+    const resp = await authFetch(`${BACKEND_URL}/orders/${order.id}`, {
+        method: "PUT",
+        body: JSON.stringify(order)
+    });
+    if (!resp.ok) throw new Error("Failed to update order");
+    return resp.json();
+}
+
+export async function updateProduct(product: ProductType) {
+    const resp = await authFetch(`${BACKEND_URL}/products/${product.id}`, {
+        method: "PUT",
+        body: JSON.stringify(product),
+    });
+
+    if (!resp.ok) throw new Error(`Failed to update product ${product.id}`);
+    return resp.json();
+}
+
+export async function updateEmployee(employee: EmployeeType) {
+    const resp = await authFetch(`${BACKEND_URL}/employees/${employee.id}`, {
+        method: "PUT",
+        body: JSON.stringify(employee),
+    });
+
+    if (!resp.ok) throw new Error(`Failed to update employee ${employee.id}`);
+    return resp.json();
+}
+
+
+
+
+export async function deleteProduct(id: number) {
+    const resp = await authFetch(`${BACKEND_URL}/products/${id}`, {
+        method: "DELETE",
+    });
+
+    if (!resp.ok) throw new Error("Failed to delete product");
+}
+
+export async function deleteOrder(id: number) {
+    const resp = await authFetch(`${BACKEND_URL}/orders/${id}`, {
+        method: "DELETE",
+    });
+
+    if (!resp.ok) throw new Error("Failed to delete order");
+}
+
+export async function deleteEmployee(id: number) {
+    const resp = await authFetch(`${BACKEND_URL}/employees/${id}`, {
+        method: "DELETE",
+    });
+
+    if (!resp.ok) throw new Error("Failed to delete employee");
+}
+
+
+
+export async function createProduct(product: ProductType) {
+    const resp = await authFetch(`${BACKEND_URL}/products`, {
+        method: "POST",
+        body: JSON.stringify(product)
+    });
+
+    if (!resp.ok) throw new Error("Failed to create product");
+    return resp.json();
+}
+
+export async function createOrder(order: OrderType) {
+    const resp = await authFetch(`${BACKEND_URL}/orders`, {
+        method: "POST",
+        body: JSON.stringify(order),
+    });
+
+    if (!resp.ok) throw new Error("Failed to create order");
+    return resp.json();
+}
+
+export async function createEmployee(employee: EmployeeType) {
+    const resp = await authFetch(`${BACKEND_URL}/employees`, {
+        method: "POST",
+        body: JSON.stringify(employee),
+    });
+
+    if (!resp.ok) throw new Error("Failed to create employee");
+    return resp.json();
+}
+

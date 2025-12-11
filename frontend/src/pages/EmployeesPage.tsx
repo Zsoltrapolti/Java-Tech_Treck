@@ -1,51 +1,59 @@
 import { useEffect, useState } from "react";
-import { fetchEmployees } from "../api/backend";
+import { deleteEmployee, fetchEmployees } from "../api/backend.ts";
+import { useNavigate } from "react-router-dom";
+
 import {
-    StockPageContainer,
-    StockTableContainer,
-    StockTableHeader,
-    StockBodyRow,
-    StockTableCell,
-    StockPageTitle,
-} from "../styles/StockList.styles";
-import { Table, TableHead, TableBody, TableRow } from "@mui/material";
+    ModulePageContainer,
+    ModuleTableContainer
+} from "../styles/ModulePage.styles.ts";
+
+import { ModuleHeader } from "../components/ModuleHeader.tsx";
+import { ModuleDataTable } from "../components/ModuleDataTable.tsx";
+import type { EmployeeType } from "../types/Employee.ts";
 
 export default function EmployeesPage() {
-    const [employees, setEmployees] = useState<any[]>([]);
-    const [error, setError] = useState<string | null>(null);
+    const [employees, setEmployees] = useState<EmployeeType[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        fetchEmployees()
-            .then(setEmployees)
-            .catch(() => setError("Could not load employees"));
+        fetchEmployees().then(setEmployees);
     }, []);
 
+    function handleDelete(id: number) {
+        deleteEmployee(id);
+        setEmployees(prev => prev.filter(e => e.id !== id));
+    }
+
     return (
-        <StockPageContainer>
-            <StockPageTitle>Employees</StockPageTitle>
-            <StockTableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <StockTableHeader>ID</StockTableHeader>
-                            <StockTableHeader>First Name</StockTableHeader>
-                            <StockTableHeader>Last Name</StockTableHeader>
-                            <StockTableHeader>Role</StockTableHeader>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {employees.map((emp) => (
-                            <StockBodyRow key={emp.id}>
-                                <StockTableCell>{emp.id}</StockTableCell>
-                                <StockTableCell>{emp.firstName}</StockTableCell>
-                                <StockTableCell>{emp.lastName}</StockTableCell>
-                                <StockTableCell>{emp.role}</StockTableCell>
-                            </StockBodyRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </StockTableContainer>
-            {error && <p style={{ textAlign: "center", color: "#a00" }}>{error}</p>}
-        </StockPageContainer>
+        <ModulePageContainer>
+
+            <ModuleHeader
+                title="Employees"
+                addLabel="Add Employee"
+                onAdd={() => navigate("/employees/new")}
+            />
+
+            <ModuleTableContainer>
+                <ModuleDataTable
+                    rows={employees.map(e => ({
+                        id: e.id,
+                        firstName: e.firstName,
+                        lastName: e.lastName,
+                        role: e.role
+                    }))}
+
+                    columns={[
+                        { label: "ID", key: "id" },
+                        { label: "First Name", key: "firstName" },
+                        { label: "Last Name", key: "lastName" },
+                        { label: "Role", key: "role" },
+                    ]}
+
+                    onEdit={id => navigate(`/employees/${id}/edit`)}
+                    onDelete={handleDelete}
+                />
+            </ModuleTableContainer>
+
+        </ModulePageContainer>
     );
 }
