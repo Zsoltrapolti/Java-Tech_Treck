@@ -1,4 +1,3 @@
-
 package ro.krumpi.demo.serviceTests;
 
 import ro.krumpi.demo.model.stock.Product;
