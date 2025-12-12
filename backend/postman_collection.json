@@ -18,6 +18,42 @@
       "name": "Auth",
       "item": [
         {
+          "name": "Register (no auth required, random user)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"user{{$randomInt}}\",\n  \"password\": \"pass{{$randomInt}}\",\n  \"role\": \"USER\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "auth": { "type": "noauth" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201 || pm.response.code === 409) {",
+                  "  const req = JSON.parse(pm.request.body.raw);",
+                  "  pm.collectionVariables.set('basic_auth_user', req.username);",
+                  "  pm.collectionVariables.set('basic_auth_password', req.password);",
+                  "  pm.test('Register response ok', function() {",
+                  "    pm.expect([200,201,409]).to.include(pm.response.code);",
+                  "  });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Login (no auth required)",
           "request": {
             "method": "POST",

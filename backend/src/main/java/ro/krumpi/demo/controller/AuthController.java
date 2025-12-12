@@ -4,7 +4,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import ro.krumpi.demo.model.auth.UserAccount;
+import ro.krumpi.demo.repository.UserAccountRepository;
+
 import java.util.Map;
 
 @RestController
@@ -13,8 +17,16 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    public AuthController(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;}
+    private final UserAccountRepository userAccountRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    public AuthController(AuthenticationManager authenticationManager,
+                          UserAccountRepository userAccountRepository,
+                          PasswordEncoder passwordEncoder) {
+        this.authenticationManager = authenticationManager;
+        this.userAccountRepository = userAccountRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
@@ -37,4 +49,22 @@ public class AuthController {
     }
 
     public record LoginRequest(String username, String password) {}
+
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        if (userAccountRepository.existsByUsername(request.username())) {
+            return ResponseEntity.status(409).body(Map.of("message", "Username already exists"));
+        }
+
+        UserAccount user = UserAccount.builder()
+                .username(request.username())
+                .password(passwordEncoder.encode(request.password()))
+                .role(request.role() == null ? "USER" : request.role())
+                .build();
+
+        userAccountRepository.save(user);
+        return ResponseEntity.ok(Map.of("message", "User created"));
+    }
+
+    public record RegisterRequest(String username, String password, String role) {}
 }
