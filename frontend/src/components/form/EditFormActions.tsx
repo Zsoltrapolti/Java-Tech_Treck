@@ -1,4 +1,4 @@
-import { SaveButton, BackButton, FormActionsWrapper } from "../styles/ModulePageEdit.styles.ts";
+import { SaveButton, BackButton, FormActionsWrapper } from "../../ui/ModulePageEdit.styles.ts";
 
 export function EditFormActions({ onSave, onCancel }: {
     onSave: () => void;

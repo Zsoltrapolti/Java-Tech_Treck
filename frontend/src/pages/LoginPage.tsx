@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../api/backend";
+import { login } from "../api/backend.ts";
 
 import {
     LoginContainer,
@@ -11,7 +11,7 @@ import {
     StyledTextField,
     StyledButton,
     ErrorText, LoginForm
-} from "../styles/LoginPage.styles";
+} from "../ui/LoginPage.styles.ts";
 
 export default function LoginPage() {
 

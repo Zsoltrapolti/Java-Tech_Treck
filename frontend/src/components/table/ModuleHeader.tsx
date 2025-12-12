@@ -1,4 +1,4 @@
-import { AddButton, ModulePageHeader } from "../styles/ModulePage.styles.ts";
+import { AddButton, ModulePageHeader } from "../../ui/ModulePage.styles.ts";
 
 export function ModuleHeader({
                                title,

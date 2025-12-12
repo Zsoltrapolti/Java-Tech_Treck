@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import { fetchOrderById, updateOrder, fetchEmployees } from "../api/backend.ts";
+import { fetchOrderById, updateOrder, fetchEmployees } from "../../api/backend.ts";
 
-import { EditFormPage } from "../components/EditFormPage.tsx";
-import { EditFormField } from "../components/EditFormField.tsx";
-import { EditFormActions } from "../components/EditFormActions.tsx";
+import { EditFormPage } from "../../components/form/EditFormPage.tsx";
+import { EditFormField } from "../../components/form/EditFormField.tsx";
+import { EditFormActions } from "../../components/form/EditFormActions.tsx";
 
-import { EditSelect } from "../styles/ModulePageEdit.styles.ts";
+import { EditSelect } from "../../ui/ModulePageEdit.styles.ts";
 
-import type { OrderType } from "../types/Order.ts";
-import type { EmployeeType } from "../types/Employee.ts";
+import type { OrderType } from "../../types/Order.ts";
+import type { EmployeeType } from "../../types/Employee.ts";
 import { MenuItem } from "@mui/material";
 
 export default function OrdersEditPage() {

@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { fetchStockEntries, deleteProduct } from "../api/backend.ts";
-import type { StockEntryType } from "../types/StockEntry.ts";
+import { fetchStockEntries, deleteProduct } from "../../api/backend.ts";
+import type { StockEntryType } from "../../types/StockEntry.ts";
 import { useNavigate } from "react-router-dom";
 
 import {
     ModulePageContainer,
     ModuleTableContainer,
-} from "../styles/ModulePage.styles.ts";
-import {ModuleHeader} from "../components/ModuleHeader.tsx";
-import {ModuleDataTable} from "../components/ModuleDataTable.tsx";
+} from "../../ui/ModulePage.styles.ts";
+import {ModuleHeader} from "../../components/table/ModuleHeader.tsx";
+import {ModuleDataTable} from "../../components/table/ModuleDataTable.tsx";
 
 
 export default function StockListPage() {

@@ -15,6 +15,8 @@ public class DemoApplication {
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
         System.out.println("Anwendung unter: http://localhost:8081/api/products");
+        System.out.println("Swagger: http://localhost:8081/swagger-ui/index.html");
+
     }
 //    @Bean
 //    public CommandLineRunner run(EmployeeService employeeService) {

@@ -4,7 +4,7 @@ import {
     ModuleTableHeader,
     EditButton,
     DeleteButton
-} from "../styles/ModulePage.styles.ts";
+} from "../../ui/ModulePage.styles.ts";
 
 export function ModuleDataTable({
                               rows,

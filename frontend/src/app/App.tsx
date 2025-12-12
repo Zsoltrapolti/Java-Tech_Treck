@@ -1,16 +1,16 @@
-import HomePage from "./pages/HomePage.tsx";
-import StockEditPage from "./pages/StockEditPage.tsx";
-import StockListPage from "./pages/StockListPage.tsx";
-import LoginPage from "./pages/LoginPage.tsx";
-import EmployeesPage from "./pages/EmployeesPage.tsx";
-import OrdersPage from "./pages/OrdersPage.tsx";
+import HomePage from "../pages/home/HomePage.tsx";
+import StockEditPage from "../pages/stock/StockEditPage.tsx";
+import StockListPage from "../pages/stock/StockListPage.tsx";
+import LoginPage from "../pages/LoginPage.tsx";
+import EmployeesPage from "../pages/employees/EmployeesPage.tsx";
+import OrdersPage from "../pages/orders/OrdersPage.tsx";
 import {Routes, Route, BrowserRouter} from "react-router-dom";
-import OrdersEditPage from "./pages/OrdersEditPage.tsx";
-import StockAddPage from "./pages/StockAddPage.tsx";
-import EmployeesEditPage from "./pages/EmployeesEditPage.tsx";
-import EmployeesAddPage from "./pages/EmployeesAddPage.tsx";
-import OrdersAddPage from "./pages/OrdersAddPage.tsx";
-import Layout from "./components/Layout";
+import OrdersEditPage from "../pages/orders/OrdersEditPage.tsx";
+import StockAddPage from "../pages/stock/StockAddPage.tsx";
+import EmployeesEditPage from "../pages/employees/EmployeesEditPage.tsx";
+import EmployeesAddPage from "../pages/employees/EmployeesAddPage.tsx";
+import OrdersAddPage from "../pages/orders/OrdersAddPage.tsx";
+import Layout from "../components/layout/Layout.tsx";
 
 function App() {
     return (

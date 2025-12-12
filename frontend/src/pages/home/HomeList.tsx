@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { fetchModules } from "../api/backend.ts";
-import type { ModuleType } from "../types/Module.ts";
+import { fetchModules } from "../../api/backend.ts";
+import type { ModuleType } from "../../types/Module.ts";
 
 import {
     Table,
@@ -11,8 +11,8 @@ import {
 
 import {
     ModuleTableCell, ModuleTableHeader
-} from "../styles/ModulePage.styles.ts";
-import {ModulesTableContainer} from "../styles/HomePage.styles.ts";
+} from "../../ui/ModulePage.styles.ts";
+import {ModulesTableContainer} from "../../ui/HomePage.styles.ts";
 
 export default function HomeList() {
     const [modules, setModules] = useState<ModuleType[]>([]);

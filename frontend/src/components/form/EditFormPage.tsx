@@ -3,7 +3,7 @@ import {
     EditContainer,
     EditCard,
     EditTitle,
-} from "../styles/ModulePageEdit.styles.ts";
+} from "../../ui/ModulePageEdit.styles.ts";
 
 export function EditFormPage({ title, children }: {
     title: string;

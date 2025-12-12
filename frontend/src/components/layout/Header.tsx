@@ -1,12 +1,12 @@
 import { useNavigate } from "react-router-dom";
-import { logout } from "../api/backend";
+import { logout } from "../../api/backend.ts";
 import {
     HeaderContainer,
     HeaderTitle,
     NavContainer,
     NavButton,
     LogoutButtonHeader
-} from "../styles/Header.styles";
+} from "../../ui/Header.styles.ts";
 
 export function Header() {
     const navigate = useNavigate();
