@@ -126,5 +126,7 @@ If you have problems with DB :
 
 ## Methods in BACKEND
 <img width="620" height="212" alt="image" src="https://github.com/user-attachments/assets/6930d8df-37da-4f75-92f7-55e4c2793f2b" /> 
+
+
 /register endpoint is working !!!
 You can test it in POSTAMAN , I updated our collection . 
