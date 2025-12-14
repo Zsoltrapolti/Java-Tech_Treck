@@ -58,6 +58,14 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        String requestedRole = (request.role() == null || request.role().isBlank())
+                ? "USER"
+                : request.role().trim().toUpperCase();
+
+        if (!requestedRole.matches("ADMIN|EMPLOYEE|USER")) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid role"));
+        }
+
         if (userAccountRepository.existsByUsername(request.username())) {
             return ResponseEntity.status(409).body(Map.of("message", "Username already exists"));
         }
@@ -65,7 +73,7 @@ public class AuthController {
         UserAccount user = UserAccount.builder()
                 .username(request.username())
                 .password(passwordEncoder.encode(request.password()))
-                .role(request.role() == null ? "USER" : request.role())
+                .role(requestedRole)
                 .build();
 
         userAccountRepository.save(user);
