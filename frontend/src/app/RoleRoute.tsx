@@ -1,7 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { getUserRole } from "../api/backend.ts";
+import { getUserRole, type UserRole } from "../api/auth";
 
-export function RoleRoute({ allowed }: { allowed: string[] }) {
+export function RoleRoute({ allowed }: { allowed: UserRole[] }) {
     const role = getUserRole();
 
     if (!role) {
