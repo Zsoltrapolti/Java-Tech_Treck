@@ -143,6 +143,24 @@
             },
             "auth": { "type": "noauth" }
           }
+        },
+        {
+          "name": "Me (requires auth)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "me"]
+            },
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{basic_auth_user}}", "type": "string" },
+                { "key": "password", "value": "{{basic_auth_password}}", "type": "string" }
+              ]
+            }
+          }
         }
       ]
     },
