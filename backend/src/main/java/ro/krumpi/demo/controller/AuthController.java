@@ -4,13 +4,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import ro.krumpi.demo.model.auth.UserAccount;
 import ro.krumpi.demo.repository.UserAccountRepository;
 
-import java.util.Map;
 import io.swagger.v3.oas.annotations.Operation;
+import java.util.Map;
 
 
 @RestController
@@ -44,8 +45,16 @@ public class AuthController {
                     )
             );
 
-            if (authentication.isAuthenticated()){
-                return ResponseEntity.ok(Map.of("message" , "Authenticated"));
+            if(authentication.isAuthenticated()){
+                String role = authentication.getAuthorities().stream()
+                        .findFirst()
+                        .map(a -> a.getAuthority().replace("ROLE_", ""))
+                        .orElse("USER");
+                return ResponseEntity.ok(Map.of(
+                        "message" , "Authenticated",
+                        "username", loginRequest.username(),
+                        "role", role
+                ));
             } else {
                 return ResponseEntity.status(401).body(Map.of("message" , "Unauthorized")) ;
             }
@@ -58,6 +67,14 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+        String requestedRole = (request.role() == null || request.role().isBlank())
+                ? "USER"
+                : request.role().trim().toUpperCase();
+
+        if (!requestedRole.matches("ADMIN|EMPLOYEE|USER")) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid role"));
+        }
+
         if (userAccountRepository.existsByUsername(request.username())) {
             return ResponseEntity.status(409).body(Map.of("message", "Username already exists"));
         }
@@ -65,7 +82,7 @@ public class AuthController {
         UserAccount user = UserAccount.builder()
                 .username(request.username())
                 .password(passwordEncoder.encode(request.password()))
-                .role(request.role() == null ? "USER" : request.role())
+                .role(requestedRole)
                 .build();
 
         userAccountRepository.save(user);
@@ -73,4 +90,22 @@ public class AuthController {
     }
 
     public record RegisterRequest(String username, String password, String role) {}
+
+    @GetMapping("/me")
+    public ResponseEntity<?> me() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null  || !auth.isAuthenticated()) {
+            return ResponseEntity.status(401).body(Map.of("message", "Unauthorized"));
+        }
+
+        String role = auth.getAuthorities().stream()
+                .findFirst()
+                .map(a -> a.getAuthority().replace("ROLE_", "")) //eliminat ROLE_ , doar pt SecurityContext folosim 
+                .orElse("USER"); //implicit
+        return ResponseEntity.ok(Map.of(
+                "username", auth.getName(),
+                "role", role // 200 status OK 
+        ));
+    }
 }
