@@ -16,6 +16,13 @@ if (typeof window !== "undefined") {
     }
 }
 
+export function getUserRole(): "USER" | "EMPLOYEE" | "ADMIN" | null {
+    const role = localStorage.getItem("role");
+    console.log("GET USER ROLE:", role);
+    return role as any;
+}
+
+
 export function setAuthHeader(username: string, password: string) {
     const token = btoa(`${username}:${password}`);
     authHeader = { Authorization: `Basic ${token}` };
@@ -23,28 +30,60 @@ export function setAuthHeader(username: string, password: string) {
 }
 
 export async function login(username: string, password: string) {
-    const resp = await fetch(`${BACKEND_URL}/auth/login`, {
-        method: "POST",
+    const token = btoa(`${username}:${password}`);
+    authHeader = { Authorization: `Basic ${token}` };
+    localStorage.setItem("authToken", token);
+
+    if (await canAccess("/employees")) {
+        localStorage.setItem("role", "ADMIN");
+        return "ADMIN";
+    }
+
+    if (await canAccess("/stock")) {
+        localStorage.setItem("role", "EMPLOYEE");
+        return "EMPLOYEE";
+    }
+
+    if (await canAccess("/products")) {
+        localStorage.setItem("role", "USER");
+        return "USER";
+    }
+
+    throw new Error("Cannot determine role");
+}
+
+
+async function canAccess(path: string): Promise<boolean> {
+    const resp = await fetch(`${BACKEND_URL}${path}`, {
         headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ username, password })
+            Authorization: authHeader.Authorization
+        }
+    });
+    return resp.ok;
+}
+
+export async function registerUser(
+    username: string,
+    password: string,
+    role: "USER" | "EMPLOYEE" | "ADMIN" = "USER"
+) {
+    const resp = await fetch(`${BACKEND_URL}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, role })
     });
 
     if (!resp.ok) {
-        throw new Error("Invalid credentials");
+        const err = await resp.json();
+        throw new Error(err.message || "Register failed");
     }
-
-    const token = btoa(`${username}:${password}`);
-    window.localStorage.setItem("authToken", token);
-    authHeader = { Authorization: `Basic ${token}` };
 
     return true;
 }
 
-
 export function logout() {
-    window.localStorage.removeItem("authToken");
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("role");
     window.location.href = "/";
 }
 
