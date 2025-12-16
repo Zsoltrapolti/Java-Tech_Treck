@@ -10,6 +10,7 @@ import {
 
 import { AuthForm } from "../../components/form/AuthForm";
 import { AuthFooter } from "../../components/form/AuthFooter";
+import {useAuth} from "../../components/form/AuthContext.tsx";
 
 export default function LoginPage() {
     const [username, setUsername] = useState("");
@@ -17,13 +18,16 @@ export default function LoginPage() {
     const [error, setError] = useState<string | null>(null);
 
     const navigate = useNavigate();
+    const { setRole } = useAuth();
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         setError(null);
 
         try {
+
             const role = await login(username, password);
+            setRole(role);
 
             switch (role) {
                 case "ADMIN":

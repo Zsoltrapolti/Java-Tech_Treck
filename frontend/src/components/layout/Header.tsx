@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { getUserRole, logout } from "../../api/backend";
+import { logout } from "../../api/backend";
 
 import {
     HeaderContainer,
@@ -8,10 +8,11 @@ import {
     NavButton,
     LogoutButtonHeader
 } from "../../ui/Header.styles";
+import {useAuth} from "../form/AuthContext.tsx";
 
 export function Header() {
     const navigate = useNavigate();
-    const role = getUserRole();
+    const { role } = useAuth();
 
     function handleLogout() {
         logout();
@@ -23,7 +24,9 @@ export function Header() {
             <HeaderTitle>Krumpi Management System</HeaderTitle>
 
             <NavContainer>
-                <NavButton to="/products">Products</NavButton>
+                {(role === "USER") && (
+                    <NavButton to="/products">Products</NavButton>
+                )}
 
                 {(role === "EMPLOYEE" || role === "ADMIN") && (
                     <NavButton to="/stock">Stock</NavButton>
