@@ -20,7 +20,7 @@ VALUES
 ON CONFLICT DO NOTHING;
 
 SELECT setval(
-  pg_get_serial_sequence('orders','id'),
-  COALESCE(MAX(id), 1),
-  MAX(id) IS NOT NULL
-) FROM orders;
+  pg_get_serial_sequence('orders', 'id'),
+  COALESCE((SELECT MAX(id) FROM orders), 1),
+  (SELECT MAX(id) FROM orders)
+);
