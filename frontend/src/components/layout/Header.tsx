@@ -1,15 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../api/backend.ts";
+import { getUserRole, logout } from "../../api/backend";
+
 import {
     HeaderContainer,
     HeaderTitle,
     NavContainer,
     NavButton,
     LogoutButtonHeader
-} from "../../ui/Header.styles.ts";
+} from "../../ui/Header.styles";
 
 export function Header() {
     const navigate = useNavigate();
+    const role = getUserRole();
 
     function handleLogout() {
         logout();
@@ -21,12 +23,20 @@ export function Header() {
             <HeaderTitle>Krumpi Management System</HeaderTitle>
 
             <NavContainer>
-                <NavButton variant="contained" onClick={() => navigate("/home")}>Home</NavButton>
-                <NavButton variant="contained" onClick={() => navigate("/stock")}>Stock</NavButton>
-                <NavButton variant="contained" onClick={() => navigate("/employees")}>Employees</NavButton>
-                <NavButton variant="contained" onClick={() => navigate("/orders")}>Orders</NavButton>
+                <NavButton to="/products">Products</NavButton>
 
-                <LogoutButtonHeader variant="contained" onClick={handleLogout}>
+                {(role === "EMPLOYEE" || role === "ADMIN") && (
+                    <NavButton to="/stock">Stock</NavButton>
+                )}
+
+                {role === "ADMIN" && (
+                    <>
+                        <NavButton to="/employees">Employees</NavButton>
+                        <NavButton to="/orders">Orders</NavButton>
+                    </>
+                )}
+
+                <LogoutButtonHeader onClick={handleLogout}>
                     Logout
                 </LogoutButtonHeader>
             </NavContainer>

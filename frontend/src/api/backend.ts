@@ -25,9 +25,7 @@ export function setAuthHeader(username: string, password: string) {
 export async function login(username: string, password: string) {
     const resp = await fetch(`${BACKEND_URL}/auth/login`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
     });
 
@@ -36,8 +34,51 @@ export async function login(username: string, password: string) {
     }
 
     const token = btoa(`${username}:${password}`);
-    window.localStorage.setItem("authToken", token);
     authHeader = { Authorization: `Basic ${token}` };
+    localStorage.setItem("authToken", token);
+
+    if (await canAccess("/employees")) {
+        localStorage.setItem("role", "ADMIN");
+        return "ADMIN";
+    }
+
+    if (await canAccess("/stock")) {
+        localStorage.setItem("role", "EMPLOYEE");
+        return "EMPLOYEE";
+    }
+
+    if (await canAccess("/products")) {
+        localStorage.setItem("role", "USER");
+        return "USER";
+    }
+
+    throw new Error("Cannot determine role");
+}
+
+async function canAccess(path: string): Promise<boolean> {
+    const resp = await fetch(`${BACKEND_URL}${path}`, {
+        headers: {
+            Authorization: authHeader.Authorization
+        }
+    });
+    return resp.ok;
+}
+
+export async function registerUser(
+    username: string,
+    password: string,
+    role: "USER" | "EMPLOYEE" | "ADMIN" = "USER"
+) {
+    const resp = await fetch(`${BACKEND_URL}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, role })
+    });
+
+    if (!resp.ok) {
+        const err = await resp.json();
+        throw new Error(err.message || "Register failed");
+    }
 
     return true;
 }
