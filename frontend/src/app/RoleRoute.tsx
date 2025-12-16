@@ -1,8 +1,10 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { getUserRole, type UserRole } from "../api/auth";
+import {useAuth} from "../components/form/AuthContext.tsx";
+
+export type UserRole = "USER" | "EMPLOYEE" | "ADMIN";
 
 export function RoleRoute({ allowed }: { allowed: UserRole[] }) {
-    const role = getUserRole();
+    const { role } = useAuth();
 
     if (!role) {
         return <Navigate to="/" replace />;
