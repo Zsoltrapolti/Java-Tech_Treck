@@ -6,10 +6,11 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 SELECT setval(
-  pg_get_serial_sequence('employee','id'),
-  COALESCE(MAX(id), 1),
-  MAX(id) IS NOT NULL
+    pg_get_serial_sequence('employee', 'id'),
+    COALESCE(MAX(id), 0) + 1,
+    false
 ) FROM employee;
+
 
 INSERT INTO orders (customer_name, creation_date, status, responsible_employee_id)
 VALUES
