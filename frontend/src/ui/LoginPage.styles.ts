@@ -85,3 +85,14 @@ export const LoginForm = styled("form")(() => ({
   flexDirection: "column",
   gap: "12px",
 }));
+
+export const AuthLink = styled("span")(() => ({
+  color: "#2C6E49",
+  fontWeight: 600,
+  fontsize: "1.5rem",
+  cursor: "pointer",
+  marginLeft: 4,
+  "&:hover": {
+  textDecoration: "underline"
+}
+}));
