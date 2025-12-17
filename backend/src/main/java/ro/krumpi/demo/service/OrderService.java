@@ -30,7 +30,7 @@ public class OrderService {
 
         order.getItems().forEach(item -> item.setOrder(order));
         Order saved = orderRepository.save(order);
-        distributorClient.sendOrderToDistributor(saved);
+//        distributorClient.sendOrderToDistributor(saved);
         saved.setStatus(OrderStatus.SENT);
 
         return orderRepository.save(order);
