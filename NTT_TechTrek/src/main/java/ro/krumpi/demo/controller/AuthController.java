@@ -1,10 +1,14 @@
 package ro.krumpi.demo.controller;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
+import ro.krumpi.demo.model.auth.UserAccount;
+import ro.krumpi.demo.repository.UserAccountRepository;
+
 import java.util.Map;
 
 @RestController
@@ -13,8 +17,11 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    public AuthController(AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;}
+    private final UserAccountRepository userAccountRepository;
+
+    public AuthController(AuthenticationManager authenticationManager, UserAccountRepository userAccountRepository) {
+        this.authenticationManager = authenticationManager;
+        this.userAccountRepository = userAccountRepository;}
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
@@ -37,4 +44,16 @@ public class AuthController {
     }
 
     public record LoginRequest(String username, String password) {}
+
+    @PostMapping("/register") // Mapping for creating users
+    public ResponseEntity<UserAccount> register(@RequestBody UserAccount user) {
+        UserAccount saved = userAccountRepository.save(user);
+        return new ResponseEntity<>(saved, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/user/{id}") // Mapping for deleting users
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userAccountRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }

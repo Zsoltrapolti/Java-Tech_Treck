@@ -136,7 +136,8 @@ class ProductControllerIntegrationTest {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(EntityNotFoundException.class)
     public String handleNotFoundException(EntityNotFoundException ex) {
-        // This ensures Spring correctly returns an HTTP 404 status code
         return ex.getMessage();
     }
 }
+
+//teste useri si employee
