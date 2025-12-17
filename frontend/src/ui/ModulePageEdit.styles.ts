@@ -4,7 +4,7 @@ import { Box, Paper, Typography, TextField, Button } from "@mui/material";
 export const EditContainer = styled(Box)(({ theme }) => ({
     paddingTop: theme.spacing(6),
     paddingBottom: theme.spacing(6),
-    minHeight: "85vh",
+    minHeight: "80vh",
     display: "flex",
     justifyContent: "center",
     alignItems: "flex-start",

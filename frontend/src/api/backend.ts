@@ -45,6 +45,13 @@ export async function login(username: string, password: string) {
     return data.role;
 }
 
+export async function fetchMe() {
+    const resp = await authFetch("http://localhost:8081/api/auth/me");
+    if (!resp.ok) throw new Error("Not authenticated");
+    return resp.json();
+}
+
+
 export async function registerUser(
     username: string,
     password: string,
