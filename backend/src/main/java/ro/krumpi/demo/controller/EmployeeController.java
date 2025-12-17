@@ -1,12 +1,12 @@
 package ro.krumpi.demo.controller;
 
-import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Operation; // Kept from the main branch
 import ro.krumpi.demo.model.employee.Employee;
 import ro.krumpi.demo.service.EmployeeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import ro.krumpi.demo.model.employee.Employee;
 
 @RestController
 @RequestMapping("/api/employees")
