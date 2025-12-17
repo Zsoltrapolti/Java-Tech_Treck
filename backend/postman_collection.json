@@ -404,7 +404,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"customerName\": \"{{$randomCompanyName}}\",\n  \"status\": \"NEW\",\n  \"responsibleEmployee\": { \"id\": {{employeeId}} }\n}"
+              "raw": "{\n  \"customerName\": \"{{$randomCompanyName}}\",\n  \"responsibleEmployee\": { \"id\": {{employeeId}} },\n  \"items\": [\n    {\n      \"product\": { \"id\": {{productId}} },\n      \"quantity\": 10,\n      \"unitPrice\": 12.5\n    }\n  ]\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/orders",
@@ -435,7 +435,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"customerName\": \"{{$randomCompanyName}}\",\n  \"status\": \"IN_PROGRESS\",\n  \"responsibleEmployee\": { \"id\": {{employeeId}} }\n}"
+              "raw": "{\n  \"customerName\": \"{{$randomCompanyName}}\",\n  \"status\": \"CONFIRMED\",\n  \"responsibleEmployee\": { \"id\": {{employeeId}} }\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/orders/{{orderId}}",
@@ -452,6 +452,39 @@
               "raw": "{{base_url}}/api/orders/{{orderId}}",
               "host": ["{{base_url}}"],
               "path": ["api", "orders", "{{orderId}}"]
+            }
+          }
+        },
+        {
+          "name": "Mark order as delivered",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/orders/{{orderId}}/deliver",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "{{orderId}}", "deliver"]
+            }
+          }
+        },
+        {
+          "name": "Mark order as confirmed",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/orders/{{orderId}}/confirm",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "{{orderId}}", "confirm"]
+            }
+          }
+        },
+        {
+          "name": "Mark order as cancelled",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/orders/{{orderId}}/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "{{orderId}}", "cancel"]
             }
           }
         }

@@ -77,4 +77,39 @@ public class OrderController {
         orderService.deleteOrder(id);
         return ResponseEntity.noContent().build();
     }
+
+    @Operation(
+            summary = "Mark order as delivered",
+            description = "Marks the order with the given ID as delivered"
+    )
+    @PostMapping("/{id}/deliver")
+    public ResponseEntity<Void> markOrderAsDelivered(@PathVariable Long id) {
+        try {
+            orderService.markDelivered(id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @Operation(
+            summary = "Confirm order",
+            description = "Marks the order with the given ID as confirmed"
+    )
+    @PostMapping("/{id}/confirm")
+    public ResponseEntity<Void> confirm(@PathVariable Long id) {
+        orderService.markConfirmed(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @Operation(
+            summary = "Cancel order",
+            description = "Marks the order with the given ID as canceled"
+    )
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancel(@PathVariable Long id) {
+        orderService.cancel(id);
+        return ResponseEntity.ok().build();
+    }
+
 }

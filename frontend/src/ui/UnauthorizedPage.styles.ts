@@ -3,11 +3,11 @@ import { Box, Button, Typography } from "@mui/material";
 
 export const UnauthorizedContainer = styled(Box)(() => ({
     width: "100%",
-    minHeight: "calc(100vh - 80px)",
+    minHeight: "calc(100vh - 200px)",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#E0ECD6",
+    backgroundColor: "#E5F3E5",
 }));
 
 export const UnauthorizedCard = styled(Box)(({ theme }) => ({
