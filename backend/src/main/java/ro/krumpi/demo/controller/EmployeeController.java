@@ -1,15 +1,12 @@
 package ro.krumpi.demo.controller;
 
-<<<<<<<< HEAD:NTT_TechTrek/src/main/java/ro/krumpi/demo/controller/EmployeeController.java
-========
-import io.swagger.v3.oas.annotations.Operation;
->>>>>>>> 6ffb373cacd99985119d91f35591ae5bc2228713:backend/src/main/java/ro/krumpi/demo/controller/EmployeeController.java
+import io.swagger.v3.oas.annotations.Operation; // Kept from the main branch
 import ro.krumpi.demo.model.employee.Employee;
 import ro.krumpi.demo.service.EmployeeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import ro.krumpi.demo.model.employee.Employee;
 
 @RestController
 @RequestMapping("/api/employees")

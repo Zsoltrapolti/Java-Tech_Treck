@@ -1,12 +1,5 @@
 package ro.krumpi.demo.contollerTests;
 
-<<<<<<<< HEAD:NTT_TechTrek/src/test/java/ro/krumpi/demo/contollerTests/ProductControllerIntegrationTest.java
-import jakarta.persistence.EntityNotFoundException;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-========
->>>>>>>> 6ffb373cacd99985119d91f35591ae5bc2228713:backend/src/test/java/ro/krumpi/demo/contollerTests/ProductControllerIntegrationTest.java
 import ro.krumpi.demo.config.TestSecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -15,6 +8,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -22,19 +17,13 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest(properties = {
-        "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1",
-        "spring.datasource.driver-class-name=org.h2.Driver",
-
-        "spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect",
-
-        "spring.flyway.enabled=false",
-        "spring.liquibase.enabled=false",
-        "spring.jpa.hibernate.ddl-auto=create-drop",
+@SpringBootTest
+@AutoConfigureMockMvc
+@ActiveProfiles("test")
+@Import(TestSecurityConfig.class)
+@TestPropertySource(properties = {
         "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration"
 })
-@AutoConfigureMockMvc
-@Import(TestSecurityConfig.class)
 class ProductControllerIntegrationTest {
 
     @Autowired
@@ -45,6 +34,7 @@ class ProductControllerIntegrationTest {
 
     @Test
     void createProduct_shouldReturnCreatedProduct() throws Exception {
+        // CORRECTED JSON: Removed quotes from 1L and added comma after id.
         String productJson = """
         {
             "id" : 1, 
@@ -55,13 +45,15 @@ class ProductControllerIntegrationTest {
         }
         """;
 
-
+        // When
         ResultActions response = mockMvc.perform(post("/api/products")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(productJson));
 
+        // Then
         response.andExpect(status().isCreated())
-
+                // Note: The returned ID might not be exactly 1L if the DB is running,
+                // but the integration test assumes successful creation.
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.name", is("Integration Test Product")))
                 .andExpect(jsonPath("$.type", is("ceva")))
@@ -71,6 +63,8 @@ class ProductControllerIntegrationTest {
 
     @Test
     void testUpdateProduct() throws Exception {
+        // First create a product
+        // CORRECTED JSON: Removed non-existent 'price' field. Set required fields.
         String createJson = """
             {
                 "name": "Original Name",
@@ -108,10 +102,7 @@ class ProductControllerIntegrationTest {
                 .andExpect(jsonPath("$.quantity", is(15.0)));
     }
 
-<<<<<<<< HEAD:NTT_TechTrek/src/test/java/ro/krumpi/demo/contollerTests/ProductControllerIntegrationTest.java
-========
     //        // ... (Deletion logic would go here)
->>>>>>>> 6ffb373cacd99985119d91f35591ae5bc2228713:backend/src/test/java/ro/krumpi/demo/contollerTests/ProductControllerIntegrationTest.java
     @Test
     void testDeleteProduct() throws Exception {
         String createJson = """
@@ -134,22 +125,6 @@ class ProductControllerIntegrationTest {
 
         Long productId = objectMapper.readTree(response).get("id").asLong();
 
-<<<<<<<< HEAD:NTT_TechTrek/src/test/java/ro/krumpi/demo/contollerTests/ProductControllerIntegrationTest.java
-
-    mockMvc.perform(delete("/api/products/{id}", productId))
-            .andExpect(status().isNoContent()); // Expect 204 for successful deletion//Verify the product is deleted (GET should return 404 Not Found)
-    mockMvc.perform(get("/api/products/{id}", productId))
-            .andExpect(status().isNotFound());
-}
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(EntityNotFoundException.class)
-    public String handleNotFoundException(EntityNotFoundException ex) {
-        return ex.getMessage();
-    }
-}
-
-//teste useri si employee
-========
         mockMvc.perform(delete("/api/products/{id}", productId))
                 .andExpect(status().isNoContent()); // Expect 204 for successful deletion//Verify the product is deleted (GET should return 404 Not Found)
         mockMvc.perform(get("/api/products/{id}", productId))
@@ -158,4 +133,3 @@ class ProductControllerIntegrationTest {
 //
 
 }
->>>>>>>> 6ffb373cacd99985119d91f35591ae5bc2228713:backend/src/test/java/ro/krumpi/demo/contollerTests/ProductControllerIntegrationTest.java

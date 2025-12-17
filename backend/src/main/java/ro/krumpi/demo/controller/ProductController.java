@@ -1,13 +1,6 @@
 package ro.krumpi.demo.controller;
-<<<<<<<< HEAD:NTT_TechTrek/src/main/java/ro/krumpi/demo/controller/ProductController.java
-
 import ro.krumpi.demo.model.stock.Product;
 import ro.krumpi.demo.service.ProductService;
-import jakarta.persistence.EntityNotFoundException;
-========
-import ro.krumpi.demo.model.stock.Product;
-import ro.krumpi.demo.service.ProductService;
->>>>>>>> 6ffb373cacd99985119d91f35591ae5bc2228713:backend/src/main/java/ro/krumpi/demo/controller/ProductController.java
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -78,11 +71,9 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
     }
-
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(EntityNotFoundException.class)
-    public String handleNotFoundException(EntityNotFoundException ex) {
-        return ex.getMessage();
+    @GetMapping("/test")
+    public String test() {
+        return "✅ Product API is working! Time: " + new java.util.Date();
     }
 
 }
