@@ -1,5 +1,6 @@
 package ro.krumpi.demo.contollerTests;
 
+import jakarta.persistence.EntityNotFoundException;
 import ro.krumpi.demo.config.TestSecurityConfig;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -17,13 +18,17 @@ import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-@Import(TestSecurityConfig.class)
-@TestPropertySource(properties = {
-        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration"
+@SpringBootTest(properties = {
+        "spring.datasource.url=jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE",
+        "spring.datasource.driver-class-name=org.h2.Driver",
+        "spring.datasource.username=sa",
+        "spring.datasource.password=",
+        "spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect",
+        "spring.jpa.hibernate.ddl-auto=create-drop",
+        "spring.flyway.enabled=false"
 })
+@AutoConfigureMockMvc(addFilters = false)
+@ActiveProfiles("test")
 class ProductControllerIntegrationTest {
 
     @Autowired
@@ -33,8 +38,8 @@ class ProductControllerIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Test
+
     void createProduct_shouldReturnCreatedProduct() throws Exception {
-        // CORRECTED JSON: Removed quotes from 1L and added comma after id.
         String productJson = """
         {
             "id" : 1, 
@@ -45,15 +50,11 @@ class ProductControllerIntegrationTest {
         }
         """;
 
-        // When
         ResultActions response = mockMvc.perform(post("/api/products")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(productJson));
 
-        // Then
         response.andExpect(status().isCreated())
-                // Note: The returned ID might not be exactly 1L if the DB is running,
-                // but the integration test assumes successful creation.
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.name", is("Integration Test Product")))
                 .andExpect(jsonPath("$.type", is("ceva")))
@@ -63,8 +64,6 @@ class ProductControllerIntegrationTest {
 
     @Test
     void testUpdateProduct() throws Exception {
-        // First create a product
-        // CORRECTED JSON: Removed non-existent 'price' field. Set required fields.
         String createJson = """
             {
                 "name": "Original Name",
@@ -83,7 +82,6 @@ class ProductControllerIntegrationTest {
 
         Long productId = objectMapper.readTree(response).get("id").asLong();
 
-        // Update the product
         String updateJson = """
             {
                 "name": "Updated Name",
@@ -105,30 +103,36 @@ class ProductControllerIntegrationTest {
     //        // ... (Deletion logic would go here)
     @Test
     void testDeleteProduct() throws Exception {
+     //cream produs de test si verificam pe pasi operatiunile
         String createJson = """
-            {
-                "name": "Product to Delete",
-                "type": "Test Type",
-                "unitOfMeasure": "pcs",
-                "quantity": 1.0
-            }
-            """;
+        {
+            "name": "Product to Delete",
+            "type": "Test Type",
+            "unitOfMeasure": "pcs",
+            "quantity": 1.0
+        }
+        """;
 
         String response = mockMvc.perform(post("/api/products")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(createJson))
                 .andExpect(status().isCreated())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
+                .andReturn().getResponse().getContentAsString();
 
         Long productId = objectMapper.readTree(response).get("id").asLong();
 
+        // stergem produsul
         mockMvc.perform(delete("/api/products/{id}", productId))
-                .andExpect(status().isNoContent()); // Expect 204 for successful deletion//Verify the product is deleted (GET should return 404 Not Found)
+                .andExpect(status().isNoContent());
+
+        // verificam ca ii
         mockMvc.perform(get("/api/products/{id}", productId))
-                .andExpect(status().isNotFound());
+                .andExpect(result -> {
+                    if (!(result.getResolvedException() instanceof EntityNotFoundException)) {
+                        throw new AssertionError("Expected EntityNotFoundException but was: "
+                                + result.getResolvedException());
+                    }
+                });
     }
 //
 

@@ -29,12 +29,12 @@ class ProductServiceTest {
 
     @Test
     void createProduct() {
-        // Given
+
         Product product = new Product();
         product.setName("Test");
         product.setType("Type");
         product.setUnitOfMeasure("Unit");
-        product.setQuantity(0.0); // Ensure quantity is initialized
+        product.setQuantity(0.0);
 
         Product savedProduct = new Product();
         savedProduct.setId(1L);
@@ -45,10 +45,8 @@ class ProductServiceTest {
 
         when(productRepository.save(any(Product.class))).thenReturn(savedProduct);
 
-        // When
         Product result = productService.createProduct(product);
 
-        // Then
         assertNotNull(result.getId());
         assertEquals("Test", result.getName());
         verify(productRepository, times(1)).save(product);
@@ -56,7 +54,6 @@ class ProductServiceTest {
 
     @Test
     void getAllProducts() {
-        // Given: CORRECTED CONSTRUCTOR CALL (must include quantity as Double)
         Product p1 = new Product(1L, "Product1", "Type1", "Unit1", 1.0);
         Product p2 = new Product(2L, "Product2", "Type2", "Unit2", 5.0);
         List<Product> products = Arrays.asList(p1, p2);
@@ -67,7 +64,7 @@ class ProductServiceTest {
         List<Product> result = productService.getAllProducts();
 
         System.out.println(result.getFirst().getId());
-        // Then
+
         assertEquals(2, result.size());
         assertEquals(1L, result.getFirst().getId());
     }
@@ -77,19 +74,16 @@ class ProductServiceTest {
         Product product = new Product(1L, "Test", "Type", "Unit", 10.0);
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
-        // When
         Product result = productService.getProductById(1L);
 
-        // Then
         assertEquals("Test", result.getName());
     }
 
     @Test
     void getProductById_notFound() {
-        // Given
+
         when(productRepository.findById(99L)).thenReturn(Optional.empty());
 
-        // When & Then
         assertThrows(EntityNotFoundException.class, () -> {
             productService.getProductById(99L);
         });

@@ -23,4 +23,5 @@ public class UserAccount {
 
     @Column(nullable = false)
     private String role;
+
 }

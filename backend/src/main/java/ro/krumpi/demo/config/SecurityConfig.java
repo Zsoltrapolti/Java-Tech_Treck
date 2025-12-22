@@ -1,5 +1,6 @@
 package ro.krumpi.demo.config;
 
+import org.springframework.context.annotation.Profile;
 import ro.krumpi.demo.model.auth.UserAccount;
 import ro.krumpi.demo.repository.UserAccountRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -66,6 +67,7 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Profile("!test")
     public CommandLineRunner seedDefaultUser(UserAccountRepository userRepo, PasswordEncoder encoder) {
         return args -> {
             if (!userRepo.existsByUsername("admin")) {
