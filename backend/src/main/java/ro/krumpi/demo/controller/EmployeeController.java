@@ -1,6 +1,7 @@
 package ro.krumpi.demo.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ro.krumpi.demo.dto.EmployeeDTO;
@@ -50,7 +51,7 @@ public class EmployeeController {
             description = "Adds a new employee to the system"
     )
     @PostMapping
-    public EmployeeDTO createEmployee(@RequestBody EmployeeDTO employeeDTO) {
+    public EmployeeDTO createEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
         Employee saved = employeeService.addEmployee(EmployeeMapper.toEntity(employeeDTO));
         return EmployeeMapper.toDTO(saved);
     }
@@ -62,14 +63,10 @@ public class EmployeeController {
     @PutMapping("/{id}")
     public ResponseEntity<EmployeeDTO> updateEmployee(
             @PathVariable Long id,
-            @RequestBody EmployeeDTO updatedDto
+            @Valid @RequestBody EmployeeDTO updatedDto
     ) {
-        try {
-            Employee updated = employeeService.updateEmployee(id, EmployeeMapper.toEntity(updatedDto));
-            return ResponseEntity.ok(EmployeeMapper.toDTO(updated));
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        Employee updated = employeeService.updateEmployee(id, EmployeeMapper.toEntity(updatedDto));
+        return ResponseEntity.ok(EmployeeMapper.toDTO(updated));
     }
 
     @Operation(
