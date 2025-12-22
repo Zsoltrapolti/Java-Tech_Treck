@@ -49,6 +49,27 @@ mvn spring-boot:run
 Backend runs on port:
 http://localhost:8081
 
+### Flyway (DB migrations)
+Location: `NTT_TechTrek/`
+
+Config file (already in repo):`flyway.conf`
+
+Common commands (from `NTT_TechTrek/`):
+```bash
+# run migration on DB from flyway.conf
+./mvnw clean flyway:migrate -Dflyway.configFiles=flyway.conf
+
+# status
+./mvnw flyway:info -Dflyway.configFiles=flyway.conf
+
+# repair+migrate for any modification 
+./mvnw flyway:repair -Dflyway.configFiles=flyway.conf
+./mvnw flyway:migrate -Dflyway.configFiles=flyway.conf
+```
+!!!! REMEMBER !!! :
+- don't edit applied Vx migrations , better create a new file `V{n}__description.sql` in `src/main/resources/db/migration`.
+- `spring.jpa.hibernate.ddl-auto=validate` – must come from migrations, not Hibarnate ...
+
 ## Frontend 
 
 Location: `frontend/`
@@ -89,3 +110,23 @@ We are using Trello to manage tasks, track progress, and organize the project wo
 
 Access the board here:  
 https://trello.com/b/fDtMqXC2/krumpi
+
+
+## Hints for backend issues
+
+If you have problems with DB : 
+    1. Let me know
+    2. Use these commands :
+    ```bash
+        dropdb -h localhost -p 5436 -U postgres krumpi_db
+        createdb -h localhost -p 5436 -U postgres krumpi_db
+        ./mvnw spring-boot:run 
+    ```bash
+    Now, everything has to be fine !  Heart eyes
+
+## Methods in BACKEND
+<img width="620" height="212" alt="image" src="https://github.com/user-attachments/assets/6930d8df-37da-4f75-92f7-55e4c2793f2b" /> 
+
+
+/register endpoint is working !!!
+You can test it in POSTAMAN , I updated our collection . 

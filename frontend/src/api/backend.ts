@@ -5,8 +5,6 @@ import type {OrderType} from "../types/Order.ts";
 import type {EmployeeType} from "../types/Employee.ts";
 
 const BACKEND_URL = "http://localhost:8081/api";
-
-
 let authHeader: Record<string, string> = {};
 
 if (typeof window !== "undefined") {
@@ -22,22 +20,53 @@ export function setAuthHeader(username: string, password: string) {
     window.localStorage.setItem("authToken", token);
 }
 
+
 export async function login(username: string, password: string) {
-    const resp = await fetch(`${BACKEND_URL}/auth/login`, {
+    const response = await fetch(`${BACKEND_URL}/auth/login`, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
         },
-        body: JSON.stringify({ username, password })
+        body: JSON.stringify({ username, password }),
+    });
+
+    if (!response.ok) {
+        throw new Error("Login failed");
+    }
+
+    const data: { username: string; role: "USER" | "EMPLOYEE" | "ADMIN" } =
+        await response.json();
+
+    const token = btoa(`${username}:${password}`);
+    authHeader = { Authorization: `Basic ${token}` };
+    localStorage.setItem("authToken", token);
+    localStorage.setItem("role", data.role);
+
+    return data.role;
+}
+
+export async function fetchMe() {
+    const resp = await authFetch("http://localhost:8081/api/auth/me");
+    if (!resp.ok) throw new Error("Not authenticated");
+    return resp.json();
+}
+
+
+export async function registerUser(
+    username: string,
+    password: string,
+    role: "USER" | "EMPLOYEE" | "ADMIN" = "USER"
+) {
+    const resp = await fetch(`${BACKEND_URL}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, role })
     });
 
     if (!resp.ok) {
-        throw new Error("Invalid credentials");
+        const err = await resp.json();
+        throw new Error(err.message || "Register failed");
     }
-
-    const token = btoa(`${username}:${password}`);
-    window.localStorage.setItem("authToken", token);
-    authHeader = { Authorization: `Basic ${token}` };
 
     return true;
 }
@@ -45,6 +74,7 @@ export async function login(username: string, password: string) {
 
 export function logout() {
     window.localStorage.removeItem("authToken");
+    localStorage.removeItem("role");
     window.location.href = "/";
 }
 
