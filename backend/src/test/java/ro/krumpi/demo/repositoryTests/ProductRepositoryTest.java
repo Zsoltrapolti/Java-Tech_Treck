@@ -14,7 +14,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestPropertySource(properties = {
         "spring.jpa.hibernate.ddl-auto=create-drop",
-        "spring.jpa.show-sql=true"
+        "spring.flyway.enabled=false",
+        "spring.jpa.show-sql=true",
+        "spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.H2Dialect"
 })
 class ProductRepositoryTest {
 

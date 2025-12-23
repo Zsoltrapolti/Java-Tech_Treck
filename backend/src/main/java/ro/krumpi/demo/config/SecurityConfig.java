@@ -1,5 +1,6 @@
 package ro.krumpi.demo.config;
 
+import org.springframework.context.annotation.Profile;
 import ro.krumpi.demo.model.auth.UserAccount;
 import ro.krumpi.demo.repository.UserAccountRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -35,8 +36,14 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/products/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/products/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/products/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                        .requestMatchers("/api/employees/**", "/api/orders/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/orders/*/delivered").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());
@@ -60,13 +67,14 @@ public class SecurityConfig {
     }
 
     @Bean
+    @Profile("!test")
     public CommandLineRunner seedDefaultUser(UserAccountRepository userRepo, PasswordEncoder encoder) {
         return args -> {
             if (!userRepo.existsByUsername("admin")) {
                 userRepo.save(UserAccount.builder()
                         .username("admin")
                         .password(encoder.encode("password"))
-                        .role("USER")
+                        .role("ADMIN")
                         .build());
             }
         };

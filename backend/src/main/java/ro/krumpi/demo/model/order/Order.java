@@ -3,6 +3,8 @@ import ro.krumpi.demo.model.employee.Employee;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -16,7 +18,12 @@ public class Order {
     private Long id;
     private String customerName;
     private LocalDateTime creationDate;
-    private String status;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> items = new ArrayList<>();
 
     @ManyToOne
     private Employee responsibleEmployee;

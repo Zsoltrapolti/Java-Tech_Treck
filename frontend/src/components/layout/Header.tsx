@@ -1,0 +1,48 @@
+import { useNavigate } from "react-router-dom";
+import { logout } from "../../api/backend";
+
+import {
+    HeaderContainer,
+    HeaderTitle,
+    NavContainer,
+    NavButton,
+    LogoutButtonHeader
+} from "../../ui/Header.styles";
+import {useAuth} from "../form/AuthContext.tsx";
+
+export function Header() {
+    const navigate = useNavigate();
+    const { role } = useAuth();
+
+    function handleLogout() {
+        logout();
+        navigate("/");
+    }
+
+    return (
+        <HeaderContainer>
+            <HeaderTitle>Krumpi Management System</HeaderTitle>
+
+            <NavContainer>
+                {(role === "USER") && (
+                    <NavButton to="/products">Products</NavButton>
+                )}
+
+                {(role === "EMPLOYEE" || role === "ADMIN") && (
+                    <NavButton to="/stock">Stock</NavButton>
+                )}
+
+                {role === "ADMIN" && (
+                    <>
+                        <NavButton to="/employees">Employees</NavButton>
+                        <NavButton to="/orders">Orders</NavButton>
+                    </>
+                )}
+
+                <LogoutButtonHeader onClick={handleLogout}>
+                    Logout
+                </LogoutButtonHeader>
+            </NavContainer>
+        </HeaderContainer>
+    );
+}

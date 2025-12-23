@@ -18,6 +18,114 @@
       "name": "Auth",
       "item": [
         {
+          "name": "Register (no auth required, random user)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"user{{$randomInt}}\",\n  \"password\": \"pass{{$randomInt}}\",\n  \"role\": \"USER\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "auth": { "type": "noauth" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201 || pm.response.code === 409) {",
+                  "  const req = JSON.parse(pm.request.body.raw);",
+                  "  pm.collectionVariables.set('basic_auth_user', req.username);",
+                  "  pm.collectionVariables.set('basic_auth_password', req.password);",
+                  "  pm.test('Register response ok', function() {",
+                  "    pm.expect([200,201,409]).to.include(pm.response.code);",
+                  "  });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register Employee (random)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"employee{{$randomInt}}\",\n  \"password\": \"pass{{$randomInt}}\",\n  \"role\": \"EMPLOYEE\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "auth": { "type": "noauth" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201 || pm.response.code === 409) {",
+                  "  const req = JSON.parse(pm.request.body.raw);",
+                  "  pm.collectionVariables.set('basic_auth_user', req.username);",
+                  "  pm.collectionVariables.set('basic_auth_password', req.password);",
+                  "  pm.test('Register employee response ok', function() {",
+                  "    pm.expect([200,201,409]).to.include(pm.response.code);",
+                  "  });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register Admin (random)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin{{$randomInt}}\",\n  \"password\": \"pass{{$randomInt}}\",\n  \"role\": \"ADMIN\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "auth": { "type": "noauth" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201 || pm.response.code === 409) {",
+                  "  const req = JSON.parse(pm.request.body.raw);",
+                  "  pm.collectionVariables.set('basic_auth_user', req.username);",
+                  "  pm.collectionVariables.set('basic_auth_password', req.password);",
+                  "  pm.test('Register admin response ok', function() {",
+                  "    pm.expect([200,201,409]).to.include(pm.response.code);",
+                  "  });",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Login (no auth required)",
           "request": {
             "method": "POST",
@@ -35,6 +143,24 @@
             },
             "auth": { "type": "noauth" }
           }
+        },
+        {
+          "name": "Me (requires auth)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "me"]
+            },
+            "auth": {
+              "type": "basic",
+              "basic": [
+                { "key": "username", "value": "{{basic_auth_user}}", "type": "string" },
+                { "key": "password", "value": "{{basic_auth_password}}", "type": "string" }
+              ]
+            }
+          }
         }
       ]
     },
@@ -49,7 +175,7 @@
       },
       "item": [
         {
-          "name": "List products",
+          "name": "List products (roles: USER/EMPLOYEE/ADMIN)",
           "request": {
             "method": "GET",
             "url": {
@@ -60,7 +186,7 @@
           }
         },
         {
-          "name": "Get product by id",
+          "name": "Get product by id (roles: USER/EMPLOYEE/ADMIN)",
           "request": {
             "method": "GET",
             "url": {
@@ -71,7 +197,7 @@
           }
         },
         {
-          "name": "Create product",
+          "name": "Create product (roles: EMPLOYEE/ADMIN)",
           "request": {
             "method": "POST",
             "header": [
@@ -102,7 +228,7 @@
           ]
         },
         {
-          "name": "Update product",
+          "name": "Update product (roles: EMPLOYEE/ADMIN)",
           "request": {
             "method": "PUT",
             "header": [
@@ -120,7 +246,7 @@
           }
         },
         {
-          "name": "Delete product",
+          "name": "Delete product (roles: EMPLOYEE/ADMIN)",
           "request": {
             "method": "DELETE",
             "url": {
@@ -131,7 +257,7 @@
           }
         },
         {
-          "name": "Health test",
+          "name": "Health test (roles: USER/EMPLOYEE/ADMIN)",
           "request": {
             "method": "GET",
             "url": {
@@ -278,7 +404,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"customerName\": \"{{$randomCompanyName}}\",\n  \"status\": \"NEW\",\n  \"responsibleEmployee\": { \"id\": {{employeeId}} }\n}"
+              "raw": "{\n  \"customerName\": \"{{$randomCompanyName}}\",\n  \"responsibleEmployee\": { \"id\": {{employeeId}} },\n  \"items\": [\n    {\n      \"product\": { \"id\": {{productId}} },\n      \"quantity\": 10,\n      \"unitPrice\": 12.5\n    }\n  ]\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/orders",
@@ -309,7 +435,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"customerName\": \"{{$randomCompanyName}}\",\n  \"status\": \"IN_PROGRESS\",\n  \"responsibleEmployee\": { \"id\": {{employeeId}} }\n}"
+              "raw": "{\n  \"customerName\": \"{{$randomCompanyName}}\",\n  \"status\": \"CONFIRMED\",\n  \"responsibleEmployee\": { \"id\": {{employeeId}} }\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/orders/{{orderId}}",
@@ -326,6 +452,39 @@
               "raw": "{{base_url}}/api/orders/{{orderId}}",
               "host": ["{{base_url}}"],
               "path": ["api", "orders", "{{orderId}}"]
+            }
+          }
+        },
+        {
+          "name": "Mark order as delivered",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/orders/{{orderId}}/deliver",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "{{orderId}}", "deliver"]
+            }
+          }
+        },
+        {
+          "name": "Mark order as confirmed",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/orders/{{orderId}}/confirm",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "{{orderId}}", "confirm"]
+            }
+          }
+        },
+        {
+          "name": "Mark order as cancelled",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/orders/{{orderId}}/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "{{orderId}}", "cancel"]
             }
           }
         }
