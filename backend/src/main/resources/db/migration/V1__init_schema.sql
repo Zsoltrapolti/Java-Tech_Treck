@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS product (
     name VARCHAR(255),
     type VARCHAR(255),
     unit_of_measure VARCHAR(100),
-    quantity NUMERIC
+    quantity NUMERIC,
+    owner_username VARCHAR(255)
 );
 
 -- stock entries

@@ -38,6 +38,13 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    @GetMapping("/my")
+    public ResponseEntity<List<Product>> getMyProducts(java.security.Principal principal) {
+
+        List<Product> myProducts = productService.getProductsByUsername(principal.getName());
+        return ResponseEntity.ok(myProducts);
+    }
+
     @Operation(
             summary = "Get product by ID",
             description = "Returns details of a specific product"

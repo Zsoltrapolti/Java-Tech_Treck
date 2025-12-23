@@ -38,6 +38,7 @@ export async function login(username: string, password: string) {
         await response.json();
 
     const token = btoa(`${username}:${password}`);
+
     authHeader = { Authorization: `Basic ${token}` };
     localStorage.setItem("authToken", token);
     localStorage.setItem("role", data.role);
@@ -112,6 +113,12 @@ export async function fetchModules(): Promise<ModuleType[]> {
     ];
 }
 
+
+export async function fetchMyProducts(): Promise<ProductType[]> {
+    const resp = await authFetch(`${BACKEND_URL}/products/my`);
+    if (!resp.ok) throw new Error("Failed to fetch your products");
+    return resp.json();
+}
 
 export async function fetchProducts(): Promise<ProductType[]> {
     const resp = await authFetch(`${BACKEND_URL}/products`);

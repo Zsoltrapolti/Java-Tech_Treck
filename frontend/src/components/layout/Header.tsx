@@ -24,9 +24,12 @@ export function Header() {
             <HeaderTitle>Krumpi Management System</HeaderTitle>
 
             <NavContainer>
-                {(role === "USER") && (
-                    <NavButton to="/products">Products</NavButton>
-                )}
+               {role === "USER" && (
+                       <>
+                           <NavButton to="/products">All Products</NavButton>
+                           <NavButton to="/my-products">My Orders</NavButton>
+                       </>
+                   )}
 
                 {(role === "EMPLOYEE" || role === "ADMIN") && (
                     <NavButton to="/stock">Stock</NavButton>
