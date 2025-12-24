@@ -1,7 +1,5 @@
 package ro.krumpi.demo.controller;
-import jakarta.validation.Valid;
-import ro.krumpi.demo.dto.ProductDTO;
-import ro.krumpi.demo.mapper.ProductMapper;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import ro.krumpi.demo.model.stock.Product;
 import ro.krumpi.demo.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -69,15 +67,16 @@ public class ProductController {
 
     @Operation(
             summary = "Update product",
-            description = "Modifies product details for the given ID"
+            description = "Modifies product details or assigns an owner"
     )
     @PutMapping("/{id}")
-    public ResponseEntity<ProductDTO> updateProduct(
-            @PathVariable Long id,
-            @Valid @RequestBody ProductDTO dto )
-    {
-        Product updated = productService.updateProduct(id, ProductMapper.toEntity(dto));
-        return ResponseEntity.ok(ProductMapper.toDTO(updated));
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
+
+        Product existingProduct = productService.getProductById(id);
+        existingProduct.setOwnerUsername(productDetails.getOwnerUsername());
+
+        Product updated = productService.updateProduct(id, existingProduct);
+        return ResponseEntity.ok(updated);
     }
 
     @Operation(
@@ -93,5 +92,6 @@ public class ProductController {
     public String test() {
         return "Product API is working! Time: " + new java.util.Date();
     }
+
 
 }
