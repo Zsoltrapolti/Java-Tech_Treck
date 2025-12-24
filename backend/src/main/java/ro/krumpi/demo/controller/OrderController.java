@@ -1,10 +1,16 @@
 package ro.krumpi.demo.controller;
 
+import jakarta.validation.Valid;
+import ro.krumpi.demo.dto.OrderDTO;
+import ro.krumpi.demo.mapper.OrderMapper;
+import ro.krumpi.demo.model.employee.Employee;
 import ro.krumpi.demo.model.order.Order;
+import ro.krumpi.demo.service.EmployeeService;
 import ro.krumpi.demo.service.OrderService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
+import ro.krumpi.demo.service.ProductService;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,9 +21,13 @@ import java.util.Optional;
 public class OrderController {
 
     private final OrderService orderService;
+    private final EmployeeService employeeService;
+    private final ProductService productService;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, EmployeeService employeeService, ProductService productService) {
         this.orderService = orderService;
+        this.employeeService = employeeService;
+        this.productService = productService;
     }
 
     @Operation(
@@ -25,8 +35,21 @@ public class OrderController {
             description = "Adds a new order to the system"
     )
     @PostMapping
-    public Order addOrder(@RequestBody Order order) {
-        return orderService.addOrder(order);
+    public OrderDTO addOrder(@Valid @RequestBody OrderDTO orderdto) {
+
+        Employee employee = employeeService
+                .getEmployeeById(orderdto.getResponsibleEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        Order saved = orderService.addOrder(
+                OrderMapper.toOrderEntity(
+                        orderdto,
+                        employee,
+                        productService::getProductById
+                )
+        );
+
+        return OrderMapper.toOrderDTO(saved);
     }
 
     @Operation(
@@ -34,8 +57,11 @@ public class OrderController {
             description = "Returns a list of all orders"
     )
     @GetMapping
-    public List<Order> getAllOrders() {
-        return orderService.getAllOrders();
+    public List<OrderDTO> getAllOrders() {
+        return orderService.getAllOrders()
+                .stream()
+                .map(OrderMapper::toOrderDTO)
+                .toList();
     }
 
     @Operation(
@@ -43,14 +69,11 @@ public class OrderController {
             description = "Returns the order that matches the given ID"
     )
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
-        Optional<Order> order = orderService.getOrderById(id);
-
-        if (order.isPresent()) {
-            return ResponseEntity.ok(order.get());
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<OrderDTO> getOrderById(@PathVariable Long id) {
+        return orderService.getOrderById(id)
+                .map(OrderMapper::toOrderDTO)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @Operation(
@@ -58,14 +81,22 @@ public class OrderController {
             description = "Updates the order with the given ID"
     )
     @PutMapping("/{id}")
-    public ResponseEntity<Order> updateOrder(@PathVariable Long id,
-                                             @RequestBody Order updatedOrder) {
-        try {
-            Order order = orderService.updateOrder(id, updatedOrder);
-            return ResponseEntity.ok(order);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<OrderDTO> updateOrder(@PathVariable Long id,
+                                                @Valid @RequestBody OrderDTO updatedOrder) {
+        Employee employee = employeeService
+                .getEmployeeById(updatedOrder.getResponsibleEmployeeId())
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        Order updated = orderService.updateOrder(
+                id,
+                OrderMapper.toOrderEntity(
+                        updatedOrder,
+                        employee,
+                        productService::getProductById
+                )
+        );
+
+        return ResponseEntity.ok(OrderMapper.toOrderDTO(updated));
     }
 
     @Operation(
