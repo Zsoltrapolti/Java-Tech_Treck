@@ -13,10 +13,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import ro.krumpi.demo.service.ProductService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5174")
 @RequestMapping("/api/orders")
 public class OrderController {
 
@@ -142,5 +141,6 @@ public class OrderController {
         orderService.cancel(id);
         return ResponseEntity.ok().build();
     }
+
 
 }

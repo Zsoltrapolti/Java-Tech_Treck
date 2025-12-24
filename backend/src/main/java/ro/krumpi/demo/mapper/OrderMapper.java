@@ -5,6 +5,7 @@ import ro.krumpi.demo.dto.OrderItemDTO;
 import ro.krumpi.demo.model.employee.Employee;
 import ro.krumpi.demo.model.order.Order;
 import ro.krumpi.demo.model.order.OrderItem;
+import ro.krumpi.demo.model.order.OrderStatus;
 import ro.krumpi.demo.model.stock.Product;
 
 import java.util.function.Function;
@@ -37,12 +38,15 @@ public class OrderMapper {
 
     public static OrderDTO toOrderDTO(Order order) {
         OrderDTO dto = new OrderDTO();
-        dto.setId(order.getId());
         dto.setCustomerName(order.getCustomerName());
+        dto.setId(order.getId());
+        dto.setCreationDate(order.getCreationDate());
 
-        if (order.getResponsibleEmployee() != null) {
-            dto.setResponsibleEmployeeId(order.getResponsibleEmployee().getId());
-        }
+        dto.setResponsibleEmployeeId(
+                order.getResponsibleEmployee() != null
+                        ? order.getResponsibleEmployee().getId()
+                        : null
+        );
 
         dto.setItems(
                 order.getItems().stream()
@@ -60,4 +64,6 @@ public class OrderMapper {
         dto.setUnitPrice(item.getUnitPrice());
         return dto;
     }
+
 }
+

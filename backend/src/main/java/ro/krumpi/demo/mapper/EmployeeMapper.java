@@ -16,7 +16,6 @@ public class EmployeeMapper {
 
     public static Employee toEntity(EmployeeDTO dto) {
         Employee e = new Employee();
-        e.setId(dto.getId());
         e.setFirstName(dto.getFirstName());
         e.setLastName(dto.getLastName());
         e.setRole(dto.getRole());

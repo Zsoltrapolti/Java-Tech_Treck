@@ -2,7 +2,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import LoginPage from "../pages/login/LoginPage";
 import RegisterPage from "../pages/login/RegisterPage";
-
 import Layout from "../components/layout/Layout";
 import { RoleRoute } from "../app/RoleRoute";
 
@@ -19,28 +18,35 @@ import OrdersAddPage from "../pages/orders/OrdersAddPage";
 import OrdersEditPage from "../pages/orders/OrdersEditPage";
 
 import ProductsListPage from "../pages/products/ProductsListPage";
+import MyProductsListPage from "../pages/products/MyProductsListPage.tsx";
 import UnauthorizedPage from "../pages/home/UnauthorizedPage";
+import ErrorToast from "../components/layout/ErrorToast.tsx";
 
 function App() {
     return (
         <BrowserRouter>
             <Routes>
-
+                {/* Public Routes */}
                 <Route path="/" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
 
+                {/* Everything inside Layout */}
                 <Route element={<Layout />}>
 
+                    {/* USER ROUTES */}
                     <Route element={<RoleRoute allowed={["USER"]} />}>
                         <Route path="/products" element={<ProductsListPage />} />
+                        <Route path="/my-products" element={<MyProductsListPage />} />
                     </Route>
 
+                    {/* EMPLOYEE & ADMIN ROUTES */}
                     <Route element={<RoleRoute allowed={["EMPLOYEE", "ADMIN"]} />}>
                         <Route path="/stock" element={<StockListPage />} />
                         <Route path="/stock/new" element={<StockAddPage />} />
                         <Route path="/stock/:id/edit" element={<StockEditPage />} />
                     </Route>
 
+                    {/* ADMIN ONLY ROUTES */}
                     <Route element={<RoleRoute allowed={["ADMIN"]} />}>
                         <Route path="/employees" element={<EmployeesPage />} />
                         <Route path="/employees/new" element={<EmployeesAddPage />} />
@@ -52,11 +58,10 @@ function App() {
                     </Route>
 
                     <Route path="/unauthorized" element={<UnauthorizedPage />} />
-
                 </Route>
             </Routes>
+            <ErrorToast />
         </BrowserRouter>
-
     );
 }
 
