@@ -43,6 +43,10 @@ public class ProductService {
         return productRepository.existsByName(name);
     }
 
+    public List<Product> getProductsByUsername(String username) {
+        return productRepository.findAllByOwnerUsername(username);
+    }
+
     public Product updateProduct(Long id, Product updatedProduct) {
         Product existing = getProductById(id);
 

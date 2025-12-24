@@ -7,6 +7,7 @@ import { EditFormField } from "../../components/form/EditFormField.tsx";
 import { EditFormActions } from "../../components/form/EditFormActions.tsx";
 
 import type { ProductType } from "../../types/Product.ts";
+import { showError } from "../../utils/toast";
 
 export default function StockEditPage() {
     const { id } = useParams();
@@ -29,11 +30,6 @@ export default function StockEditPage() {
                 onChange={v => setProduct({ ...product, name: v })}
             />
 
-            <EditFormField
-                label="Type"
-                value={product.type}
-                onChange={v => setProduct({ ...product, type: v })}
-            />
 
             <EditFormField
                 label="Unit of Measure"
@@ -49,9 +45,17 @@ export default function StockEditPage() {
             />
 
             <EditFormActions
-                onSave={async () => { await updateProduct(product); navigate("/stock"); }}
+                onSave={async () => {
+                    try {
+                        await updateProduct(product);
+                        navigate("/stock");
+                    } catch (e) {
+                        showError(e);
+                    }
+                }}
                 onCancel={() => navigate("/stock")}
             />
+
 
         </EditFormPage>
     );

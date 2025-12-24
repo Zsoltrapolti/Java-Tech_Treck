@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { fetchProducts } from "../../api/backend";
 import type { ProductType } from "../../types/Product";
@@ -22,13 +23,13 @@ export default function ProductsListPage() {
     const [products, setProducts] = useState<ProductType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
-   useEffect(() => {
-           console.log("Fetching global menu...");
-           fetchProducts()
-               .then((data) => {
-                   setProducts(data);
-                   setLoading(false);
-               })
+    useEffect(() => {
+        console.log("Fetching global menu...");
+        fetchProducts()
+            .then((data) => {
+                setProducts(data);
+                setLoading(false);
+            })
             .catch((err) => {
                 console.error("Fetch error:", err);
                 setLoading(false);
@@ -46,7 +47,6 @@ export default function ProductsListPage() {
                         <TableRow>
                             <ModuleTableHeader>ID</ModuleTableHeader>
                             <ModuleTableHeader>Name</ModuleTableHeader>
-                            <ModuleTableHeader>Type</ModuleTableHeader>
                             <ModuleTableHeader>Unit</ModuleTableHeader>
                             <ModuleTableHeader>In Stock</ModuleTableHeader>
                         </TableRow>
@@ -57,7 +57,6 @@ export default function ProductsListPage() {
                                 <TableRow key={product.id}>
                                     <ModuleTableCell>{product.id}</ModuleTableCell>
                                     <ModuleTableCell>{product.name}</ModuleTableCell>
-                                    <ModuleTableCell>{product.type}</ModuleTableCell>
                                     <ModuleTableCell>{product.unitOfMeasure}</ModuleTableCell>
                                     <ModuleTableCell>{product.quantity}</ModuleTableCell>
                                 </TableRow>

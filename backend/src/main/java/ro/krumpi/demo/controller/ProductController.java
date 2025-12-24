@@ -10,11 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5174")
 public class ProductController {
 
     private final ProductService productService;
@@ -28,8 +29,10 @@ public class ProductController {
             description = "Adds a new product to the catalog"
     )
     @PostMapping
-    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductDTO productdto) {
-        Product saved = productService.createProduct(ProductMapper.toEntity(productdto));
+    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductDTO productdto, Principal principal) {
+        Product product = ProductMapper.toEntity(productdto);
+        product.setOwnerUsername(principal.getName());
+        Product saved = productService.createProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ProductMapper.toDTO(saved));
     }
@@ -47,10 +50,11 @@ public class ProductController {
     }
 
     @GetMapping("/my")
-    public ResponseEntity<List<Product>> getMyProducts(java.security.Principal principal) {
-
-        List<Product> myProducts = productService.getProductsByUsername(principal.getName());
-        return ResponseEntity.ok(myProducts);
+    public List<ProductDTO> getMyProducts(Principal principal) {
+        return productService.getProductsByUsername(principal.getName())
+                .stream()
+                .map(ProductMapper::toDTO)
+                .toList();
     }
 
     @Operation(

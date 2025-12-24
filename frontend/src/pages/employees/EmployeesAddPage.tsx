@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { createEmployee } from "../../api/backend.ts";
+import {createEmployee} from "../../api/backend.ts";
 
 import { EditFormPage } from "../../components/form/EditFormPage.tsx";
 import { EditFormField } from "../../components/form/EditFormField.tsx";
 import { EditFormActions } from "../../components/form/EditFormActions.tsx";
+import {showError} from "../../utils/toast.ts";
 
 export default function EmployeesAddPage() {
     const navigate = useNavigate();
@@ -40,8 +41,12 @@ export default function EmployeesAddPage() {
 
             <EditFormActions
                 onSave={async () => {
-                    await createEmployee(employee);
-                    navigate("/employees");
+                    try {
+                        await createEmployee(employee);
+                        navigate("/employees");
+                    } catch (e) {
+                        showError(e);
+                    }
                 }}
                 onCancel={() => navigate("/employees")}
             />

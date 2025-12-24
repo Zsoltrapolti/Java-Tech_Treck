@@ -1,5 +1,6 @@
 package ro.krumpi.demo.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -17,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderDTO {
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
 
     @NotBlank(message = "Customer name is required")
