@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchProducts } from "../../api/backend";
+import { fetchProducts, updateProduct } from "../../api/backend";
 import type { ProductType } from "../../types/Product";
 
 import {
@@ -22,19 +22,37 @@ export default function ProductsListPage() {
     const [products, setProducts] = useState<ProductType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
-   useEffect(() => {
-           console.log("Fetching global menu...");
-           fetchProducts()
-               .then((data) => {
-                   setProducts(data);
-                   setLoading(false);
-               })
+    useEffect(() => {
+        fetchProducts()
+            .then((data) => {
+                setProducts(data);
+                setLoading(false);
+            })
             .catch((err) => {
                 console.error("Fetch error:", err);
                 setLoading(false);
             });
     }, []);
 
+   const handleClaimProduct = async (product: ProductType) => {
+       const currentUsername = localStorage.getItem("username");
+
+       if (!currentUsername) {
+           alert("Please log in again.");
+           return;
+       }
+
+       try {
+           const updatedProduct = { ...product, ownerUsername: currentUsername };
+           await updateProduct(updatedProduct);
+
+           alert(`${product.name} added to My Orders!`);
+           window.location.reload();
+       } catch (err) {
+           console.error("Failed to add product:", err);
+           alert("Error: Could not add product to orders.");
+       }
+   };
     if (loading) return <CircularProgress style={{ display: 'block', margin: '20px auto' }} />;
 
     return (
@@ -46,29 +64,28 @@ export default function ProductsListPage() {
                         <TableRow>
                             <ModuleTableHeader>ID</ModuleTableHeader>
                             <ModuleTableHeader>Name</ModuleTableHeader>
-                            <ModuleTableHeader>Type</ModuleTableHeader>
                             <ModuleTableHeader>Unit</ModuleTableHeader>
                             <ModuleTableHeader>In Stock</ModuleTableHeader>
+                            <ModuleTableHeader>Action</ModuleTableHeader>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {products.length > 0 ? (
-                            products.map(product => (
-                                <TableRow key={product.id}>
-                                    <ModuleTableCell>{product.id}</ModuleTableCell>
-                                    <ModuleTableCell>{product.name}</ModuleTableCell>
-                                    <ModuleTableCell>{product.type}</ModuleTableCell>
-                                    <ModuleTableCell>{product.unitOfMeasure}</ModuleTableCell>
-                                    <ModuleTableCell>{product.quantity}</ModuleTableCell>
-                                </TableRow>
-                            ))
-                        ) : (
-                            <TableRow>
-                                <ModuleTableCell colSpan={5} style={{ textAlign: 'center' }}>
-                                    No products found in the database.
+                        {products.map(product => (
+                            <TableRow key={product.id}>
+                                <ModuleTableCell>{product.id}</ModuleTableCell>
+                                <ModuleTableCell>{product.name}</ModuleTableCell>
+                                <ModuleTableCell>{product.unitOfMeasure}</ModuleTableCell>
+                                <ModuleTableCell>{product.quantity}</ModuleTableCell>
+                                <ModuleTableCell>
+                                    <button
+                                        onClick={() => handleClaimProduct(product)}
+                                        style={{ cursor: 'pointer', padding: '5px 10px' }}
+                                    >
+                                        Add to My Orders
+                                    </button>
                                 </ModuleTableCell>
                             </TableRow>
-                        )}
+                        ))}
                     </TableBody>
                 </Table>
             </ModuleTableContainer>

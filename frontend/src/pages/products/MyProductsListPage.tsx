@@ -21,7 +21,6 @@ export default function MyProductsListPage() {
                     <TableHead>
                         <TableRow>
                             <ModuleTableHeader>Name</ModuleTableHeader>
-                            <ModuleTableHeader>Type</ModuleTableHeader>
                             <ModuleTableHeader>Unit</ModuleTableHeader>
                             <ModuleTableHeader>Quantity</ModuleTableHeader>
                         </TableRow>
@@ -30,7 +29,6 @@ export default function MyProductsListPage() {
                         {products.map(p => (
                             <TableRow key={p.id}>
                                 <ModuleTableCell>{p.name}</ModuleTableCell>
-                                <ModuleTableCell>{p.type}</ModuleTableCell>
                                 <ModuleTableCell>{p.unitOfMeasure}</ModuleTableCell>
                                 <ModuleTableCell>{p.quantity}</ModuleTableCell>
                             </TableRow>

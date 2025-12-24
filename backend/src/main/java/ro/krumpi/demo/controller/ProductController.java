@@ -1,4 +1,5 @@
 package ro.krumpi.demo.controller;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import ro.krumpi.demo.model.stock.Product;
 import ro.krumpi.demo.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -57,16 +58,16 @@ public class ProductController {
 
     @Operation(
             summary = "Update product",
-            description = "Modifies product details for the given ID"
+            description = "Modifies product details or assigns an owner"
     )
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(
-            @PathVariable Long id,
-            @RequestBody Product productDetails) {
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
 
-        productDetails.setId(id);
-        Product updatedProduct = productService.updateProduct(id, productDetails);
-        return ResponseEntity.ok(updatedProduct);
+        Product existingProduct = productService.getProductById(id);
+        existingProduct.setOwnerUsername(productDetails.getOwnerUsername());
+
+        Product updated = productService.updateProduct(id, existingProduct);
+        return ResponseEntity.ok(updated);
     }
 
     @Operation(
@@ -80,7 +81,8 @@ public class ProductController {
     }
     @GetMapping("/test")
     public String test() {
-        return "✅ Product API is working! Time: " + new java.util.Date();
+        return "Product API is working! Time: " + new java.util.Date();
     }
+
 
 }
