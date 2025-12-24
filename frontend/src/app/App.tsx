@@ -18,7 +18,7 @@ import OrdersAddPage from "../pages/orders/OrdersAddPage";
 import OrdersEditPage from "../pages/orders/OrdersEditPage";
 
 import ProductsListPage from "../pages/products/ProductsListPage";
-import MyProductsListPage from "../pages/products/MyProductsListPage.tsx";
+import MyProductsListPage from "../pages/products/MyProductsListPage";
 import UnauthorizedPage from "../pages/home/UnauthorizedPage";
 import ErrorToast from "../components/layout/ErrorToast.tsx";
 

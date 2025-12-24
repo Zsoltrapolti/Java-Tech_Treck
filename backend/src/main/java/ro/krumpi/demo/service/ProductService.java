@@ -26,6 +26,11 @@ public class ProductService {
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with id : " + id));
     }
 
+    // In your ProductService.java or similar
+    public List<Product> getProductsByUsername(String username) {
+        return productRepository.findAllByOwnerUsername(username);
+    }
+
     public Product getProductByName(String name) {
         return productRepository.findByName(name);
     }
