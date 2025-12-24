@@ -404,7 +404,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"customerName\": \"{{$randomCompanyName}}\",\n  \"status\": \"NEW\",\n  \"responsibleEmployee\": { \"id\": {{employeeId}} }\n}"
+              "raw": "{\n  \"customerName\": \"{{$randomCompanyName}}\",\n  \"responsibleEmployeeId\": {{employeeId}},\n  \"items\": [\n    {\n      \"productId\": {{productId}},\n      \"quantity\": 10,\n      \"unitPrice\": 12.5\n    }\n  ]\n}"
             },
             "url": {
               "raw": "{{base_url}}/api/orders",
@@ -435,7 +435,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"customerName\": \"{{$randomCompanyName}}\",\n  \"status\": \"IN_PROGRESS\",\n  \"responsibleEmployee\": { \"id\": {{employeeId}} }\n}"
+              "raw": "{\n  \"customerName\": \"{{$randomCompanyName}}\",\n  \"status\": \"CONFIRMED\",\n  \"responsibleEmployeeId\": {{employeeId}} \n}"
             },
             "url": {
               "raw": "{{base_url}}/api/orders/{{orderId}}",
@@ -454,7 +454,214 @@
               "path": ["api", "orders", "{{orderId}}"]
             }
           }
+        },
+        {
+          "name": "Mark order as delivered",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/orders/{{orderId}}/deliver",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "{{orderId}}", "deliver"]
+            }
+          }
+        },
+        {
+          "name": "Mark order as confirmed",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/orders/{{orderId}}/confirm",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "{{orderId}}", "confirm"]
+            }
+          }
+        },
+        {
+          "name": "Mark order as cancelled",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/orders/{{orderId}}/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders", "{{orderId}}", "cancel"]
+            }
+          }
         }
+      ]
+    },
+    {
+      "name": "Validation Tests",
+      "auth": {
+        "type": "basic",
+        "basic": [
+          { "key": "username", "value": "{{basic_auth_user}}", "type": "string" },
+          { "key": "password", "value": "{{basic_auth_password}}", "type": "string" }
+        ]
+      },
+      "item": [
+
+        {
+          "name": "Product validation - empty fields",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"type\": \"\",\n  \"unitOfMeasure\": \"\",\n  \"quantity\": -5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/products",
+              "host": ["{{base_url}}"],
+              "path": ["api", "products"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 returned', () => pm.response.to.have.status(400));",
+                  "pm.test('Validation error present', () => {",
+                  "  pm.expect(pm.response.json()).to.have.property('error');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+
+        {
+          "name": "Employee validation - invalid names",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"\",\n  \"lastName\": \"A\",\n  \"role\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/employees",
+              "host": ["{{base_url}}"],
+              "path": ["api", "employees"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 returned', () => pm.response.to.have.status(400));",
+                  "pm.test('Employee validation error returned', () => {",
+                  "  pm.expect(pm.response.json().error).to.be.a('string');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+
+        {
+          "name": "Order validation - missing customerName",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"responsibleEmployeeId\": {{employeeId}},\n  \"items\": []\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Order validation failed (400)', () => pm.response.to.have.status(400));",
+                  "pm.test('Order validation message present', () => {",
+                  "  pm.expect(pm.response.json()).to.have.property('error');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+
+        {
+          "name": "OrderItem validation - negative quantity",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerName\": \"Bad Order\",\n  \"responsibleEmployeeId\": {{employeeId}},\n  \"items\": [\n    {\n      \"productId\": {{productId}},\n      \"quantity\": -10,\n      \"unitPrice\": 5\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/orders",
+              "host": ["{{base_url}}"],
+              "path": ["api", "orders"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Negative quantity rejected', () => pm.response.to.have.status(400));",
+                  "pm.test('Quantity validation error returned', () => {",
+                  "  pm.expect(pm.response.json().error).to.include('Quantity');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+
+        {
+          "name": "Auth register validation - short password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"ab\",\n  \"password\": \"123\",\n  \"role\": \"USER\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "auth": { "type": "noauth" }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Register validation failed', () => pm.response.to.have.status(400));",
+                  "pm.test('Validation error message returned', () => {",
+                  "  pm.expect(pm.response.json()).to.have.property('error');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+
       ]
     }
   ]

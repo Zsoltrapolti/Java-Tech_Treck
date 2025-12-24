@@ -1,16 +1,19 @@
 package ro.krumpi.demo.controller;
 
-import io.swagger.v3.oas.annotations.Operation; // Kept from the main branch
-import ro.krumpi.demo.model.employee.Employee;
-import ro.krumpi.demo.service.EmployeeService;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+import ro.krumpi.demo.dto.EmployeeDTO;
+import ro.krumpi.demo.mapper.EmployeeMapper;
 import ro.krumpi.demo.model.employee.Employee;
+import ro.krumpi.demo.service.EmployeeService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/employees")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5174")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
@@ -24,18 +27,21 @@ public class EmployeeController {
             description = "Returns a list of all employees"
     )
     @GetMapping
-    public List<Employee> getAllEmployees() {
-        return employeeService.getAllEmployees();
+    public List<EmployeeDTO> getAllEmployees() {
+        return employeeService.getAllEmployees()
+                .stream()
+                .map(EmployeeMapper::toDTO)
+                .toList();
     }
-
 
     @Operation(
             summary = "Get employee by ID",
             description = "Returns the employee that matches the given ID"
     )
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
+    public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable Long id) {
         return employeeService.getEmployeeById(id)
+                .map(EmployeeMapper::toDTO)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -45,8 +51,9 @@ public class EmployeeController {
             description = "Adds a new employee to the system"
     )
     @PostMapping
-    public Employee createEmployee(@RequestBody Employee employee) {
-        return employeeService.addEmployee(employee);
+    public EmployeeDTO createEmployee(@Valid @RequestBody EmployeeDTO employeeDTO) {
+        Employee saved = employeeService.addEmployee(EmployeeMapper.toEntity(employeeDTO));
+        return EmployeeMapper.toDTO(saved);
     }
 
     @Operation(
@@ -54,15 +61,12 @@ public class EmployeeController {
             description = "Updates employee information for the given ID"
     )
     @PutMapping("/{id}")
-    public ResponseEntity<Employee> updateEmployee(
+    public ResponseEntity<EmployeeDTO> updateEmployee(
             @PathVariable Long id,
-            @RequestBody Employee updatedEmployee
+            @Valid @RequestBody EmployeeDTO updatedDto
     ) {
-        try {
-            return ResponseEntity.ok(employeeService.updateEmployee(id, updatedEmployee));
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
+        Employee updated = employeeService.updateEmployee(id, EmployeeMapper.toEntity(updatedDto));
+        return ResponseEntity.ok(EmployeeMapper.toDTO(updated));
     }
 
     @Operation(

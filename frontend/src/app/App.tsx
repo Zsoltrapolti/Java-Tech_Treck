@@ -20,6 +20,7 @@ import OrdersEditPage from "../pages/orders/OrdersEditPage";
 import ProductsListPage from "../pages/products/ProductsListPage";
 import MyProductsListPage from "../pages/products/MyProductsListPage";
 import UnauthorizedPage from "../pages/home/UnauthorizedPage";
+import ErrorToast from "../components/layout/ErrorToast.tsx";
 
 function App() {
     return (
@@ -59,6 +60,7 @@ function App() {
                     <Route path="/unauthorized" element={<UnauthorizedPage />} />
                 </Route>
             </Routes>
+            <ErrorToast />
         </BrowserRouter>
     );
 }

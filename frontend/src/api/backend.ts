@@ -1,8 +1,9 @@
 import type { ModuleType } from "../types/Module";
 import type { StockEntryType } from "../types/StockEntry";
 import type { ProductType } from "../types/Product";
-import type {OrderType} from "../types/Order.ts";
 import type {EmployeeType} from "../types/Employee.ts";
+import {showError} from "../utils/toast.ts";
+import type {OrderType} from "../types/Order.ts";
 
 const BACKEND_URL = "http://localhost:8081/api";
 let authHeader: Record<string, string> = {};
@@ -12,6 +13,20 @@ if (typeof window !== "undefined") {
     if (saved) {
         authHeader = { Authorization: `Basic ${saved}` };
     }
+}
+
+async function handleError(resp: Response) {
+    let message = "Unexpected error";
+
+    try {
+        const data = await resp.json();
+        message = data.message || JSON.stringify(data);
+    } catch {
+        message = resp.statusText;
+    }
+
+    showError(new Error(message));
+    throw new Error(message);
 }
 
 export function setAuthHeader(username: string, password: string) {
@@ -39,6 +54,13 @@ const handleClaimProduct = async (product: ProductType) => {
         alert("Error: Could not add product to orders.");
     }
 };
+
+export async function fetchMe() {
+    const resp = await authFetch("http://localhost:8081/api/auth/me");
+    if (!resp.ok) throw new Error("Not authenticated");
+    return resp.json();
+}
+
 
 export async function registerUser(
     username: string,
@@ -150,25 +172,27 @@ export async function fetchStockEntries(): Promise<StockEntryType[]> {
     }));
 }
 
-export async function fetchEmployees() {
+export async function fetchEmployees(): Promise<EmployeeType[]> {
     const resp = await authFetch(`${BACKEND_URL}/employees`);
     if (!resp.ok) throw new Error("Failed to fetch employees");
     return resp.json();
 }
 
-export async function fetchOrders() {
+
+export async function fetchOrders(): Promise<OrderType[]> {
     const resp = await authFetch(`${BACKEND_URL}/orders`);
     if (!resp.ok) throw new Error("Failed to fetch orders");
     return resp.json();
 }
 
 
-
-export async function fetchOrderById(id: number) {
+export async function fetchOrderById(id: number): Promise<OrderType> {
     const resp = await authFetch(`${BACKEND_URL}/orders/${id}`);
     if (!resp.ok) throw new Error("Failed to fetch order");
     return resp.json();
 }
+
+
 
 export async function fetchProductById(id: number): Promise<ProductType> {
     const resp = await authFetch(`${BACKEND_URL}/products/${id}`);
@@ -183,16 +207,20 @@ export async function fetchEmployeeById(id: number): Promise<EmployeeType> {
 }
 
 
-
-
 export async function updateOrder(order: OrderType) {
+    if (!order.id) {
+        throw new Error("Order ID is required for update");
+    }
+
     const resp = await authFetch(`${BACKEND_URL}/orders/${order.id}`, {
         method: "PUT",
-        body: JSON.stringify(order)
+        body: JSON.stringify(order),
     });
-    if (!resp.ok) throw new Error("Failed to update order");
+
+    if (!resp.ok) await handleError(resp);
     return resp.json();
 }
+
 
 export async function updateProduct(product: ProductType) {
     const resp = await authFetch(`${BACKEND_URL}/products/${product.id}`, {
@@ -200,7 +228,8 @@ export async function updateProduct(product: ProductType) {
         body: JSON.stringify(product),
     });
 
-    if (!resp.ok) throw new Error(`Failed to update product ${product.id}`);
+    if (!resp.ok)
+        await handleError(resp);
     return resp.json();
 }
 
@@ -210,7 +239,8 @@ export async function updateEmployee(employee: EmployeeType) {
         body: JSON.stringify(employee),
     });
 
-    if (!resp.ok) throw new Error(`Failed to update employee ${employee.id}`);
+    if (!resp.ok)
+        await handleError(resp);
     return resp.json();
 }
 
@@ -249,7 +279,8 @@ export async function createProduct(product: ProductType) {
         body: JSON.stringify(product)
     });
 
-    if (!resp.ok) throw new Error("Failed to create product");
+    if (!resp.ok)
+        await handleError(resp);
     return resp.json();
 }
 
@@ -259,9 +290,11 @@ export async function createOrder(order: OrderType) {
         body: JSON.stringify(order),
     });
 
-    if (!resp.ok) throw new Error("Failed to create order");
+    if (!resp.ok) await handleError(resp);
     return resp.json();
 }
+
+
 
 export async function createEmployee(employee: EmployeeType) {
     const resp = await authFetch(`${BACKEND_URL}/employees`, {
@@ -269,7 +302,7 @@ export async function createEmployee(employee: EmployeeType) {
         body: JSON.stringify(employee),
     });
 
-    if (!resp.ok) throw new Error("Failed to create employee");
+    if (!resp.ok)
+        await handleError(resp);
     return resp.json();
 }
-

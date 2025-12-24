@@ -4,7 +4,7 @@ import { TableCell, Button, Box } from "@mui/material";
 export const ModulePageContainer = styled(Box)(({ theme }) => ({
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
-    minHeight: "100vh",
+    minHeight: "80vh",
     maxWidth: "100%",
 }));
 

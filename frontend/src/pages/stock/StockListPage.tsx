@@ -38,14 +38,12 @@ export default function StockListPage() {
                     rows={stocks.map(s => ({
                         id: s.id,
                         name: s.product.name,
-                        type: s.product.type,
                         unitOfMeasure: s.product.unitOfMeasure,
                         quantity: s.quantity
                     }))}
                     columns={[
                         { label: "ID", key: "id" },
                         { label: "Name", key: "name" },
-                        { label: "Type", key: "type" },
                         { label: "Unit", key: "unitOfMeasure" },
                         { label: "Quantity", key: "quantity" }
                     ]}

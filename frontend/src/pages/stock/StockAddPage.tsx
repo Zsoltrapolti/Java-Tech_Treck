@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { createProduct } from "../../api/backend.ts";
+import {createProduct} from "../../api/backend.ts";
+import { showError } from "../../utils/toast";
 
 import { EditFormPage } from "../../components/form/EditFormPage.tsx";
 import { EditFormField } from "../../components/form/EditFormField.tsx";
@@ -54,8 +55,12 @@ export default function StockAddPage() {
 
             <EditFormActions
                 onSave={async () => {
-                    await createProduct(product);
-                    navigate("/stock");
+                    try {
+                        await createProduct(product);
+                        navigate("/stock");
+                    } catch (e) {
+                        showError(e);
+                    }
                 }}
                 onCancel={() => navigate("/stock")}
             />

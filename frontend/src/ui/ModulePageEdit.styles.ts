@@ -4,7 +4,7 @@ import { Box, Paper, Typography, TextField, Button } from "@mui/material";
 export const EditContainer = styled(Box)(({ theme }) => ({
     paddingTop: theme.spacing(6),
     paddingBottom: theme.spacing(6),
-    minHeight: "85vh",
+    minHeight: "80vh",
     display: "flex",
     justifyContent: "center",
     alignItems: "flex-start",
@@ -103,3 +103,21 @@ export const FormActionsWrapper = styled("div")(({ theme }) => ({
     marginTop: theme.spacing(2),
 }));
 
+export const AddItemButton = styled(Button)(() => ({
+    fontWeight: 600,
+    padding: "6px 16px",
+    borderRadius: "8px",
+    backgroundColor: "#1b7944",
+    "&:hover": {
+        backgroundColor: "#135229",
+    },
+    color: "#ffffff",
+}));
+
+
+export const OrderItemRow = styled(Box)(({ theme }) => ({
+    display: "flex",
+    gap: theme.spacing(2),
+    alignItems: "center",
+    marginBottom: theme.spacing(1),
+}));
