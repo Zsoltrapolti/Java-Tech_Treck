@@ -32,8 +32,6 @@ public class OrderDTO {
     @Valid
     private List<OrderItemDTO> items;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private LocalDateTime creationDate;
-
-
+    public void setCreationDate(LocalDateTime creationDate) {
+    }
 }
