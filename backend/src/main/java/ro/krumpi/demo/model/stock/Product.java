@@ -17,4 +17,6 @@ public class Product {
     private Double quantity;
     private String ownerUsername;
 
+    public Product(long l, String product1, String type1, String unit1, double v) {
+    }
 }

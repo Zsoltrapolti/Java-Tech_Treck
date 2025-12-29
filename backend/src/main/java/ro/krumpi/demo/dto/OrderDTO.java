@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ro.krumpi.demo.model.order.OrderStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -31,4 +32,6 @@ public class OrderDTO {
     @Valid
     private List<OrderItemDTO> items;
 
+    public void setCreationDate(LocalDateTime creationDate) {
+    }
 }
