@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ro.krumpi.demo.model.order.OrderStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -30,5 +31,9 @@ public class OrderDTO {
     @NotEmpty(message = "Order must contain at least one item")
     @Valid
     private List<OrderItemDTO> items;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private LocalDateTime creationDate;
+
 
 }

@@ -1,5 +1,8 @@
 package ro.krumpi.demo.controller;
+import jakarta.validation.Valid;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import ro.krumpi.demo.dto.ProductDTO;
+import ro.krumpi.demo.mapper.ProductMapper;
 import ro.krumpi.demo.model.stock.Product;
 import ro.krumpi.demo.service.ProductService;
 import lombok.RequiredArgsConstructor;
