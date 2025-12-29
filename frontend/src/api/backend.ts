@@ -35,31 +35,25 @@ export function setAuthHeader(username: string, password: string) {
     window.localStorage.setItem("authToken", token);
 }
 
+const handleClaimProduct = async (product: ProductType) => {
+    try {
+        const currentUsername = localStorage.getItem("username");
+        if (!currentUsername) {
+            alert("Please log in again.");
+            return;
+        }
 
-export async function login(username: string, password: string) {
-    const response = await fetch(`${BACKEND_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-    });
+        const updatedProduct = { ...product, ownerUsername: currentUsername };
+        await updateProduct(updatedProduct);
 
-    if (!response.ok) {
-        throw new Error("Login failed");
+        alert(`${product.name} added to your orders!`);
+
+        window.location.reload();
+    } catch (err) {
+        console.error("Failed to claim product:", err);
+        alert("Error: Could not add product to orders.");
     }
-
-    const data: { username: string; role: "USER" | "EMPLOYEE" | "ADMIN" } =
-        await response.json();
-
-    const token = btoa(`${username}:${password}`);
-
-    authHeader = { Authorization: `Basic ${token}` };
-    localStorage.setItem("authToken", token);
-    localStorage.setItem("role", data.role);
-
-    return data.role;
-}
+};
 
 export async function fetchMe() {
     const resp = await authFetch("http://localhost:8081/api/auth/me");
@@ -87,6 +81,26 @@ export async function registerUser(
     return true;
 }
 
+export async function login(username: string, password: string) {
+    const response = await fetch(`${BACKEND_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+    });
+
+    if (!response.ok) throw new Error("Login failed");
+
+    const data: { username: string; role: "USER" | "EMPLOYEE" | "ADMIN" } = await response.json();
+    const token = btoa(`${username}:${password}`);
+
+    authHeader = { Authorization: `Basic ${token}` };
+
+    localStorage.setItem("username", username);
+    localStorage.setItem("authToken", token);
+    localStorage.setItem("role", data.role);
+
+    return data.role;
+}
 
 export function logout() {
     window.localStorage.removeItem("authToken");

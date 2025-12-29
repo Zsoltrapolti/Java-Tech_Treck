@@ -16,16 +16,28 @@ export default function StockAddPage() {
         name: "",
         type: "",
         unitOfMeasure: "",
-        quantity: 0
+        quantity: 0,
+        ownerUsername: ""
     });
 
     return (
         <EditFormPage title="Add Product">
-
             <EditFormField
                 label="Name"
                 value={product.name}
                 onChange={v => setProduct({ ...product, name: v })}
+            />
+
+            <EditFormField
+                label="Type"
+                value={product.type}
+                onChange={v => setProduct({ ...product, type: v })}
+            />
+
+            <EditFormField
+                label="Owner Username"
+                value={product.ownerUsername}
+                onChange={v => setProduct({ ...product, ownerUsername: v })}
             />
 
             <EditFormField
@@ -52,8 +64,6 @@ export default function StockAddPage() {
                 }}
                 onCancel={() => navigate("/stock")}
             />
-
-
         </EditFormPage>
     );
 }
