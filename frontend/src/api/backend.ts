@@ -321,3 +321,16 @@ export async function addProductToMyList(productId: number): Promise<void> {
         throw new Error("Could not add product to your selection");
     }
 }
+
+export async function unclaimProduct(productId: number): Promise<void> {
+    const response = await fetch(`${BACKEND_URL}/products/${productId}/unclaim`, {
+        method: "PUT",
+        headers: {
+            "Authorization": `Basic ${localStorage.getItem("authToken")}`
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error("Could not eliminate product.");
+    }
+}
