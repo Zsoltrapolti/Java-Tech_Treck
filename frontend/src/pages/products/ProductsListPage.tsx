@@ -35,25 +35,26 @@ export default function ProductsListPage() {
             });
     }, []);
 
-   const handleClaimProduct = async (product: ProductType) => {
-       const currentUsername = localStorage.getItem("username");
+    const handleClaimProduct = async (product: ProductType) => {
+     try {
 
-       if (!currentUsername) {
-           alert("Please log in again.");
-           return;
-       }
+         const response = await fetch(`http://localhost:8081/api/products/${product.id}/claim`, {
+             method: "PUT",
+             headers: {
+                 "Authorization": `Basic ${localStorage.getItem("authToken")}`
+             }
+         });
 
-       try {
-           const updatedProduct = { ...product, ownerUsername: currentUsername };
-           await updateProduct(updatedProduct);
+         if (response.ok) {
+             alert(`${product.name} a fost adăugat în lista ta!`);
 
-           alert(`${product.name} added to My Orders!`);
-           window.location.reload();
-       } catch (err) {
-           console.error("Failed to add product:", err);
-           alert("Error: Could not add product to orders.");
-       }
-   };
+             setProducts(prev => prev.map(p => p.id === product.id ? { ...p, ownerUsername: localStorage.getItem("username") } : p));
+         }
+     } catch (err) {
+         alert("Eroare la adăugarea produsului.");
+     }
+    };
+
     if (loading) return <CircularProgress style={{ display: 'block', margin: '20px auto' }} />;
 
     return (

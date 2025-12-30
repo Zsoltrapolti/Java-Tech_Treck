@@ -97,4 +97,19 @@ public class ProductController {
     }
 
 
+    @Operation(
+            summary = "Claim product",
+            description = "Assigns the logged-in user as the owner of the product"
+    )
+
+
+    @PutMapping("/{id}/claim")
+    public ResponseEntity<ProductDTO> claimProduct(@PathVariable Long id, Principal principal) {
+        Product existingProduct = productService.getProductById(id);
+
+        existingProduct.setOwnerUsername(principal.getName());
+
+        Product updated = productService.updateProduct(id, existingProduct);
+        return ResponseEntity.ok(ProductMapper.toDTO(updated));
+    }
 }

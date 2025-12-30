@@ -5,6 +5,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -26,9 +27,9 @@ public class ProductService {
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with id : " + id));
     }
 
-//    public List<Product> getProductsByUsername(String username) {
-//        return productRepository.findAllByOwnerUsername(username);
-//    }
+    public List<Product> getProductsByUsername(String username) {
+        return productRepository.findAllByOwnerUsername(username);
+    }
 
     public Product getProductByName(String name) {
         return productRepository.findByName(name);
@@ -62,4 +63,5 @@ public class ProductService {
     public void deleteAllProducts() {
         productRepository.deleteAll();
     }
+
 }
