@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login, registerUser } from "../../api/backend";
+import { useAuth } from "../../components/form/AuthContext";
 
 import {
     FieldLabel,
@@ -18,19 +19,20 @@ export default function RegisterPage() {
     const [password, setPassword] = useState("");
     const [error, setError] = useState<string | null>(null);
 
+    const { setRole } = useAuth();
+
     async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
-        setError(null);
-
-        try {
-            await registerUser(username, password, "USER");
-            await login(username, password);
-            navigate("/products");
-
-        } catch (err: any) {
-            setError(err.message || "Registration failed");
-        }
-    }
+      e.preventDefault();
+      setError(null);
+      try {
+          await registerUser(username, password, "USER");
+          const role = await login(username, password);
+          setRole(role);
+          navigate("/products");
+      } catch (err: any) {
+          setError(err.message || "Registration failed");
+      }
+  }
 
     return (
         <AuthForm

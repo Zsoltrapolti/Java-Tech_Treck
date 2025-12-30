@@ -306,3 +306,31 @@ export async function createEmployee(employee: EmployeeType) {
         await handleError(resp);
     return resp.json();
 }
+
+export async function addProductToMyList(productId: number): Promise<void> {
+    const response = await fetch(`${BACKEND_URL}/products/my-selection`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Basic ${localStorage.getItem("authToken")}`
+        },
+        body: JSON.stringify({ productId })
+    });
+
+    if (!response.ok) {
+        throw new Error("Could not add product to your selection");
+    }
+}
+
+export async function unclaimProduct(productId: number): Promise<void> {
+    const response = await fetch(`${BACKEND_URL}/products/${productId}/unclaim`, {
+        method: "PUT",
+        headers: {
+            "Authorization": `Basic ${localStorage.getItem("authToken")}`
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error("Could not eliminate product.");
+    }
+}

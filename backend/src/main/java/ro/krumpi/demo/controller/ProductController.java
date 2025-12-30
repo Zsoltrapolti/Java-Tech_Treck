@@ -32,7 +32,6 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductDTO productdto, Principal principal) {
         Product product = ProductMapper.toEntity(productdto);
-        product.setOwnerUsername(principal.getName());
         Product saved = productService.createProduct(product);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ProductMapper.toDTO(saved));
@@ -76,7 +75,6 @@ public class ProductController {
     public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
 
         Product existingProduct = productService.getProductById(id);
-        existingProduct.setOwnerUsername(productDetails.getOwnerUsername());
 
         Product updated = productService.updateProduct(id, existingProduct);
         return ResponseEntity.ok(updated);
@@ -96,5 +94,21 @@ public class ProductController {
         return "Product API is working! Time: " + new java.util.Date();
     }
 
+    @Operation(
+            summary = "Unclaim product",
+            description = "Removes the product from the logged-in user's personal list"
+    )
+    @PutMapping("/{id}/unclaim")
+    public ResponseEntity<Void> unclaimProduct(@PathVariable Long id, Principal principal) {
+        // Apelăm metoda care șterge doar legătura dintre user și produs
+        productService.removeProductFromUserSelection(id, principal.getName());
 
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/claim")
+    public ResponseEntity<Void> claimProduct(@PathVariable Long id, Principal principal) {
+        productService.addProductToUserSelection(id, principal.getName());
+        return ResponseEntity.ok().build();
+    }
 }
