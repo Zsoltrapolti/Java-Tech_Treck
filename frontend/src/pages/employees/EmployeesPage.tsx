@@ -10,6 +10,7 @@ import {
 import { ModuleHeader } from "../../components/table/ModuleHeader.tsx";
 import { ModuleDataTable } from "../../components/table/ModuleDataTable.tsx";
 import type { EmployeeType } from "../../types/Employee.ts";
+import {showSuccess} from "../../utils/toast.ts";
 
 export default function EmployeesPage() {
     const [employees, setEmployees] = useState<EmployeeType[]>([]);
@@ -22,6 +23,7 @@ export default function EmployeesPage() {
     function handleDelete(id: number) {
         deleteEmployee(id);
         setEmployees(prev => prev.filter(e => e.id !== id));
+        showSuccess("Employee removed successfully.");
     }
 
     return (

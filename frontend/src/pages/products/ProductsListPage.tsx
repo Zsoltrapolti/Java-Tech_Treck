@@ -1,14 +1,15 @@
 
 import { useEffect, useState } from "react";
-import { fetchProducts, updateProduct } from "../../api/backend";
+import { fetchProducts } from "../../api/backend";
 import type { ProductType } from "../../types/Product";
+import { claimProduct } from "../../api/backend";
 
 import {
     ModulePageContainer,
     ModuleTableContainer,
     ModuleTableHeader,
     ModuleTableCell,
-    ModulePageHeader,
+    ModulePageHeader, EditButton,
 } from '../../ui/ModulePage.styles';
 
 import {
@@ -18,6 +19,7 @@ import {
     TableBody,
     CircularProgress
 } from "@mui/material";
+import {showSuccess} from "../../utils/toast.ts";
 
 export default function ProductsListPage() {
     const [products, setProducts] = useState<ProductType[]>([]);
@@ -36,24 +38,17 @@ export default function ProductsListPage() {
     }, []);
 
     const handleClaimProduct = async (product: ProductType) => {
-     try {
-
-         const response = await fetch(`http://localhost:8081/api/products/${product.id}/claim`, {
-             method: "PUT",
-             headers: {
-                 "Authorization": `Basic ${localStorage.getItem("authToken")}`
-             }
-         });
-
-         if (response.ok) {
-             alert(`${product.name} a fost adăugat în lista ta!`);
-
-             setProducts(prev => prev.map(p => p.id === product.id ? { ...p, ownerUsername: localStorage.getItem("username") } : p));
-         }
-     } catch (err) {
-         alert("Eroare la adăugarea produsului.");
-     }
+        await claimProduct(product.id);
+        setProducts(prev =>
+                prev.map(p =>
+                    p.id === product.id
+                        ? { ...p, ownerUsername: localStorage.getItem("username") }
+                        : p
+                )
+        );
+        showSuccess(`${product.name} has been added successfully.`);
     };
+
 
     if (loading) return <CircularProgress style={{ display: 'block', margin: '20px auto' }} />;
 
@@ -79,12 +74,9 @@ export default function ProductsListPage() {
                                 <ModuleTableCell>{product.unitOfMeasure}</ModuleTableCell>
                                 <ModuleTableCell>{product.quantity}</ModuleTableCell>
                                 <ModuleTableCell>
-                                    <button
-                                        onClick={() => handleClaimProduct(product)}
-                                        style={{ cursor: 'pointer', padding: '5px 10px' }}
-                                    >
+                                    <EditButton onClick={() => handleClaimProduct(product)}>
                                         Add to My Orders
-                                    </button>
+                                    </EditButton>
                                 </ModuleTableCell>
                             </TableRow>
                         ))}

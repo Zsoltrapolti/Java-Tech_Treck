@@ -9,7 +9,7 @@ public class UserAccountMapper {
         return new UserAccountDTO(
                 user.getId(),
                 user.getUsername(),
-                user.getRole()
+                user.getRole().name()
         );
     }
 }

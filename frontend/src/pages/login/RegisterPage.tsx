@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login, registerUser } from "../../api/backend";
 import { useAuth } from "../../components/form/AuthContext";
+import type { UserRole } from "../../types/Auth";
 
 import {
     FieldLabel,
@@ -11,28 +12,38 @@ import {
 
 import { AuthForm } from "../../components/form/AuthForm";
 import { AuthFooter } from "../../components/form/AuthFooter";
+import { MenuItem } from "@mui/material";
 
 export default function RegisterPage() {
     const navigate = useNavigate();
+    const { setRole: setAuthRole } = useAuth();
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [role, setRole] = useState<UserRole>("USER");
     const [error, setError] = useState<string | null>(null);
 
-    const { setRole } = useAuth();
-
     async function handleSubmit(e: React.FormEvent) {
-      e.preventDefault();
-      setError(null);
-      try {
-          await registerUser(username, password, "USER");
-          const role = await login(username, password);
-          setRole(role);
-          navigate("/products");
-      } catch (err: any) {
-          setError(err.message || "Registration failed");
-      }
-  }
+        e.preventDefault();
+        setError(null);
+
+        try {
+            await registerUser(username, password, role);
+
+            const loggedRole = await login(username, password);
+            setAuthRole(loggedRole);
+
+            navigate(
+                loggedRole === "ADMIN"
+                    ? "/employees"
+                    : loggedRole === "EMPLOYEE"
+                        ? "/stock"
+                        : "/products"
+            );
+        } catch (err: any) {
+            setError(err.message || "Registration failed");
+        }
+    }
 
     return (
         <AuthForm
@@ -62,6 +73,18 @@ export default function RegisterPage() {
                 onChange={e => setPassword(e.target.value)}
                 fullWidth
             />
+
+            <FieldLabel>Role</FieldLabel>
+            <StyledTextField
+                select
+                value={role}
+                onChange={e => setRole(e.target.value as UserRole)}
+                fullWidth
+            >
+                <MenuItem value="USER">User</MenuItem>
+                <MenuItem value="EMPLOYEE">Employee</MenuItem>
+                <MenuItem value="ADMIN">Admin</MenuItem>
+            </StyledTextField>
 
             <StyledButton type="submit" fullWidth>
                 Register

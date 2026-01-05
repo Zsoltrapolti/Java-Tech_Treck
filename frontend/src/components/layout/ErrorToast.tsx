@@ -1,25 +1,46 @@
 import { useEffect, useState } from "react";
 import { Typography } from "@mui/material";
-import {ErrorToastWrapper} from "../../ui/Toast.styles.ts";
-import { registerErrorToast } from "../../utils/toast.ts";
+import {
+    ErrorToastWrapper,
+    SuccessToastWrapper
+} from "../../ui/Toast.styles";
+import {
+    registerErrorToast,
+    registerSuccessToast
+} from "../../utils/toast";
+
+type ToastState = {
+    message: string;
+    type: "error" | "success";
+} | null;
 
 export default function ErrorToast() {
-    const [message, setMessage] = useState<string | null>(null);
+    const [toast, setToast] = useState<ToastState>(null);
 
     useEffect(() => {
         registerErrorToast((msg) => {
-            setMessage(msg);
-            setTimeout(() => setMessage(null), 5000);
+            setToast({ message: msg, type: "error" });
+            setTimeout(() => setToast(null), 5000);
+        });
+
+        registerSuccessToast((msg) => {
+            setToast({ message: msg, type: "success" });
+            setTimeout(() => setToast(null), 3000);
         });
     }, []);
 
-    if (!message) return null;
+    if (!toast) return null;
+
+    const Wrapper =
+        toast.type === "error"
+            ? ErrorToastWrapper
+            : SuccessToastWrapper;
 
     return (
-        <ErrorToastWrapper>
+        <Wrapper>
             <Typography fontWeight={600}>
-                {message}
+                {toast.message}
             </Typography>
-        </ErrorToastWrapper>
+        </Wrapper>
     );
 }

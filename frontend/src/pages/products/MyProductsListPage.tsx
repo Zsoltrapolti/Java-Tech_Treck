@@ -6,9 +6,10 @@ import {
     ModuleTableContainer,
     ModulePageHeader,
     ModuleTableHeader,
-    ModuleTableCell
+    ModuleTableCell, DeleteButton
 } from "../../ui/ModulePage.styles";
 import { Table, TableHead, TableRow, TableBody, CircularProgress } from "@mui/material";
+import {showSuccess} from "../../utils/toast.ts";
 
 export default function MyProductsListPage() {
     const [products, setProducts] = useState<ProductType[]>([]);
@@ -31,6 +32,7 @@ export default function MyProductsListPage() {
      try {
          await unclaimProduct(productId);
          setProducts(prev => prev.filter(p => p.id !== productId));
+         showSuccess(`Product has been removed successfully.`);
      } catch (err) {
          alert("Eroare la eliminarea produsului.");
      }
@@ -68,20 +70,9 @@ export default function MyProductsListPage() {
                                     <ModuleTableCell>{p.unitOfMeasure}</ModuleTableCell>
                                     <ModuleTableCell>{p.quantity}</ModuleTableCell>
                                     <ModuleTableCell>
-                                        <button
-                                            onClick={() => handleRemove(p.id)}
-                                            style={{
-                                                backgroundColor: '#ff4d4d',
-                                                color: 'white',
-                                                border: 'none',
-                                                padding: '8px 12px',
-                                                cursor: 'pointer',
-                                                borderRadius: '4px',
-                                                fontWeight: 'bold'
-                                            }}
-                                        >
+                                        <DeleteButton onClick={() => handleRemove(p.id)}>
                                             Remove
-                                        </button>
+                                        </DeleteButton>
                                     </ModuleTableCell>
                                 </TableRow>
                             ))

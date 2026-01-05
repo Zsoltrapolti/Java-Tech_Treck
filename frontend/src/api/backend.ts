@@ -35,25 +35,15 @@ export function setAuthHeader(username: string, password: string) {
     window.localStorage.setItem("authToken", token);
 }
 
-const handleClaimProduct = async (product: ProductType) => {
-    try {
-        const currentUsername = localStorage.getItem("username");
-        if (!currentUsername) {
-            alert("Please log in again.");
-            return;
-        }
+export async function claimProduct(productId: number): Promise<void> {
+    const resp = await authFetch(`${BACKEND_URL}/products/${productId}/claim`, {
+        method: "PUT",
+    });
 
-        const updatedProduct = { ...product, ownerUsername: currentUsername };
-        await updateProduct(updatedProduct);
-
-        alert(`${product.name} added to your orders!`);
-
-        window.location.reload();
-    } catch (err) {
-        console.error("Failed to claim product:", err);
-        alert("Error: Could not add product to orders.");
+    if (!resp.ok) {
+        await handleError(resp);
     }
-};
+}
 
 export async function fetchMe() {
     const resp = await authFetch("http://localhost:8081/api/auth/me");

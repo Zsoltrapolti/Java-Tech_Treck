@@ -1,6 +1,7 @@
 package ro.krumpi.demo.config;
 
 import org.springframework.context.annotation.Profile;
+import ro.krumpi.demo.model.auth.Role;
 import ro.krumpi.demo.model.auth.UserAccount;
 import ro.krumpi.demo.repository.UserAccountRepository;
 import org.springframework.boot.CommandLineRunner;
@@ -58,7 +59,7 @@ public class SecurityConfig {
         return username -> userRepo.findByUsername(username)
                 .map(user -> User.withUsername(user.getUsername())
                         .password(user.getPassword())
-                        .roles(user.getRole())
+                        .roles(user.getRole().name())
                         .build())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
@@ -76,7 +77,7 @@ public class SecurityConfig {
                 userRepo.save(UserAccount.builder()
                         .username("admin")
                         .password(encoder.encode("password"))
-                        .role("ADMIN")
+                        .role(Role.ADMIN)
                         .build());
             }
         };
@@ -90,7 +91,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5174"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

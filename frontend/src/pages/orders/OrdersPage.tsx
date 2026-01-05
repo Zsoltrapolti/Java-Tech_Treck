@@ -10,6 +10,7 @@ import {
 import { ModuleHeader } from "../../components/table/ModuleHeader";
 import { ModuleDataTable } from "../../components/table/ModuleDataTable";
 import type { OrderType } from "../../types/Order";
+import {showSuccess} from "../../utils/toast.ts";
 
 export default function OrdersPage() {
     const [orders, setOrders] = useState<OrderType[]>([]);
@@ -22,6 +23,7 @@ export default function OrdersPage() {
     async function handleDelete(id: number) {
         await deleteOrder(id);
         setOrders(prev => prev.filter(o => o.id !== id));
+        showSuccess("Order removed successfully.");
     }
 
     return (

@@ -25,8 +25,9 @@ public class UserAccount {
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String role;
+    private Role role;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(

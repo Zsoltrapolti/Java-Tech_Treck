@@ -9,6 +9,7 @@ import {
 } from "../../ui/ModulePage.styles.ts";
 import {ModuleHeader} from "../../components/table/ModuleHeader.tsx";
 import {ModuleDataTable} from "../../components/table/ModuleDataTable.tsx";
+import {showSuccess} from "../../utils/toast.ts";
 
 
 export default function StockListPage() {
@@ -22,6 +23,7 @@ export default function StockListPage() {
     function handleDelete(id: number) {
         deleteProduct(id);
         setStocks(prev => prev.filter(s => s.id !== id));
+        showSuccess("Product removed successfully.");
     }
 
     return (
