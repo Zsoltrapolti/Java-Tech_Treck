@@ -1,8 +1,8 @@
-INSERT INTO employee (id, first_name, last_name, role)
+INSERT INTO employee (id, first_name, last_name, role, user_id)
 VALUES
-    (1, 'John', 'Doe', 'MANAGER'),
-    (2, 'Jane', 'Smith', 'SUPERVISOR'),
-    (3, 'Alex', 'Johnson', 'STAFF')
+    (1, 'John', 'Doe', 'MANAGER', NULL),
+    (2, 'Jane', 'Smith', 'SUPERVISOR', NULL),
+    (3, 'Alex', 'Johnson', 'STAFF', NULL)
     ON CONFLICT (id) DO NOTHING;
 
 SELECT setval(

@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS employee (
     id BIGSERIAL PRIMARY KEY,
     first_name VARCHAR(255),
     last_name VARCHAR(255),
-    role VARCHAR(255)
+    role VARCHAR(255),
+    user_id BIGINT
 );
 
 -- products
