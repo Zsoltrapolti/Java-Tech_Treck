@@ -1,11 +1,20 @@
 let handler: ((msg: string) => void) | null = null;
+let successHandler: ((msg: string) => void) | null = null;
 
 export function registerErrorToast(fn: (msg: string) => void) {
     handler = fn;
 }
 
+export function registerSuccessToast(fn: (msg: string) => void) {
+    successHandler = fn;
+}
+
 export function triggerErrorToast(message: string) {
     handler?.(message);
+}
+
+export function triggerSuccessToast(message: string) {
+    successHandler?.(message);
 }
 
 function formatErrorMessage(message: string): string {
@@ -33,4 +42,9 @@ export function showError(error: unknown) {
     }
 
     triggerErrorToast(message);
+}
+
+
+export function showSuccess(message: string) {
+    triggerSuccessToast(message);
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ro.krumpi.demo.dto.RegisterRequestDTO;
 import ro.krumpi.demo.model.auth.UserAccount;
 import ro.krumpi.demo.repository.UserAccountRepository;
+import ro.krumpi.demo.model.auth.Role;
 
 @Service
 @RequiredArgsConstructor
@@ -19,11 +20,7 @@ public class UserAccountService {
         if (userRepo.existsByUsername(dto.username())) {
             throw new IllegalStateException("Username already exists");
         }
-
-        String role = (dto.role() == null || dto.role().isBlank())
-                ? "USER"
-                : dto.role().toUpperCase();
-
+        Role role = dto.role() != null ? dto.role() : Role.USER;
         UserAccount user = UserAccount.builder()
                 .username(dto.username())
                 .password(passwordEncoder.encode(dto.password()))
