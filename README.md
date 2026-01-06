@@ -124,9 +124,37 @@ If you have problems with DB :
     ```bash
     Now, everything has to be fine !  Heart eyes
 
-## Methods in BACKEND
-<img width="620" height="212" alt="image" src="https://github.com/user-attachments/assets/6930d8df-37da-4f75-92f7-55e4c2793f2b" /> 
+
+# SpiceGarden
+
+SpiceGarden is a Spring Boot microservice for managing a catalog of spices, orders, customers, and prices.
+The project includes:
+- REST API for CRUD operations on spices, categories, customers, and orders
+- SOAP integration for prices
+- Persistence with PostgreSQL
+- OpenAPI (Swagger) documentation
+
+## Running the JAR
+1. Make sure you have Java 21 installed.
+2. The JAR file is already present on the `main` branch at `backend/target/backend-0.0.1-SNAPSHOT.jar`.Open a terminal to bring .jar from main branch:
+	```bash
+	git checkout main
+	git pull
+	```
+
+3. Make sure PostgreSQL is running and the settings in `application.properties` are correct.
+4. Run the JAR in the terminal:
+	```bash
+	java -jar backend/target/backend-0.0.1-SNAPSHOT.jar
+	```
+5. Access the API at `http://localhost:8099`
 
 
-/register endpoint is working !!!
-You can test it in POSTAMAN , I updated our collection . 
+## API Documentation
+After starting the application, OpenAPI/Swagger documentation is available at:
+```
+http://localhost:8099/swagger-ui.html
+```
+
+## Contact
+For questions/issues, contact me 
