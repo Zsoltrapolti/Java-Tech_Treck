@@ -8,7 +8,9 @@ import ro.krumpi.demo.dto.EmployeeDTO;
 import ro.krumpi.demo.mapper.EmployeeMapper;
 import ro.krumpi.demo.model.employee.Employee;
 import ro.krumpi.demo.service.EmployeeService;
+import ro.krumpi.demo.service.UserAccountService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -17,9 +19,11 @@ import java.util.List;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
+    private final UserAccountService userAccountService;
 
-    public EmployeeController(EmployeeService employeeService) {
+    public EmployeeController(EmployeeService employeeService, UserAccountService userAccountService) {
         this.employeeService = employeeService;
+        this.userAccountService = userAccountService;
     }
 
     @Operation(
@@ -28,11 +32,29 @@ public class EmployeeController {
     )
     @GetMapping
     public List<EmployeeDTO> getAllEmployees() {
-        return employeeService.getAllEmployees()
+
+        List<EmployeeDTO> result = new ArrayList<>(
+                employeeService.getAllEmployees()
+                        .stream()
+                        .map(EmployeeMapper::toDTO)
+                        .toList()
+        );
+
+        List<EmployeeDTO> users = userAccountService.findAll()
                 .stream()
-                .map(EmployeeMapper::toDTO)
+                .map(user -> new EmployeeDTO(
+                        user.getId(),
+                        user.getUsername(),
+                        "",
+                        user.getRole().name()
+                ))
                 .toList();
+
+        result.addAll(users);
+        return result;
     }
+
+
 
     @Operation(
             summary = "Get employee by ID",
