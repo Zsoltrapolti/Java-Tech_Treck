@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { createProduct } from "../../api/backend.ts";
+import {createProduct} from "../../api/backend.ts";
+import { showError } from "../../utils/toast";
 
 import { EditFormPage } from "../../components/form/EditFormPage.tsx";
 import { EditFormField } from "../../components/form/EditFormField.tsx";
@@ -15,12 +16,12 @@ export default function StockAddPage() {
         name: "",
         type: "",
         unitOfMeasure: "",
-        quantity: 0
+        quantity: 0,
+        ownerUsername: ""
     });
 
     return (
         <EditFormPage title="Add Product">
-
             <EditFormField
                 label="Name"
                 value={product.name}
@@ -31,6 +32,12 @@ export default function StockAddPage() {
                 label="Type"
                 value={product.type}
                 onChange={v => setProduct({ ...product, type: v })}
+            />
+
+            <EditFormField
+                label="Owner Username"
+                value={product.ownerUsername}
+                onChange={v => setProduct({ ...product, ownerUsername: v })}
             />
 
             <EditFormField
@@ -48,12 +55,15 @@ export default function StockAddPage() {
 
             <EditFormActions
                 onSave={async () => {
-                    await createProduct(product);
-                    navigate("/stock");
+                    try {
+                        await createProduct(product);
+                        navigate("/stock");
+                    } catch (e) {
+                        showError(e);
+                    }
                 }}
                 onCancel={() => navigate("/stock")}
             />
-
         </EditFormPage>
     );
 }

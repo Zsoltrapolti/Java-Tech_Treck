@@ -14,7 +14,7 @@ export const LoginContainer = styled(Box)(({ theme }) => ({
 
 export const LoginCard = styled(Paper)(({ theme }) => ({
   width: "620px",
-  height: "620px",
+  height: "660px",
   padding: theme.spacing(4),
   borderRadius: 12,
   backgroundColor: "#f4f8f0",
@@ -93,6 +93,6 @@ export const AuthLink = styled("span")(() => ({
   cursor: "pointer",
   marginLeft: 4,
   "&:hover": {
-  textDecoration: "underline"
-}
+    textDecoration: "underline"
+  }
 }));

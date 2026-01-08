@@ -16,6 +16,6 @@ public class Product {
     private String unitOfMeasure;
     private Double quantity;
 
-    public Product(Long l, String product1, String type1, String unit1) {
+    public Product(long l, String product1, String type1, String unit1, double v) {
     }
 }

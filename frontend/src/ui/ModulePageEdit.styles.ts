@@ -103,3 +103,21 @@ export const FormActionsWrapper = styled("div")(({ theme }) => ({
     marginTop: theme.spacing(2),
 }));
 
+export const AddItemButton = styled(Button)(() => ({
+    fontWeight: 600,
+    padding: "6px 16px",
+    borderRadius: "8px",
+    backgroundColor: "#1b7944",
+    "&:hover": {
+        backgroundColor: "#135229",
+    },
+    color: "#ffffff",
+}));
+
+
+export const OrderItemRow = styled(Box)(({ theme }) => ({
+    display: "flex",
+    gap: theme.spacing(2),
+    alignItems: "center",
+    marginBottom: theme.spacing(1),
+}));

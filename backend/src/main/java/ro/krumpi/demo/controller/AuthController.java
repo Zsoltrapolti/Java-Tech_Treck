@@ -1,4 +1,5 @@
 package ro.krumpi.demo.controller;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -7,28 +8,30 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import ro.krumpi.demo.dto.LoginRequestDTO;
+import ro.krumpi.demo.dto.RegisterRequestDTO;
+import ro.krumpi.demo.dto.UserAccountDTO;
+import ro.krumpi.demo.mapper.UserAccountMapper;
 import ro.krumpi.demo.model.auth.UserAccount;
 import ro.krumpi.demo.repository.UserAccountRepository;
 
 import io.swagger.v3.oas.annotations.Operation;
+import ro.krumpi.demo.service.UserAccountService;
+
 import java.util.Map;
 
-
+@CrossOrigin(origins = "http://localhost:5174")
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:5173")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
-    private final UserAccountRepository userAccountRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserAccountService userService;
 
     public AuthController(AuthenticationManager authenticationManager,
-                          UserAccountRepository userAccountRepository,
-                          PasswordEncoder passwordEncoder) {
+                          UserAccountService userService){
         this.authenticationManager = authenticationManager;
-        this.userAccountRepository = userAccountRepository;
-        this.passwordEncoder = passwordEncoder;
+        this.userService = userService;
     }
 
     @Operation(
@@ -36,60 +39,35 @@ public class AuthController {
             description = "Authenticates a user and returns a JWT token"
     )
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        try {
-            Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequest.username(),
-                            loginRequest.password()
-                    )
-            );
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO request) {
 
-            if(authentication.isAuthenticated()){
-                String role = authentication.getAuthorities().stream()
-                        .findFirst()
-                        .map(a -> a.getAuthority().replace("ROLE_", ""))
-                        .orElse("USER");
-                return ResponseEntity.ok(Map.of(
-                        "message" , "Authenticated",
-                        "username", loginRequest.username(),
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.username(),
+                        request.password()
+                )
+        );
+
+        String role = auth.getAuthorities().stream()
+                .findFirst()
+                .map(a -> a.getAuthority().replace("ROLE_", ""))
+                .orElse("USER");
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "username", request.username(),
                         "role", role
-                ));
-            } else {
-                return ResponseEntity.status(401).body(Map.of("message" , "Unauthorized")) ;
-            }
-        }catch (AuthenticationException ex){
-            return ResponseEntity.status(401).body(Map.of("message" , "Unauthorized"));
-        }
+                )
+        );
     }
-
-    public record LoginRequest(String username, String password) {}
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        String requestedRole = (request.role() == null || request.role().isBlank())
-                ? "USER"
-                : request.role().trim().toUpperCase();
-
-        if (!requestedRole.matches("ADMIN|EMPLOYEE|USER")) {
-            return ResponseEntity.badRequest().body(Map.of("message", "Invalid role"));
-        }
-
-        if (userAccountRepository.existsByUsername(request.username())) {
-            return ResponseEntity.status(409).body(Map.of("message", "Username already exists"));
-        }
-
-        UserAccount user = UserAccount.builder()
-                .username(request.username())
-                .password(passwordEncoder.encode(request.password()))
-                .role(requestedRole)
-                .build();
-
-        userAccountRepository.save(user);
-        return ResponseEntity.ok(Map.of("message", "User created"));
+    public ResponseEntity<UserAccountDTO> register(
+            @Valid @RequestBody RegisterRequestDTO request
+    ) {
+        UserAccount saved = userService.register(request);
+        return ResponseEntity.ok(UserAccountMapper.toDTO(saved));
     }
-
-    public record RegisterRequest(String username, String password, String role) {}
 
     @GetMapping("/me")
     public ResponseEntity<?> me() {

@@ -1,12 +1,15 @@
 package ro.krumpi.demo.service;
 
 import org.springframework.transaction.annotation.Transactional;
+import ro.krumpi.demo.model.employee.Employee;
 import ro.krumpi.demo.model.order.Order;
 import ro.krumpi.demo.model.order.OrderItem;
 import ro.krumpi.demo.model.order.OrderStatus;
 import ro.krumpi.demo.model.stock.Product;
+import ro.krumpi.demo.repository.EmployeeRepository;
 import ro.krumpi.demo.repository.OrderRepository;
 import org.springframework.stereotype.Service;
+import ro.krumpi.demo.repository.ProductRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,13 +31,16 @@ public class OrderService {
         order.setCreationDate(LocalDateTime.now());
         order.setStatus(OrderStatus.NEW);
 
-        order.getItems().forEach(item -> item.setOrder(order));
-        Order saved = orderRepository.save(order);
-//        distributorClient.sendOrderToDistributor(saved);
-        saved.setStatus(OrderStatus.SENT);
+        order.getItems().forEach(i -> i.setOrder(order));
 
-        return orderRepository.save(order);
+        Order saved = orderRepository.save(order);
+
+        distributorClient.sendOrderToDistributor(saved);
+
+        saved.setStatus(OrderStatus.SENT);
+        return orderRepository.save(saved);
     }
+
 
     // READ all
     public List<Order> getAllOrders() {

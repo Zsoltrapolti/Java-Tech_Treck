@@ -1,4 +1,8 @@
 package ro.krumpi.demo.controller;
+import jakarta.validation.Valid;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+import ro.krumpi.demo.dto.ProductDTO;
+import ro.krumpi.demo.mapper.ProductMapper;
 import ro.krumpi.demo.model.stock.Product;
 import ro.krumpi.demo.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -7,25 +11,30 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:5174")
 public class ProductController {
 
     private final ProductService productService;
+
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @Operation(
             summary = "Create product",
             description = "Adds a new product to the catalog"
     )
     @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        product.setId(null);
-        Product savedProduct = productService.createProduct(product);
-        return new ResponseEntity<>(savedProduct, HttpStatus.CREATED);
+    public ResponseEntity<ProductDTO> createProduct(@Valid @RequestBody ProductDTO productdto, Principal principal) {
+        Product product = ProductMapper.toEntity(productdto);
+        Product saved = productService.createProduct(product);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ProductMapper.toDTO(saved));
     }
 
     @Operation(
@@ -33,9 +42,19 @@ public class ProductController {
             description = "Returns a list of all products"
     )
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProducts() {
-        List<Product> products = productService.getAllProducts();
-        return ResponseEntity.ok(products);
+    public List<ProductDTO> getAllProducts() {
+        return productService.getAllProducts()
+                .stream()
+                .map(ProductMapper::toDTO)
+                .toList();
+    }
+
+    @GetMapping("/my")
+    public List<ProductDTO> getMyProducts(Principal principal) {
+        return productService.getProductsByUsername(principal.getName())
+                .stream()
+                .map(ProductMapper::toDTO)
+                .toList();
     }
 
     @Operation(
@@ -43,23 +62,22 @@ public class ProductController {
             description = "Returns details of a specific product"
     )
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable Long id) {
         Product product = productService.getProductById(id);
-        return ResponseEntity.ok(product);
+        return ResponseEntity.ok(ProductMapper.toDTO(product));
     }
 
     @Operation(
             summary = "Update product",
-            description = "Modifies product details for the given ID"
+            description = "Modifies product details or assigns an owner"
     )
     @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(
-            @PathVariable Long id,
-            @RequestBody Product productDetails) {
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
 
-        productDetails.setId(id);
-        Product updatedProduct = productService.updateProduct(id, productDetails);
-        return ResponseEntity.ok(updatedProduct);
+        Product existingProduct = productService.getProductById(id);
+
+        Product updated = productService.updateProduct(id, existingProduct);
+        return ResponseEntity.ok(updated);
     }
 
     @Operation(
@@ -73,7 +91,24 @@ public class ProductController {
     }
     @GetMapping("/test")
     public String test() {
-        return "✅ Product API is working! Time: " + new java.util.Date();
+        return "Product API is working! Time: " + new java.util.Date();
     }
 
+    @Operation(
+            summary = "Unclaim product",
+            description = "Removes the product from the logged-in user's personal list"
+    )
+    @PutMapping("/{id}/unclaim")
+    public ResponseEntity<Void> unclaimProduct(@PathVariable Long id, Principal principal) {
+        // Apelăm metoda care șterge doar legătura dintre user și produs
+        productService.removeProductFromUserSelection(id, principal.getName());
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/{id}/claim")
+    public ResponseEntity<Void> claimProduct(@PathVariable Long id, Principal principal) {
+        productService.addProductToUserSelection(id, principal.getName());
+        return ResponseEntity.ok().build();
+    }
 }

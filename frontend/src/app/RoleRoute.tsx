@@ -1,18 +1,17 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../components/form/AuthContext";
+import { useAuth } from "../components/form/AuthContext.tsx";
+import type {UserRole} from "../types/Auth.ts";
 
-export function RoleRoute({ allowed }: { allowed: string[] }) {
-    const { role, loading } = useAuth();
+export function RoleRoute({ allowed }: { allowed: UserRole[] }) {
+    const { role } = useAuth();
+        
+        const savedRole = localStorage.getItem("role") as UserRole | null;
+        const currentRole = role || savedRole;
 
-    if (loading) {
-        return null;
-    }
-
-    if (!role) {
-        return <Navigate to="/" replace />;
-    }
-
-    if (!allowed.includes(role)) {
+        if (!currentRole) {
+            return <Navigate to="/" replace />;
+        }
+    if (!allowed.includes(currentRole)) {
         return <Navigate to="/unauthorized" replace />;
     }
 

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.test.context.TestPropertySource;
+import ro.krumpi.demo.model.auth.Role;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -27,7 +29,7 @@ class UserRepositoryTest {
         UserAccount user = UserAccount.builder()
                 .username("andreea")
                 .password("encoded_pass")
-                .role("ADMIN")
+                .role(Role.ADMIN)   // ✅ enum, not String
                 .build();
 
         UserAccount saved = userRepository.save(user);
@@ -41,7 +43,7 @@ class UserRepositoryTest {
         UserAccount user = UserAccount.builder()
                 .username("testUser")
                 .password("pass")
-                .role("USER")
+                .role(Role.USER)
                 .build();
         userRepository.save(user);
 

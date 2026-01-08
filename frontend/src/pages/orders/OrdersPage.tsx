@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import { deleteOrder, fetchOrders } from "../../api/backend.ts";
+import { deleteOrder, fetchOrders } from "../../api/backend";
 import { useNavigate } from "react-router-dom";
 
 import {
     ModulePageContainer,
     ModuleTableContainer
-} from "../../ui/ModulePage.styles.ts";
+} from "../../ui/ModulePage.styles";
 
-import { ModuleHeader } from "../../components/table/ModuleHeader.tsx";
-import { ModuleDataTable } from "../../components/table/ModuleDataTable.tsx";
-import type { OrderType } from "../../types/Order.ts";
+import { ModuleHeader } from "../../components/table/ModuleHeader";
+import { ModuleDataTable } from "../../components/table/ModuleDataTable";
+import type { OrderType } from "../../types/Order";
+import {showSuccess} from "../../utils/toast.ts";
 
 export default function OrdersPage() {
     const [orders, setOrders] = useState<OrderType[]>([]);
@@ -19,14 +20,14 @@ export default function OrdersPage() {
         fetchOrders().then(setOrders);
     }, []);
 
-    function handleDelete(id: number) {
-        deleteOrder(id);
+    async function handleDelete(id: number) {
+        await deleteOrder(id);
         setOrders(prev => prev.filter(o => o.id !== id));
+        showSuccess("Order removed successfully.");
     }
 
     return (
         <ModulePageContainer>
-
             <ModuleHeader
                 title="Orders"
                 addLabel="Add Order"
@@ -35,27 +36,25 @@ export default function OrdersPage() {
 
             <ModuleTableContainer>
                 <ModuleDataTable
-                    rows={orders.map(o => ({
-                        id: o.id,
-                        customerName: o.customerName,
-                        status: o.status,
-                        responsibleEmployee: o.responsibleEmployee
-                            ? `${o.responsibleEmployee.firstName} ${o.responsibleEmployee.lastName}`
-                            : "—"
-                    }))}
+                    rows={orders
+                        .filter(o => o.id !== undefined)
+                        .map(o => ({
+                            id: o.id as number,
+                            customerName: o.customerName,
+                            responsibleEmployeeId: o.responsibleEmployeeId,
+                        }))
+                    }
 
                     columns={[
                         { label: "ID", key: "id" },
                         { label: "Customer", key: "customerName" },
-                        { label: "Status", key: "status" },
-                        { label: "Responsible Employee", key: "responsibleEmployee" },
+                        { label: "Employee ID", key: "responsibleEmployeeId" },
                     ]}
 
-                    onEdit={id => navigate(`/orders/${id}/edit`)}
+                    onEdit={(id) => navigate(`/orders/${id}/edit`)}
                     onDelete={handleDelete}
                 />
             </ModuleTableContainer>
-
         </ModulePageContainer>
     );
 }

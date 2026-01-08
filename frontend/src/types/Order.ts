@@ -1,9 +1,8 @@
-import type {EmployeeType} from "./Employee.ts";
+import type {OrderItemType} from "./OrderItem.ts";
 
-export interface OrderType {
-    id: number;
+export interface OrderType{
+    id?: number;
     customerName: string;
-    creationDate: Date;
-    status: string;
-    responsibleEmployee: EmployeeType | null;
+    responsibleEmployeeId: number;
+    items: OrderItemType[];
 }
