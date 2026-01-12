@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoginPage from "../pages/login/LoginPage";
 import RegisterPage from "../pages/login/RegisterPage";
+import RequestAccountPage from "../pages/login/RequestAccountPage";
 import Layout from "../components/layout/Layout";
 import { RoleRoute } from "../app/RoleRoute";
 import StockListPage from "../pages/stock/StockListPage";
@@ -24,6 +25,7 @@ function App() {
                 {/* Public Routes */}
                 <Route path="/" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
+                <Route path="/request-account" element={<RequestAccountPage />} />
 
                 {/* Protected Routes inside Layout */}
                 <Route element={<Layout />}>
