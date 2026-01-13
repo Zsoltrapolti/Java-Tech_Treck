@@ -20,6 +20,7 @@ public class UserAccountService {
     private final PasswordEncoder passwordEncoder;
     private final AccountRequestService accountRequestService;
 
+    @Transactional
     public UserAccount register(RegisterRequestDTO dto) {
 
         String emailAsUsername = dto.username().toLowerCase();
@@ -38,8 +39,7 @@ public class UserAccountService {
 
         UserAccount saved = userRepo.save(user);
         approvedReq.setStatus(AccountRequestStatus.REGISTERED);
-
-        accountRequestService.delete(approvedReq);
+        accountRequestService.save(approvedReq);
 
         return saved;
     }

@@ -1,3 +1,4 @@
+// File: frontend/src/pages/login/LoginPage.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../api/backend";
@@ -25,7 +26,6 @@ export default function LoginPage() {
         setError(null);
 
         try {
-
             const role = await login(username, password);
             setRole(role);
 
@@ -80,6 +80,16 @@ export default function LoginPage() {
 
             <StyledButton type="submit" fullWidth>
                 Login
+            </StyledButton>
+
+            {/* New button to navigate to the account request page */}
+            <StyledButton
+                type="button"
+                fullWidth
+                onClick={() => navigate("/request-account")}
+                style={{ marginTop: 12 }}
+            >
+                Request Account
             </StyledButton>
         </AuthForm>
     );

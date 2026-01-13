@@ -350,6 +350,25 @@
 						"header": []
 					},
 					"response": []
+				},
+				{
+					"name": "All Accounts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/admin/accounts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"accounts"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"auth": {

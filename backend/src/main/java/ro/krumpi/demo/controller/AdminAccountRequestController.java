@@ -10,6 +10,7 @@ import ro.krumpi.demo.service.AccountRequestService;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/admin/account-requests")
 public class AdminAccountRequestController {

@@ -107,4 +107,8 @@ public class AccountRequestService {
                 .toList();
     }
 
+    public AccountRequest save(AccountRequest req) {
+        return repo.save(req);
+    }
+
 }
