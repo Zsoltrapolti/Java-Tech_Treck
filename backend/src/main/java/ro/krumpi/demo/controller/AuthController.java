@@ -20,7 +20,6 @@ import ro.krumpi.demo.service.UserAccountService;
 
 import java.util.Map;
 
-@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
