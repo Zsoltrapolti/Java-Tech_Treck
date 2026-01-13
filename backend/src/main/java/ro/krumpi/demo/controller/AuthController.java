@@ -20,6 +20,7 @@ import ro.krumpi.demo.service.UserAccountService;
 
 import java.util.Map;
 
+
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -68,8 +69,10 @@ public class AuthController {
     public ResponseEntity<UserAccountDTO> register(
             @Valid @RequestBody RegisterRequestDTO request
     ) {
+        System.out.println("Registering user: " + request.username());
         UserAccount saved = userService.register(request);
         return ResponseEntity.ok(UserAccountMapper.toDTO(saved));
+
     }
 
     @GetMapping("/me")
