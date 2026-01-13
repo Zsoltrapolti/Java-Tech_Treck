@@ -1,5 +1,6 @@
 package ro.krumpi.demo.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import ro.krumpi.demo.model.auth.Role;
 import ro.krumpi.demo.model.auth.UserAccount;
@@ -29,6 +30,10 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+
+    @Value("${frontend.origins}")
+    private List<String> frontendOrigins;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
