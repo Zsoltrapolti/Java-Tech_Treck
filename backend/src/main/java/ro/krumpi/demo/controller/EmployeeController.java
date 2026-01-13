@@ -19,11 +19,9 @@ import java.util.List;
 public class EmployeeController {
 
     private final EmployeeService employeeService;
-    private final UserAccountService userAccountService;
 
-    public EmployeeController(EmployeeService employeeService, UserAccountService userAccountService) {
+    public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
-        this.userAccountService = userAccountService;
     }
 
     @Operation(
@@ -39,21 +37,8 @@ public class EmployeeController {
                         .map(EmployeeMapper::toDTO)
                         .toList()
         );
-
-        List<EmployeeDTO> users = userAccountService.findAll()
-                .stream()
-                .map(user -> new EmployeeDTO(
-                        user.getId(),
-                        user.getUsername(),
-                        "",
-                        user.getRole().name()
-                ))
-                .toList();
-
-        result.addAll(users);
         return result;
     }
-
 
 
     @Operation(

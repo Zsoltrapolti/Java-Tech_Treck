@@ -61,6 +61,10 @@ public class AuthController {
         );
     }
 
+    @Operation(
+            summary = "Register user",
+            description = "Creates an account"
+    )
     @PostMapping("/register")
     public ResponseEntity<UserAccountDTO> register(
             @Valid @RequestBody RegisterRequestDTO request
@@ -79,11 +83,11 @@ public class AuthController {
 
         String role = auth.getAuthorities().stream()
                 .findFirst()
-                .map(a -> a.getAuthority().replace("ROLE_", "")) //eliminat ROLE_ , doar pt SecurityContext folosim 
-                .orElse("USER"); //implicit
+                .map(a -> a.getAuthority().replace("ROLE_", ""))
+                .orElse("USER");
         return ResponseEntity.ok(Map.of(
                 "username", auth.getName(),
-                "role", role // 200 status OK 
+                "role", role
         ));
     }
 }

@@ -14,11 +14,9 @@ import java.util.Optional;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
-    private final UserAccountService userAccountService;
 
-    public EmployeeService(EmployeeRepository employeeRepository, UserAccountService userAccountService) {
+    public EmployeeService(EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
-        this.userAccountService = userAccountService;
     }
 
     // CREATE
@@ -49,22 +47,13 @@ public class EmployeeService {
     }
 
     // DELETE
-    @Transactional
     public void deleteEmployee(Long id) {
         Optional<Employee> optEmployee = employeeRepository.findById(id);
         if (optEmployee.isPresent()) {
             Employee employee = optEmployee.get();
-            UserAccount user = employee.getUser();
             employeeRepository.delete(employee);
-            if (user != null) {
-                userAccountService.deleteUser(user.getId());
-            }
             return;
         }
-        if (userAccountService.existsById(id)) {
-            userAccountService.deleteUser(id);
-            return;
-        }
-        throw new RuntimeException("Employee/User not found");
+        throw new RuntimeException("Employee not found");
     }
 }

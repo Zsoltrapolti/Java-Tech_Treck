@@ -8,6 +8,7 @@ import ro.krumpi.demo.dto.RegisterRequestDTO;
 import ro.krumpi.demo.model.auth.UserAccount;
 import ro.krumpi.demo.repository.UserAccountRepository;
 import ro.krumpi.demo.model.auth.Role;
+import ro.krumpi.demo.model.auth.AccountRequestStatus;
 
 import java.util.List;
 
@@ -17,20 +18,45 @@ public class UserAccountService {
 
     private final UserAccountRepository userRepo;
     private final PasswordEncoder passwordEncoder;
+    private final AccountRequestService accountRequestService;
 
     public UserAccount register(RegisterRequestDTO dto) {
 
-        if (userRepo.existsByUsername(dto.username())) {
+        String emailAsUsername = dto.username().toLowerCase();
+
+        if (userRepo.existsByUsername(emailAsUsername)) {
             throw new IllegalStateException("Username already exists");
         }
-        Role role = dto.role() != null ? dto.role() : Role.USER;
+
+        var approvedReq = accountRequestService.getApprovedRequest(emailAsUsername);
+
         UserAccount user = UserAccount.builder()
-                .username(dto.username())
+                .username(emailAsUsername)
                 .password(passwordEncoder.encode(dto.password()))
-                .role(role)
+                .role(approvedReq.getAssignedRole())
                 .build();
 
-        return userRepo.save(user);
+        UserAccount saved = userRepo.save(user);
+        approvedReq.setStatus(AccountRequestStatus.REGISTERED);
+
+        accountRequestService.delete(approvedReq);
+
+        return saved;
+    }
+
+    public UserAccount createByAdmin(String username, String rawPassword, Role role) {
+        if (userRepo.existsByUsername(username.toLowerCase())) {
+            throw new IllegalStateException("Username already exists");
+        }
+        if (role == null) {
+            throw new IllegalStateException("Role is required");
+        }
+
+        return userRepo.save(UserAccount.builder()
+                .username(username.toLowerCase())
+                .password(passwordEncoder.encode(rawPassword))
+                .role(role)
+                .build());
     }
 
     public UserAccount findByUsername(String username) {
