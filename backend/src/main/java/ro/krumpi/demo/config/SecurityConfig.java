@@ -1,12 +1,10 @@
 package ro.krumpi.demo.config;
 
-import org.springframework.context.annotation.Profile;
-import ro.krumpi.demo.model.auth.Role;
-import ro.krumpi.demo.model.auth.UserAccount;
-import ro.krumpi.demo.repository.UserAccountRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -23,12 +21,18 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import ro.krumpi.demo.model.auth.Role;
+import ro.krumpi.demo.model.auth.UserAccount;
+import ro.krumpi.demo.repository.UserAccountRepository;
 
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    @Value("${frontend.origins}")
+    private List<String> frontendOrigins;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -38,10 +42,12 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
+                        .requestMatchers("/api/account-requests/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/products/{id}/claim").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/products/{id}/unclaim").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/products/*/claim").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/products/*/unclaim").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/products/**").hasAnyRole("EMPLOYEE", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/products/**").hasAnyRole("EMPLOYEE", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("EMPLOYEE", "ADMIN")
@@ -73,9 +79,9 @@ public class SecurityConfig {
     @Profile("!test")
     public CommandLineRunner seedDefaultUser(UserAccountRepository userRepo, PasswordEncoder encoder) {
         return args -> {
-            if (!userRepo.existsByUsername("admin")) {
+            if (!userRepo.existsByUsername("admin@krumpi.ro")) {
                 userRepo.save(UserAccount.builder()
-                        .username("admin")
+                        .username("admin@krumpi.ro")
                         .password(encoder.encode("password"))
                         .role(Role.ADMIN)
                         .build());
@@ -84,14 +90,15 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5174"));
+        configuration.setAllowedOrigins(frontendOrigins);
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);

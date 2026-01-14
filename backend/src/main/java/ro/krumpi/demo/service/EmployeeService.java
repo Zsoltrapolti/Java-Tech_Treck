@@ -1,8 +1,11 @@
 package ro.krumpi.demo.service;
 
+import org.springframework.transaction.annotation.Transactional;
+import ro.krumpi.demo.model.auth.UserAccount;
 import ro.krumpi.demo.model.employee.Employee;
 import ro.krumpi.demo.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
+import ro.krumpi.demo.repository.UserAccountRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +48,12 @@ public class EmployeeService {
 
     // DELETE
     public void deleteEmployee(Long id) {
-        employeeRepository.deleteById(id);
+        Optional<Employee> optEmployee = employeeRepository.findById(id);
+        if (optEmployee.isPresent()) {
+            Employee employee = optEmployee.get();
+            employeeRepository.delete(employee);
+            return;
+        }
+        throw new RuntimeException("Employee not found");
     }
 }

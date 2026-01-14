@@ -8,12 +8,13 @@ import ro.krumpi.demo.dto.EmployeeDTO;
 import ro.krumpi.demo.mapper.EmployeeMapper;
 import ro.krumpi.demo.model.employee.Employee;
 import ro.krumpi.demo.service.EmployeeService;
+import ro.krumpi.demo.service.UserAccountService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/employees")
-@CrossOrigin(origins = "http://localhost:5174")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
@@ -28,11 +29,16 @@ public class EmployeeController {
     )
     @GetMapping
     public List<EmployeeDTO> getAllEmployees() {
-        return employeeService.getAllEmployees()
-                .stream()
-                .map(EmployeeMapper::toDTO)
-                .toList();
+
+        List<EmployeeDTO> result = new ArrayList<>(
+                employeeService.getAllEmployees()
+                        .stream()
+                        .map(EmployeeMapper::toDTO)
+                        .toList()
+        );
+        return result;
     }
+
 
     @Operation(
             summary = "Get employee by ID",

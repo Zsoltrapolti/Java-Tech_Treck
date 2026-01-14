@@ -31,7 +31,7 @@ public class UserAccount {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
-            name = "user_products", // Numele tabelei de legătură
+            name = "user_products",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "product_id"))
     private Set<Product> favoriteProducts= new HashSet<>();;
