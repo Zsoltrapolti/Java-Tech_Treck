@@ -17,10 +17,4 @@ public class Employee {
     private String firstName;
     private String lastName;
     private String role;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = true)
-    private UserAccount user;
-
-
 }

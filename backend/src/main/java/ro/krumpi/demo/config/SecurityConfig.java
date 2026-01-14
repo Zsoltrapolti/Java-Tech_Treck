@@ -42,6 +42,8 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
+                        .requestMatchers("/api/account-requests/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/products/*/claim").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
@@ -77,9 +79,9 @@ public class SecurityConfig {
     @Profile("!test")
     public CommandLineRunner seedDefaultUser(UserAccountRepository userRepo, PasswordEncoder encoder) {
         return args -> {
-            if (!userRepo.existsByUsername("admin")) {
+            if (!userRepo.existsByUsername("admin@krumpi.ro")) {
                 userRepo.save(UserAccount.builder()
-                        .username("admin")
+                        .username("admin@krumpi.ro")
                         .password(encoder.encode("password"))
                         .role(Role.ADMIN)
                         .build());
