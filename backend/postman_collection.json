@@ -1,11 +1,11 @@
 {
 	"info": {
-		"_postman_id": "6f1518a5-264a-4a68-9d79-cdd1b30bbedf",
+		"_postman_id": "e9e7af24-afd9-4faf-9b7f-5a8ea0646407",
 		"name": "Krumpi Backend API",
 		"description": "Collection for testing APIs in Spring Boot on port 8081 (Basic Auth admin/password). Create payloads use Postman dynamic variables for random data.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "44239868",
-		"_collection_link": "https://cata-5288300.postman.co/workspace/Cata's-Workspace~b22af98c-725c-4720-85d7-07984363ab37/collection/44239868-6f1518a5-264a-4a68-9d79-cdd1b30bbedf?action=share&source=collection_link&creator=44239868"
+		"_exporter_id": "50717664",
+		"_collection_link": "https://javatechtrek.postman.co/workspace/Java_TechTrek~ed1b908e-9d6a-4943-850e-123497b1d8d8/collection/50717664-e9e7af24-afd9-4faf-9b7f-5a8ea0646407?action=share&source=collection_link&creator=50717664"
 	},
 	"item": [
 		{
@@ -45,57 +45,6 @@
 						"body": {
 							"mode": "raw",
 							"raw": "{\n  \"username\": \"user{{$randomInt}}\",\n  \"password\": \"pass{{$randomInt}}\",\n  \"role\": \"USER\"\n}"
-						},
-						"url": {
-							"raw": "{{base_url}}/api/auth/register",
-							"host": [
-								"{{base_url}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"register"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Register Admin (random)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"if (pm.response.code === 200 || pm.response.code === 201 || pm.response.code === 409) {",
-									"  const req = JSON.parse(pm.request.body.raw);",
-									"  pm.collectionVariables.set('basic_auth_user', req.username);",
-									"  pm.collectionVariables.set('basic_auth_password', req.password);",
-									"  pm.test('Register admin response ok', function() {",
-									"    pm.expect([200,201,409]).to.include(pm.response.code);",
-									"  });",
-									"}"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/json"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n  \"username\": \"admin}@krumpi.ro\",\n  \"password\": \"password\",\n  \"role\": \"ADMIN\"\n}"
 						},
 						"url": {
 							"raw": "{{base_url}}/api/auth/register",
@@ -175,6 +124,33 @@
 						}
 					},
 					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		},
@@ -346,8 +322,24 @@
 				{
 					"name": "Delete request",
 					"request": {
-						"method": "GET",
-						"header": []
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/admin/account-requests/{{request_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"admin",
+								"account-requests",
+								"{{request_id}}"
+							]
+						}
 					},
 					"response": []
 				},
@@ -372,16 +364,11 @@
 				}
 			],
 			"auth": {
-				"type": "basic",
-				"basic": [
+				"type": "bearer",
+				"bearer": [
 					{
-						"key": "password",
-						"value": "{{admin_password}}",
-						"type": "string"
-					},
-					{
-						"key": "username",
-						"value": "{{admin_username}}",
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBrcnVtcGkucm8iLCJpYXQiOjE3Njg0MDIwNjAsImV4cCI6MTc2ODQwNTY2MH0.o3QuZfD97p2kkPWmZXQTw72wC7n8in1AvWy_fxEF9Ls",
 						"type": "string"
 					}
 				]
@@ -560,16 +547,11 @@
 				}
 			],
 			"auth": {
-				"type": "basic",
-				"basic": [
+				"type": "bearer",
+				"bearer": [
 					{
-						"key": "password",
-						"value": "{{admin_password}}\n",
-						"type": "string"
-					},
-					{
-						"key": "username",
-						"value": "{{admin_username}}",
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBrcnVtcGkucm8iLCJpYXQiOjE3Njg0MDIwNjAsImV4cCI6MTc2ODQwNTY2MH0.o3QuZfD97p2kkPWmZXQTw72wC7n8in1AvWy_fxEF9Ls",
 						"type": "string"
 					}
 				]
@@ -729,16 +711,11 @@
 				}
 			],
 			"auth": {
-				"type": "basic",
-				"basic": [
+				"type": "bearer",
+				"bearer": [
 					{
-						"key": "password",
-						"value": "{{admin_password}}\n",
-						"type": "string"
-					},
-					{
-						"key": "username",
-						"value": "{{admin_username}}",
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBrcnVtcGkucm8iLCJpYXQiOjE3Njg0MDIwNjAsImV4cCI6MTc2ODQwNTY2MH0.o3QuZfD97p2kkPWmZXQTw72wC7n8in1AvWy_fxEF9Ls",
 						"type": "string"
 					}
 				]
@@ -958,16 +935,11 @@
 				}
 			],
 			"auth": {
-				"type": "basic",
-				"basic": [
+				"type": "bearer",
+				"bearer": [
 					{
-						"key": "password",
-						"value": "{{admin_password}}\n",
-						"type": "string"
-					},
-					{
-						"key": "username",
-						"value": "{{admin_username}}",
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBrcnVtcGkucm8iLCJpYXQiOjE3Njg0MDIwNjAsImV4cCI6MTc2ODQwNTY2MH0.o3QuZfD97p2kkPWmZXQTw72wC7n8in1AvWy_fxEF9Ls",
 						"type": "string"
 					}
 				]
@@ -1249,6 +1221,30 @@
 					}
 				}
 			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
 		}
 	],
 	"variable": [

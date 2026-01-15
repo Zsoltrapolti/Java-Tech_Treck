@@ -1,6 +1,12 @@
 package ro.krumpi.demo.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import ro.krumpi.demo.model.auth.Role;
+import ro.krumpi.demo.model.auth.UserAccount;
+import ro.krumpi.demo.repository.UserAccountRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,8 +37,14 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
     @Value("${frontend.origins}")
     private List<String> frontendOrigins;
+
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -55,19 +67,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/orders/*/deliver").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults());
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService(UserAccountRepository userRepo) {
-        return username -> userRepo.findByUsername(username)
-                .map(user -> User.withUsername(user.getUsername())
-                        .password(user.getPassword())
-                        .roles(user.getRole().name())
-                        .build())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
     @Bean
@@ -106,5 +108,18 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider(
+            UserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder) {
+
+        DaoAuthenticationProvider provider =
+                new DaoAuthenticationProvider();
+
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder);
+        return provider;
     }
 }

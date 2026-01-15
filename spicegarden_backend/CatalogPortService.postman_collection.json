@@ -1,0 +1,244 @@
+{
+	"info": {
+		"_postman_id": "cfe82d31-62f9-410a-a721-99915ba53aca",
+		"name": "CatalogPortService",
+		"description": "\n",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "50717664",
+		"_collection_link": "https://javatechtrek.postman.co/workspace/Java_TechTrek~ed1b908e-9d6a-4943-850e-123497b1d8d8/collection/42948187-cfe82d31-62f9-410a-a721-99915ba53aca?action=share&source=collection_link&creator=50717664"
+	},
+	"item": [
+		{
+			"name": "GetCatalog",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/xml; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n  <soap:Body>\n    <tns:GetCatalogRequest xmlns:tns=\"http://spicegarden.ro/catalog\"/>\n  </soap:Body>\n</soap:Envelope>\n",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{CatalogPortSoap11BaseUrl}}/ws",
+					"host": [
+						"{{CatalogPortSoap11BaseUrl}}"
+					],
+					"path": [
+						"ws"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "GetCatalog response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "text/xml; charset=utf-8"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n  <soap:Body>\n    <tns:GetCatalogRequest xmlns:tns=\"http://spicegarden.ro/catalog\"/>\n  </soap:Body>\n</soap:Envelope>\n",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8099/ws",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8099",
+							"path": [
+								"ws"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "xml",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "text/xml; charset=utf-8"
+						}
+					],
+					"cookie": [],
+					"body": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n  <soap:Body>\n    <tns:GetCatalogResponse xmlns:tns=\"http://spicegarden.ro/catalog\"/>\n  </soap:Body>\n</soap:Envelope>\n"
+				}
+			]
+		},
+		{
+			"name": "GetCatalogItemById",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/xml; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n  <soap:Body>\n    <tns:GetCatalogItemByIdRequest xmlns:tns=\"http://spicegarden.ro/catalog\">\n      <tns:id>100</tns:id>\n    </tns:GetCatalogItemByIdRequest>\n  </soap:Body>\n</soap:Envelope>\n",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{CatalogPortSoap11BaseUrl}}/ws",
+					"host": [
+						"{{CatalogPortSoap11BaseUrl}}"
+					],
+					"path": [
+						"ws"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "GetCatalogItemById response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "text/xml; charset=utf-8"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n  <soap:Body>\n    <tns:GetCatalogItemByIdRequest xmlns:tns=\"http://spicegarden.ro/catalog\">\n      <tns:id>100</tns:id>\n    </tns:GetCatalogItemByIdRequest>\n  </soap:Body>\n</soap:Envelope>\n",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8099/ws",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8099",
+							"path": [
+								"ws"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "xml",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "text/xml; charset=utf-8"
+						}
+					],
+					"cookie": [],
+					"body": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n  <soap:Body>\n    <tns:GetCatalogItemByIdResponse xmlns:tns=\"http://spicegarden.ro/catalog\">\n      <tns:item>\n        <tns:id>100</tns:id>\n        <tns:name>string</tns:name>\n        <tns:category>string</tns:category>\n        <tns:description>string</tns:description>\n      </tns:item>\n    </tns:GetCatalogItemByIdResponse>\n  </soap:Body>\n</soap:Envelope>\n"
+				}
+			]
+		},
+		{
+			"name": "ReloadCatalog",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/xml; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n  <soap:Body>\n    <tns:ReloadCatalogRequest xmlns:tns=\"http://spicegarden.ro/catalog\"/>\n  </soap:Body>\n</soap:Envelope>\n",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{CatalogPortSoap11BaseUrl}}/ws",
+					"host": [
+						"{{CatalogPortSoap11BaseUrl}}"
+					],
+					"path": [
+						"ws"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "ReloadCatalog response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "text/xml; charset=utf-8"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n  <soap:Body>\n    <tns:ReloadCatalogRequest xmlns:tns=\"http://spicegarden.ro/catalog\"/>\n  </soap:Body>\n</soap:Envelope>\n",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8099/ws",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8099",
+							"path": [
+								"ws"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "xml",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "text/xml; charset=utf-8"
+						}
+					],
+					"cookie": [],
+					"body": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n  <soap:Body>\n    <tns:ReloadCatalogResponse xmlns:tns=\"http://spicegarden.ro/catalog\"/>\n  </soap:Body>\n</soap:Envelope>\n"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "CatalogPortSoap11BaseUrl",
+			"value": "http://localhost:8099",
+			"type": "any"
+		}
+	]
+}
