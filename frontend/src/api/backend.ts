@@ -329,3 +329,47 @@ export async function unclaimProduct(productId: number): Promise<void> {
         throw new Error("Could not eliminate product.");
     }
 }
+
+// Account Request Functions
+export async function requestAccount(
+    firstName: string,
+    lastName: string,
+    email: string
+): Promise<void> {
+    const response = await fetch(`${BACKEND_URL}/account-requests`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            firstName,
+            lastName,
+            email
+        })
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to submit account request");
+    }
+}
+
+export async function checkRequestStatus(email: string): Promise<string> {
+    const response = await fetch(
+        `${BACKEND_URL}/account-requests/status?email=${encodeURIComponent(email)}`,
+        {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }
+    );
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to check request status");
+    }
+
+    const data = await response.json();
+    return data.status; // Expected values: "PENDING", "APPROVED", "REJECTED", "NOT_FOUND"
+}
