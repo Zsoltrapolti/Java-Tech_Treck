@@ -35,7 +35,7 @@ public class OrderService {
 
         Order saved = orderRepository.save(order);
 
-        distributorClient.sendOrderToDistributor(saved);
+        //distributorClient.sendOrderToDistributor(saved);
 
         saved.setStatus(OrderStatus.SENT);
         return orderRepository.save(saved);

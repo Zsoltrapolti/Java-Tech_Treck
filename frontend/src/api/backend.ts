@@ -71,6 +71,7 @@ export async function registerUser(
     return true;
 }
 
+
 export async function login(username: string, password: string) {
     const response = await fetch(`${BACKEND_URL}/auth/login`, {
         method: "POST",
@@ -80,14 +81,18 @@ export async function login(username: string, password: string) {
 
     if (!response.ok) throw new Error("Login failed");
 
-    const data: { username: string; role: "USER" | "EMPLOYEE" | "ADMIN" } = await response.json();
-    const token = btoa(`${username}:${password}`);
+    const data = await response.json();
 
+    const token = btoa(`${username}:${password}`);
     authHeader = { Authorization: `Basic ${token}` };
 
     localStorage.setItem("username", username);
     localStorage.setItem("authToken", token);
     localStorage.setItem("role", data.role);
+
+    if (data.id) {
+        localStorage.setItem("userId", data.id.toString());
+    }
 
     return data.role;
 }
