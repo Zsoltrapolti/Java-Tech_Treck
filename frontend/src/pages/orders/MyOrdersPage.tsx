@@ -19,7 +19,7 @@ export default function MyOrdersPage() {
     const [orders, setOrders] = useState<OrderType[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
 
-    // Get current user ID to filter orders
+
     const currentUserId = Number(localStorage.getItem("userId"));
 
     useEffect(() => {
@@ -38,9 +38,9 @@ export default function MyOrdersPage() {
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'DONE': return 'success';     // Green
-            case 'PENDING': return 'warning';  // Orange
-            case 'UPCOMING': return 'info';    // Blue
+            case 'DONE': return 'success';
+            case 'PENDING': return 'warning';
+            case 'UPCOMING': return 'info';
             default: return 'default';
         }
     };
@@ -78,7 +78,6 @@ export default function MyOrdersPage() {
                                 <TableRow key={order.id}>
                                     <ModuleTableCell>#{order.id}</ModuleTableCell>
                                     <ModuleTableCell>
-                                        {/* Format the ugly ISO date into readable text */}
                                         {new Date(order.creationDate).toLocaleString()}
                                     </ModuleTableCell>
                                     <ModuleTableCell>

@@ -57,7 +57,7 @@ export default function UserCreateOrderPage() {
         initData();
     }, []);
 
-    // Add a new empty row
+
     const addItemRow = () => {
         setOrder(prev => ({
             ...prev,
@@ -65,14 +65,14 @@ export default function UserCreateOrderPage() {
         }));
     };
 
-    // Remove a row
+
     const removeItemRow = (index: number) => {
         const newItems = [...order.items];
         newItems.splice(index, 1);
         setOrder(prev => ({ ...prev, items: newItems }));
     };
 
-    // Handle changes in the product rows
+
     const handleItemChange = (index: number, field: keyof OrderItemType, value: any) => {
         const newItems = [...order.items];
         const item = { ...newItems[index], [field]: value };

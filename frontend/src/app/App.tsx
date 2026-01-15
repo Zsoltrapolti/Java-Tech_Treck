@@ -38,7 +38,6 @@ function App() {
                     {/* USER ONLY ROUTES */}
                     <Route element={<RoleRoute allowed={["USER"]} />}>
                         <Route path="/my-products" element={<MyProductsListPage />} />
-                        {/* Move Create Order HERE so it gets the Navbar/Layout */}
                         <Route path="/create-order" element={<UserCreateOrderPage />} />
 
 
