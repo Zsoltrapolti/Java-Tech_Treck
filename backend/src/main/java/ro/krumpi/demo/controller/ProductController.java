@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/products")
-@CrossOrigin(origins = "http://localhost:5174")
+
 public class ProductController {
 
     private final ProductService productService;
@@ -49,6 +49,10 @@ public class ProductController {
                 .toList();
     }
 
+    @Operation(
+            summary = "Get all my products",
+            description = "Returns a list of all the products I added"
+    )
     @GetMapping("/my")
     public List<ProductDTO> getMyProducts(Principal principal) {
         return productService.getProductsByUsername(principal.getName())
@@ -94,18 +98,22 @@ public class ProductController {
         return "Product API is working! Time: " + new java.util.Date();
     }
 
+
     @Operation(
             summary = "Unclaim product",
             description = "Removes the product from the logged-in user's personal list"
     )
     @PutMapping("/{id}/unclaim")
     public ResponseEntity<Void> unclaimProduct(@PathVariable Long id, Principal principal) {
-        // Apelăm metoda care șterge doar legătura dintre user și produs
         productService.removeProductFromUserSelection(id, principal.getName());
 
         return ResponseEntity.ok().build();
     }
 
+    @Operation(
+            summary = "Claim a product",
+            description = "Adds a new product to the user"
+    )
     @PutMapping("/{id}/claim")
     public ResponseEntity<Void> claimProduct(@PathVariable Long id, Principal principal) {
         productService.addProductToUserSelection(id, principal.getName());

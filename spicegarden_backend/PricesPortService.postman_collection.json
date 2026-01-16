@@ -1,0 +1,94 @@
+{
+	"info": {
+		"_postman_id": "c1b1e414-f1d5-4bb7-b499-9661cd3924b7",
+		"name": "PricesPortService",
+		"description": "\n",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "50717664",
+		"_collection_link": "https://javatechtrek.postman.co/workspace/Java_TechTrek~ed1b908e-9d6a-4943-850e-123497b1d8d8/collection/42948187-c1b1e414-f1d5-4bb7-b499-9661cd3924b7?action=share&source=collection_link&creator=50717664"
+	},
+	"item": [
+		{
+			"name": "GetPrices",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/xml; charset=utf-8"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n  <soap:Body>\n    <tns:GetPricesRequest xmlns:tns=\"http://spicegarden.ro/prices\"/>\n  </soap:Body>\n</soap:Envelope>\n",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{PricesPortSoap11BaseUrl}}/ws",
+					"host": [
+						"{{PricesPortSoap11BaseUrl}}"
+					],
+					"path": [
+						"ws"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "GetPrices response",
+					"originalRequest": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "text/xml; charset=utf-8"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n  <soap:Body>\n    <tns:GetPricesRequest xmlns:tns=\"http://spicegarden.ro/prices\"/>\n  </soap:Body>\n</soap:Envelope>\n",
+							"options": {
+								"raw": {
+									"language": "xml"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8099/ws",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8099",
+							"path": [
+								"ws"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "xml",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "text/xml; charset=utf-8"
+						}
+					],
+					"cookie": [],
+					"body": "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<soap:Envelope xmlns:soap=\"http://schemas.xmlsoap.org/soap/envelope/\">\n  <soap:Body>\n    <tns:GetPricesResponse xmlns:tns=\"http://spicegarden.ro/prices\"/>\n  </soap:Body>\n</soap:Envelope>\n"
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "PricesPortSoap11BaseUrl",
+			"value": "http://localhost:8099",
+			"type": "any"
+		}
+	]
+}

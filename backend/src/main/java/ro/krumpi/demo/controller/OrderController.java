@@ -15,7 +15,6 @@ import ro.krumpi.demo.service.ProductService;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5174")
 @RequestMapping("/api/orders")
 public class OrderController {
 
