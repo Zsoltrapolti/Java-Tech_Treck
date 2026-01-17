@@ -8,7 +8,7 @@ import {
     NavButton,
     LogoutButtonHeader
 } from "../../ui/Header.styles";
-import {useAuth} from "../form/AuthContext.tsx";
+import { useAuth } from "../form/AuthContext.tsx";
 
 export function Header() {
     const navigate = useNavigate();
@@ -24,13 +24,20 @@ export function Header() {
             <HeaderTitle>Krumpi Management System</HeaderTitle>
 
             <NavContainer>
-               {role === "USER" && (
-                       <>
-                           <NavButton to="/products">All Products</NavButton>
-                           <NavButton to="/my-products">My Orders</NavButton>
-                       </>
-                   )}
+                {/* --- USER LINKS --- */}
+                {role === "USER" && (
+                    <>
+                        <NavButton to="/products">Menu</NavButton>
 
+                        <NavButton to="/my-products">My Items</NavButton>
+
+                        <NavButton to="/create-order">New Order</NavButton>
+
+                        <NavButton to="/my-orders">My Orders</NavButton>
+                    </>
+                )}
+
+                {/* --- EMPLOYEE / ADMIN LINKS --- */}
                 {(role === "EMPLOYEE" || role === "ADMIN") && (
                     <NavButton to="/stock">Stock</NavButton>
                 )}
@@ -38,7 +45,7 @@ export function Header() {
                 {role === "ADMIN" && (
                     <>
                         <NavButton to="/employees">Employees</NavButton>
-                        <NavButton to="/orders">Orders</NavButton>
+                        <NavButton to="/orders">All Orders</NavButton>
                     </>
                 )}
 

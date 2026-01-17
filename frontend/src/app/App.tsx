@@ -17,6 +17,8 @@ import ProductsListPage from "../pages/products/ProductsListPage";
 import MyProductsListPage from "../pages/products/MyProductsListPage";
 import UnauthorizedPage from "../pages/home/UnauthorizedPage";
 import ErrorToast from "../components/layout/ErrorToast";
+import UserCreateOrderPage from "../pages/orders/UserCreateOrderPage";
+import MyOrdersPage from "../pages/orders/MyOrdersPage";
 
 function App() {
     return (
@@ -30,7 +32,7 @@ function App() {
                 {/* Protected Routes inside Layout */}
                 <Route element={<Layout />}>
 
-                    {/* RUTE COMUNE: Produsele pot fi văzute de toți utilizatorii logați */}
+                    {/* RUTE COMUNE */}
                     <Route element={<RoleRoute allowed={["USER", "EMPLOYEE", "ADMIN"]} />}>
                         <Route path="/products" element={<ProductsListPage />} />
                     </Route>
@@ -38,6 +40,10 @@ function App() {
                     {/* USER ONLY ROUTES */}
                     <Route element={<RoleRoute allowed={["USER"]} />}>
                         <Route path="/my-products" element={<MyProductsListPage />} />
+                        <Route path="/create-order" element={<UserCreateOrderPage />} />
+
+
+                        <Route path="/my-orders" element={<MyOrdersPage />} />
                     </Route>
 
                     {/* EMPLOYEE & ADMIN ROUTES */}

@@ -40,7 +40,6 @@ public class OrderMapper {
         OrderDTO dto = new OrderDTO();
         dto.setCustomerName(order.getCustomerName());
         dto.setId(order.getId());
-        dto.setCreationDate(order.getCreationDate());
 
         dto.setResponsibleEmployeeId(
                 order.getResponsibleEmployee() != null
