@@ -25,13 +25,12 @@ public class OrderDTO {
     @NotBlank(message = "Customer name is required")
     private String customerName;
 
-    @NotNull(message = "Responsible employee is required")
-    private Long responsibleEmployeeId;
+   @NotNull(message = "Responsible employee is required")
+   private Long responsibleEmployeeId;
 
     @NotEmpty(message = "Order must contain at least one item")
     @Valid
     private List<OrderItemDTO> items;
 
-    public void setCreationDate(LocalDateTime creationDate) {
-    }
+
 }

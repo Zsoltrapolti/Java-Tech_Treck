@@ -1,8 +1,8 @@
-INSERT INTO employee (id, first_name, last_name, role, user_id)
+INSERT INTO employee (id, first_name, last_name, role)
 VALUES
-    (1, 'John', 'Doe', 'MANAGER', NULL),
-    (2, 'Jane', 'Smith', 'SUPERVISOR', NULL),
-    (3, 'Alex', 'Johnson', 'STAFF', NULL)
+    (1, 'John', 'Doe', 'MANAGER'),
+    (2, 'Jane', 'Smith', 'SUPERVISOR'),
+    (3, 'Alex', 'Johnson', 'STAFF')
     ON CONFLICT (id) DO NOTHING;
 
 SELECT setval(
@@ -30,7 +30,8 @@ VALUES
     (2,'Sunflower Oil', 'RAW_MATERIAL', 'l',  60,  'user'),
     (3,'Salt',          'RAW_MATERIAL', 'kg', 25,  'user'),
     (4,'Paprika',       'RAW_MATERIAL', 'kg', 10,  'user'),
-    (5,'Frozen Fries',  'SEMI_READY',   'kg', 80,  'user');
+    (5,'Frozen Fries',  'SEMI_READY',   'kg', 80,  'user')
+ON CONFLICT (id) DO NOTHING;
 
 SELECT setval(
                pg_get_serial_sequence('product','id'),
