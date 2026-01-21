@@ -4,6 +4,7 @@ import type { ProductType } from "../types/Product";
 import type { EmployeeType } from "../types/Employee";
 import { showError } from "../utils/toast";
 import type { OrderType } from "../types/Order";
+import type { AccountType } from "../types/Account.ts";
 
 const BACKEND_URL = "http://localhost:8081/api";
 let authHeader: Record<string, string> = {};
@@ -222,6 +223,13 @@ export async function fetchOrders(): Promise<OrderType[]> {
     return resp.json();
 }
 
+export async function fetchAccounts(): Promise<AccountType[]> {
+    const resp = await authFetch(`${BACKEND_URL}/admin/accounts`);
+    if (!resp.ok) {throw new Error("Failed to fetch accounts");}
+    return resp.json();
+}
+
+
 export async function fetchOrderById(id: number): Promise<OrderType> {
     const resp = await authFetch(`${BACKEND_URL}/orders/${id}`);
     if (!resp.ok) throw new Error("Failed to fetch order");
@@ -237,6 +245,12 @@ export async function fetchProductById(id: number): Promise<ProductType> {
 export async function fetchEmployeeById(id: number): Promise<EmployeeType> {
     const resp = await authFetch(`${BACKEND_URL}/employees/${id}`);
     if (!resp.ok) throw new Error(`Failed to fetch employee ${id}`);
+    return resp.json();
+}
+
+export async function fetchAccountById(id: number): Promise<AccountType> {
+    const resp = await authFetch(`${BACKEND_URL}/admin/accounts/${id}`);
+    if (!resp.ok) throw new Error("Failed to fetch account");
     return resp.json();
 }
 
@@ -273,6 +287,26 @@ export async function updateEmployee(employee: EmployeeType) {
     if (!resp.ok) await handleError(resp);
     return resp.json();
 }
+
+export async function updateAccountRole(
+    id: number,
+    assignedRole: string
+): Promise<AccountType> {
+    const resp = await authFetch(
+        `${BACKEND_URL}/admin/accounts/${id}/role`,
+        {
+            method: "PUT",
+            body: JSON.stringify(assignedRole),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        }
+    );
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
 
 export async function deleteProduct(id: number) {
     const resp = await authFetch(`${BACKEND_URL}/products/${id}`, {
