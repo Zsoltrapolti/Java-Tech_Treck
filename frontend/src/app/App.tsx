@@ -21,6 +21,7 @@ import UserCreateOrderPage from "../pages/orders/UserCreateOrderPage";
 import MyOrdersPage from "../pages/orders/MyOrdersPage";
 import AccountsPage from "../pages/accounts/AccountsPage.tsx";
 import AccountsEditPage from "../pages/accounts/AccountsEditPage.tsx";
+import AccountRequestsPage from "../pages/accounts/AccountRequestsPage.tsx";
 
 function App() {
     return (
@@ -65,6 +66,7 @@ function App() {
                         <Route path="/orders/:id/edit" element={<OrdersEditPage />} />
                         <Route path="/accounts" element={<AccountsPage />} />
                         <Route path="/accounts/:id/edit" element={<AccountsEditPage />} />
+                        <Route path="/account-requests" element={<AccountRequestsPage />} />
                     </Route>
 
                     <Route path="/unauthorized" element={<UnauthorizedPage />} />

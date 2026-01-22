@@ -5,6 +5,8 @@ import type { EmployeeType } from "../types/Employee";
 import { showError } from "../utils/toast";
 import type { OrderType } from "../types/Order";
 import type { AccountType } from "../types/Account.ts";
+import type {AccountRequestType} from "../types/AccountRequest.ts";
+import { jwtDecode } from "jwt-decode";
 
 const BACKEND_URL = "http://localhost:8081/api";
 let authHeader: Record<string, string> = {};
@@ -13,6 +15,17 @@ if (typeof window !== "undefined") {
     const savedToken = window.localStorage.getItem("authToken");
     if (savedToken) {
         authHeader = { Authorization: `Bearer ${savedToken}` };
+    }
+}
+
+function isTokenExpired(token: string): boolean {
+    if (!token) return true;
+    try {
+        const decoded: any = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+        return decoded.exp < currentTime;
+    } catch (error) {
+        return true;
     }
 }
 
@@ -30,6 +43,14 @@ async function handleError(resp: Response) {
 
 
 async function authFetch(url: string, options: RequestInit = {}) {
+    const token = window.localStorage.getItem("authToken");
+
+    if (!token || isTokenExpired(token)) {
+        console.warn("Token expired or missing. Logging out...");
+        logout();
+        throw new Error("Session expired. Please login again.");
+    }
+
     const resp = await fetch(url, {
         ...options,
         headers: {
@@ -40,7 +61,6 @@ async function authFetch(url: string, options: RequestInit = {}) {
     });
 
     if (resp.status === 401) {
-
         logout();
         throw new Error("Unauthorized");
     }
@@ -77,7 +97,6 @@ export async function login(username: string, password: string) {
 
     const role = getRoleFromToken(token);
 
-    // Update Header & Storage
     authHeader = { Authorization: `Bearer ${token}` };
     localStorage.setItem("username", username);
     localStorage.setItem("authToken", token);
@@ -229,6 +248,12 @@ export async function fetchAccounts(): Promise<AccountType[]> {
     return resp.json();
 }
 
+export async function fetchAccountRequests(): Promise<AccountRequestType[]> {
+    const resp = await authFetch(`${BACKEND_URL}/admin/account-requests`);
+    if (!resp.ok) throw new Error("Failed to fetch account requests");
+    return resp.json();
+}
+
 
 export async function fetchOrderById(id: number): Promise<OrderType> {
     const resp = await authFetch(`${BACKEND_URL}/orders/${id}`);
@@ -332,6 +357,14 @@ export async function deleteEmployee(id: number) {
     if (!resp.ok) throw new Error("Failed to delete employee");
 }
 
+export async function deleteAccountRequest(id: number): Promise<void> {
+    const resp = await authFetch(`${BACKEND_URL}/admin/account-requests/${id}`, {
+        method: "DELETE"
+    });
+
+    if (!resp.ok) throw new Error("Failed to delete request");
+}
+
 export async function createProduct(product: ProductType) {
     const resp = await authFetch(`${BACKEND_URL}/products`, {
         method: "POST",
@@ -392,4 +425,23 @@ export async function unclaimProduct(productId: number): Promise<void> {
     if (!resp.ok) {
         throw new Error("Could not eliminate product.");
     }
+}
+
+export async function reviewAccountRequest(
+    id: number,
+    approve: boolean,
+    assignedRole?: string
+): Promise<AccountRequestType> {
+    const body = {
+        approve,
+        assignedRole: approve ? assignedRole : null
+    };
+
+    const resp = await authFetch(`${BACKEND_URL}/admin/account-requests/${id}/review`, {
+        method: "PUT",
+        body: JSON.stringify(body)
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
 }
