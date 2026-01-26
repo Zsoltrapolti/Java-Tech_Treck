@@ -1,5 +1,5 @@
-// File: frontend/src/pages/login/LoginPage.tsx
-import { useState } from "react";
+// language: typescript
+import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../api/backend";
 
@@ -11,7 +11,7 @@ import {
 
 import { AuthForm } from "../../components/form/AuthForm";
 import { AuthFooter } from "../../components/form/AuthFooter";
-import {useAuth} from "../../components/form/AuthContext.tsx";
+import { useAuth } from "../../components/form/AuthContext";
 
 export default function LoginPage() {
     const [username, setUsername] = useState("");
@@ -21,32 +21,33 @@ export default function LoginPage() {
     const navigate = useNavigate();
     const { setRole } = useAuth();
 
-    async function handleSubmit(e: React.FormEvent) {
+    // Use FormEvent<Element> to match the parent prop and return void.
+    function handleSubmit(e: FormEvent<Element>): void {
         e.preventDefault();
         setError(null);
 
-        try {
-            const role = await login(username, password);
-            setRole(role);
+        // run async logic in an IIFE so the outer handler stays synchronous
+        void (async () => {
+            try {
+                const role = await login(username, password);
+                setRole(role);
 
-            switch (role) {
-                case "ADMIN":
-                    navigate("/employees");
-                    break;
-
-                case "EMPLOYEE":
-                    navigate("/stock");
-                    break;
-
-                case "USER":
-                default:
-                    navigate("/products");
-                    break;
+                switch (role) {
+                    case "ADMIN":
+                        navigate("/account-requests");
+                        break;
+                    case "EMPLOYEE":
+                        navigate("/stock");
+                        break;
+                    case "USER":
+                    default:
+                        navigate("/products");
+                        break;
+                }
+            } catch (err: unknown) {
+                setError(err instanceof Error ? err.message : "Invalid username or password");
             }
-
-        } catch {
-            setError("Invalid username or password");
-        }
+        })();
     }
 
     return (
@@ -82,7 +83,6 @@ export default function LoginPage() {
                 Login
             </StyledButton>
 
-            {/* New button to navigate to the account request page */}
             <StyledButton
                 type="button"
                 fullWidth

@@ -31,11 +31,12 @@ function App() {
                 <Route path="/" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/request-account" element={<RequestAccountPage />} />
+                <Route path="/check-request-status" element={<CheckRequestStatusPage />} />
 
                 {/* Protected Routes inside Layout */}
                 <Route element={<Layout />}>
 
-                    {/* RUTE COMUNE */}
+                    {/* RUTE COMUNE: Produsele pot fi văzute de toți utilizatorii logați */}
                     <Route element={<RoleRoute allowed={["USER", "EMPLOYEE", "ADMIN"]} />}>
                         <Route path="/products" element={<ProductsListPage />} />
                     </Route>
@@ -43,10 +44,6 @@ function App() {
                     {/* USER ONLY ROUTES */}
                     <Route element={<RoleRoute allowed={["USER"]} />}>
                         <Route path="/my-products" element={<MyProductsListPage />} />
-                        <Route path="/create-order" element={<UserCreateOrderPage />} />
-
-
-                        <Route path="/my-orders" element={<MyOrdersPage />} />
                     </Route>
 
                     {/* EMPLOYEE & ADMIN ROUTES */}
