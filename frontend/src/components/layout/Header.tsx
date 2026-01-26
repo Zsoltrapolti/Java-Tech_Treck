@@ -46,6 +46,9 @@ export function Header() {
                     <>
                         <NavButton to="/employees">Employees</NavButton>
                         <NavButton to="/orders">All Orders</NavButton>
+                        <NavButton to="/accounts">All Accounts</NavButton>
+                        <NavButton to="/account-requests">Account Requests</NavButton>
+
                     </>
                 )}
 

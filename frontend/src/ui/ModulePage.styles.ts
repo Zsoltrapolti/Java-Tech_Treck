@@ -1,5 +1,5 @@
 import { styled } from "@mui/material/styles";
-import { TableCell, Button, Box } from "@mui/material";
+import {TableCell, Button, Box, DialogTitle, DialogActions, DialogContent, Typography} from "@mui/material";
 
 export const ModulePageContainer = styled(Box)(({ theme }) => ({
     paddingTop: theme.spacing(4),
@@ -88,3 +88,51 @@ export const AddButton = styled(Button)(() => ({
     },
     color: "#ffffff",
 }));
+
+export const DenyButton = styled(Button)(() => ({
+    fontWeight: 600,
+    padding: "6px 16px",
+    borderRadius: "8px",
+    backgroundColor: "#e67e22",
+    color: "#ffffff",
+    "&:hover": {
+        backgroundColor: "#d35400",
+    },
+}));
+
+export const ModalTitle = styled(DialogTitle)(({ theme }) => ({
+    backgroundColor: "#2C6E49",
+    color: "#ffffff",
+    fontWeight: 700,
+    fontSize: "1.2rem",
+    textAlign: "center",
+    padding: theme.spacing(2),
+}));
+
+export const ModalContent = styled(DialogContent)(({ theme }) => ({
+    minWidth: "400px",
+    padding: theme.spacing(3),
+    backgroundColor: "#ffffff",
+    display: "flex",
+    flexDirection: "column",
+    gap: theme.spacing(2),
+    "&.MuiDialogContent-root": {
+        paddingTop: theme.spacing(3),
+    }
+}));
+
+export const UserInfoText = styled(Typography)(({ theme }) => ({
+    backgroundColor: "#e5f5ea",
+    padding: theme.spacing(2),
+    borderRadius: "8px",
+    color: "#1c3d2c",
+    fontSize: "0.95rem",
+    marginBottom: theme.spacing(1),
+}));
+
+export const ModalActions = styled(DialogActions)(({ theme }) => ({
+    padding: theme.spacing(2, 3),
+    justifyContent: "space-between",
+    borderTop: "1px solid #eeeeee"
+}));
+
