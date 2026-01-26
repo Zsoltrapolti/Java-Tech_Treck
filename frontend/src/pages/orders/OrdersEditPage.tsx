@@ -62,33 +62,33 @@ export default function OrdersEditPage() {
     }
 
     return (
-        <EditFormPage title={`Edit Order #${order.id}`}>
-            <EditFormField
-                label="Customer Name"
-                value={order.customerName}
-                disabled
-            />
+            <EditFormPage title={`Edit Order #${order.id}`}>
+                <EditFormField label="Customer Name" value={order.customerName} disabled />
 
-            <EditLabel>Responsible Employee</EditLabel>
-            <EditSelect
-                select
-                value={order.responsibleEmployeeId ?? ""}
-                onChange={e =>
-                    setOrder({
-                        ...order,
-                        responsibleEmployeeId: Number(e.target.value),
-                    })
-                }
-            >
-                <MenuItem value="">
-                    <em>Select employee</em>
-                </MenuItem>
-                {employees.map(emp => (
-                    <MenuItem key={emp.id} value={emp.id}>
-                        {emp.firstName} {emp.lastName}
-                    </MenuItem>
-                ))}
-            </EditSelect>
+                {/* Admin can change Status, mai vad cum trebuie implementat asta*/}
+                <EditLabel>Order Status</EditLabel>
+                <EditSelect
+                    select
+                    value={order.status}
+                    onChange={e => setOrder({ ...order, status: e.target.value as OrderStatus })}
+                >
+                    <MenuItem value="PENDING">Pending</MenuItem>
+                    <MenuItem value="UPCOMING">Upcoming</MenuItem>
+                    <MenuItem value="DONE">Done</MenuItem>
+                </EditSelect>
+
+                <EditLabel>Responsible Employee</EditLabel>
+                <EditSelect
+                    select
+                    value={order.responsibleEmployeeId ?? ""}
+                    onChange={e => setOrder({ ...order, responsibleEmployeeId: Number(e.target.value) })}
+                >
+                    {employees.map(emp => (
+                        <MenuItem key={emp.id} value={emp.id}>
+                            {emp.firstName} {emp.lastName}
+                        </MenuItem>
+                    ))}
+                </EditSelect>
 
             <EditLabel>Items (read-only)</EditLabel>
             {order.items.map((item, i) => (

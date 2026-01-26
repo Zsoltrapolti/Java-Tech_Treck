@@ -283,7 +283,6 @@ export async function updateOrder(order: OrderType) {
     if (!order.id) {
         throw new Error("Order ID is required for update");
     }
-
     const resp = await authFetch(`${BACKEND_URL}/orders/${order.id}`, {
         method: "PUT",
         body: JSON.stringify(order),
@@ -376,9 +375,17 @@ export async function createProduct(product: ProductType) {
 }
 
 export async function createOrder(order: OrderType) {
+    const payload = {
+        ...order,
+        creationDate: order.creationDate
+            ? new Date(order.creationDate).toISOString().slice(0, 19)
+            : new Date().toISOString().slice(0, 19),
+        status: order.status || "PENDING"
+    };
+
     const resp = await authFetch(`${BACKEND_URL}/orders`, {
         method: "POST",
-        body: JSON.stringify(order),
+        body: JSON.stringify(payload),
     });
 
     if (!resp.ok) await handleError(resp);

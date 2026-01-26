@@ -36,14 +36,21 @@ export default function MyOrdersPage() {
             });
     }, [currentUserId]);
 
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'DONE': return 'success';
-            case 'PENDING': return 'warning';
-            case 'UPCOMING': return 'info';
-            default: return 'default';
-        }
+    const formatDate = (dateString: string) => {
+        if (!dateString) return "N/A";
+        const date = new Date(dateString);
+        return isNaN(date.getTime()) ? "Invalid Date" : date.toLocaleString();
     };
+
+   const getStatusColor = (status: string) => {
+       const s = status?.toUpperCase();
+       switch (s) {
+           case 'DONE': return 'success';
+           case 'PENDING': return 'warning';
+           case 'UPCOMING': return 'info';
+           default: return 'default';
+       }
+   };
 
     if (loading) return <CircularProgress style={{ display: 'block', margin: '20px auto' }} />;
 
@@ -77,12 +84,18 @@ export default function MyOrdersPage() {
                             {orders.map((order) => (
                                 <TableRow key={order.id}>
                                     <ModuleTableCell>#{order.id}</ModuleTableCell>
-                                    <ModuleTableCell>
-                                        {new Date(order.creationDate).toLocaleString()}
-                                    </ModuleTableCell>
+                                   <ModuleTableCell>
+                                       {order.creationDate ? new Date(order.creationDate).toLocaleString('ro-RO', {
+                                           year: 'numeric',
+                                           month: '2-digit',
+                                           day: '2-digit',
+                                           hour: '2-digit',
+                                           minute: '2-digit'
+                                       }) : "N/A"}
+                                   </ModuleTableCell>
                                     <ModuleTableCell>
                                         <Chip
-                                            label={order.status}
+                                            label={order.status || "PENDING"}
                                             color={getStatusColor(order.status) as any}
                                             variant="filled"
                                             size="small"
