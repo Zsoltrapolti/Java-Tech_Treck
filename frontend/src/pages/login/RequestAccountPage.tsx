@@ -1,7 +1,7 @@
-// File: frontend/src/pages/login/RequestAccountPage.tsx
+// File: `frontend/src/pages/login/RequestAccountPage.tsx`
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { requestAccount, checkRequestStatus } from "../../api/backend";
+import { requestAccount } from "../../api/backend";
 
 import {
     FieldLabel,
@@ -20,13 +20,11 @@ export default function RequestAccountPage() {
     const [email, setEmail] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
-    const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
         setError(null);
         setSuccess(null);
-        setStatusMessage(null);
 
         if (!firstName || !lastName || !email) {
             setError("All fields are required");
@@ -46,28 +44,6 @@ export default function RequestAccountPage() {
                 setError(err.message);
             } else {
                 setError("Failed to submit account request");
-            }
-        }
-    }
-
-    async function handleCheckStatus() {
-        setError(null);
-        setSuccess(null);
-        setStatusMessage(null);
-
-        if (!email) {
-            setError("Please enter your email to check status");
-            return;
-        }
-
-        try {
-            const status = await checkRequestStatus(email);
-            setStatusMessage(`Request Status: ${status}`);
-        } catch (err: unknown) {
-            if (err instanceof Error) {
-                setError(err.message);
-            } else {
-                setError("Failed to check request status");
             }
         }
     }
@@ -96,19 +72,6 @@ export default function RequestAccountPage() {
                     border: "1px solid #c3e6cb"
                 }}>
                     {success}
-                </div>
-            )}
-
-            {statusMessage && (
-                <div style={{
-                    padding: "12px",
-                    marginBottom: "16px",
-                    backgroundColor: "#d1ecf1",
-                    color: "#0c5460",
-                    borderRadius: "4px",
-                    border: "1px solid #bee5eb"
-                }}>
-                    {statusMessage}
                 </div>
             )}
 
@@ -141,7 +104,7 @@ export default function RequestAccountPage() {
             <StyledButton
                 type="button"
                 fullWidth
-                onClick={handleCheckStatus}
+                onClick={() => navigate("/check-request-status")}
                 style={{ marginTop: 12 }}
             >
                 Check Request Status
