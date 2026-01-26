@@ -111,4 +111,18 @@ public class AccountRequestService {
         return repo.save(req);
     }
 
+    public AccountRequest findById(Long id) {
+        return repo.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Account/Request not found with id: " + id));
+    }
+
+    @Transactional
+    public AccountRequest updateRole(Long id, Role role) {
+        AccountRequest req = repo.findById(id)
+                .orElseThrow(() -> new IllegalStateException("Account not found"));
+
+        req.setAssignedRole(role);
+        return req;
+    }
+
 }

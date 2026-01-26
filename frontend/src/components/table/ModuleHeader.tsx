@@ -6,8 +6,8 @@ export function ModuleHeader({
                                addLabel
                            }: {
     title: string;
-    onAdd: () => void;
-    addLabel: string;
+    onAdd?: () => void;
+    addLabel?: string;
 }) {
     return (
         <>
@@ -15,9 +15,11 @@ export function ModuleHeader({
                 {title}
             </ModulePageHeader>
 
-            <AddButton onClick={onAdd}>
-                {addLabel}
-            </AddButton>
+            {onAdd && addLabel && (
+                <AddButton onClick={onAdd}>
+                    {addLabel}
+                </AddButton>
+            )}
         </>
     );
 }

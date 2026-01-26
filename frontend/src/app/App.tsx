@@ -17,7 +17,11 @@ import ProductsListPage from "../pages/products/ProductsListPage";
 import MyProductsListPage from "../pages/products/MyProductsListPage";
 import UnauthorizedPage from "../pages/home/UnauthorizedPage";
 import ErrorToast from "../components/layout/ErrorToast";
-import CheckRequestStatusPage from "../pages/login/CheckRequestStatusPage.tsx";
+import UserCreateOrderPage from "../pages/orders/UserCreateOrderPage";
+import MyOrdersPage from "../pages/orders/MyOrdersPage";
+import AccountsPage from "../pages/accounts/AccountsPage.tsx";
+import AccountsEditPage from "../pages/accounts/AccountsEditPage.tsx";
+import AccountRequestsPage from "../pages/accounts/AccountRequestsPage.tsx";
 
 function App() {
     return (
@@ -57,6 +61,9 @@ function App() {
                         <Route path="/orders" element={<OrdersPage />} />
                         <Route path="/orders/new" element={<OrdersAddPage />} />
                         <Route path="/orders/:id/edit" element={<OrdersEditPage />} />
+                        <Route path="/accounts" element={<AccountsPage />} />
+                        <Route path="/accounts/:id/edit" element={<AccountsEditPage />} />
+                        <Route path="/account-requests" element={<AccountRequestsPage />} />
                     </Route>
 
                     <Route path="/unauthorized" element={<UnauthorizedPage />} />
