@@ -27,15 +27,15 @@ export default function UserCreateOrderPage() {
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState<ProductType[]>([]);
 
-    const [order, setOrder] = useState<OrderType>({
-        customerName: localStorage.getItem("username") || "",
 
-        creationDate: new Date().toISOString().slice(0, 16),
-        status: "PENDING",
-        // SEND ID 999 (The "Unassigned" employee placeholder)
-        responsibleEmployeeId: 999,
-        items: []
-    });
+
+     const [order, setOrder] = useState<OrderType>({
+         customerName: localStorage.getItem("username") || "",
+         creationDate: new Date().toISOString().slice(0, 16),
+         status: "PENDING",
+         responsibleEmployeeId: 2, //employee-ul hardcodat
+         items: [{ productId: 999, quantity: 1, unitPrice: 10.0 }]
+        });
 
     useEffect(() => {
         const initData = async () => {
@@ -77,10 +77,10 @@ export default function UserCreateOrderPage() {
         const newItems = [...order.items];
         const item = { ...newItems[index], [field]: value };
 
-        // If product is selected, auto-set price to 10.0 to pass validation
+
         if (field === 'productId') {
             const selectedProduct = products.find(p => p.id === value);
-            // You could use selectedProduct.price here if it existed
+
             item.unitPrice = 10.0;
         }
 
@@ -102,8 +102,6 @@ export default function UserCreateOrderPage() {
 
         setLoading(true);
         try {
-            // FIX: Remove 'Z' timezone so Java LocalDateTime accepts it
-            // .slice(0, 19) produces "YYYY-MM-DDTHH:mm:ss"
             const payload = {
                 ...order,
                 creationDate: new Date(order.creationDate).toISOString().slice(0, 19)
@@ -120,7 +118,7 @@ export default function UserCreateOrderPage() {
         }
     };
 
-    return (
+return (
         <ModulePageContainer>
             <ModulePageHeader>Create New Order</ModulePageHeader>
 
@@ -128,17 +126,16 @@ export default function UserCreateOrderPage() {
                 <CardContent>
                     <Grid container spacing={3}>
 
-                        {/* Customer Name */}
+                        {/* Customer & Date Info */}
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 label="Customer Name"
                                 fullWidth
                                 value={order.customerName}
-                                onChange={(e) => setOrder({...order, customerName: e.target.value})}
+                                disabled
                             />
                         </Grid>
 
-                        {/* Date Picker */}
                         <Grid item xs={12} sm={6}>
                             <TextField
                                 label="Date"
@@ -150,40 +147,13 @@ export default function UserCreateOrderPage() {
                             />
                         </Grid>
 
-                        {/* Status Dropdown */}
-                        <Grid item xs={12} sm={6}>
-                            <FormControl fullWidth>
-                                <InputLabel>Status</InputLabel>
-                                <Select
-                                    value={order.status}
-                                    label="Status"
-                                    onChange={(e) => setOrder({...order, status: e.target.value as OrderStatus})}
-                                >
-                                    <MenuItem value="PENDING">Pending</MenuItem>
-                                    <MenuItem value="UPCOMING">Upcoming</MenuItem>
-                                    <MenuItem value="DONE">Done</MenuItem>
-                                </Select>
-                            </FormControl>
-                        </Grid>
-
-                        {/* Employee ID (Read Only) */}
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                label="User ID (Auto)"
-                                fullWidth
-                                disabled
-                                value={order.responsibleEmployeeId}
-                            />
-                        </Grid>
-
-                        {/* Product List Header */}
+                        {/* Products Section */}
                         <Grid item xs={12}>
-                            <Typography variant="h6" style={{ marginTop: 20, marginBottom: 10 }}>
+                            <Typography variant="h6" style={{ marginTop: 10, borderBottom: '1px solid #eee', paddingBottom: 10 }}>
                                 Products
                             </Typography>
                         </Grid>
 
-                        {/* Dynamic Product Rows */}
                         {order.items.map((item, index) => (
                             <Grid container item spacing={2} key={index} alignItems="center">
                                 <Grid item xs={6}>
@@ -202,7 +172,7 @@ export default function UserCreateOrderPage() {
                                         </Select>
                                     </FormControl>
                                 </Grid>
-                                <Grid item xs={3}>
+                                <Grid item xs={4}>
                                     <TextField
                                         label="Quantity"
                                         type="number"
@@ -212,26 +182,26 @@ export default function UserCreateOrderPage() {
                                         onChange={(e) => handleItemChange(index, 'quantity', Number(e.target.value))}
                                     />
                                 </Grid>
-                                <Grid item xs={3}>
-                                    <IconButton color="error" onClick={() => removeItemRow(index)}>
+                                <Grid item xs={2}>
+                                    <IconButton color="error" onClick={() => removeItemRow(index)} disabled={order.items.length === 1}>
                                         <DeleteIcon />
                                     </IconButton>
                                 </Grid>
                             </Grid>
                         ))}
 
-                        {/* Add Product Button */}
                         <Grid item xs={12}>
                             <Button
                                 startIcon={<AddCircleOutlineIcon />}
                                 onClick={addItemRow}
                                 variant="outlined"
+                                color="secondary"
                             >
-                                Add Product
+                                Add Another Product
                             </Button>
                         </Grid>
 
-                        {/* Submit Button */}
+                        {/* Submit Action */}
                         <Grid item xs={12} style={{ marginTop: 20 }}>
                             <Button
                                 variant="contained"
@@ -241,7 +211,7 @@ export default function UserCreateOrderPage() {
                                 onClick={handleSubmit}
                                 disabled={loading}
                             >
-                                {loading ? "Placing Order..." : "Create Order"}
+                                {loading ? "Placing Order..." : "Submit Order"}
                             </Button>
                         </Grid>
 
