@@ -1,4 +1,4 @@
-package ro.krumpi.demo.dto;
+package ro.krumpi.demo.dto.account;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

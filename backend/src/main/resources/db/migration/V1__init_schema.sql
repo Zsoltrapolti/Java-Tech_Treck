@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS employee (
     user_id BIGINT
 );
 
--- products
+-- stock
 CREATE TABLE IF NOT EXISTS product (
     id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255),

@@ -1,6 +1,6 @@
 package ro.krumpi.demo.mapper;
 
-import ro.krumpi.demo.dto.ProductDTO;
+import ro.krumpi.demo.dto.stock.ProductDTO;
 import ro.krumpi.demo.model.stock.Product;
 
 public class ProductMapper {
@@ -11,6 +11,7 @@ public class ProductMapper {
         p.setType(dto.getType());
         p.setUnitOfMeasure(dto.getUnitOfMeasure());
         p.setQuantity(dto.getQuantity());
+        p.setPrice(dto.getPrice());
         return p;
     }
 
@@ -20,7 +21,8 @@ public class ProductMapper {
                 product.getName(),
                 product.getType(),
                 product.getUnitOfMeasure(),
-                product.getQuantity()
+                product.getQuantity(),
+                product.getPrice()
         );
     }
 }

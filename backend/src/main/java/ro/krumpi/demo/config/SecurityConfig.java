@@ -45,6 +45,7 @@ public class SecurityConfig {
         this.rateLimitingFilter = rateLimitingFilter;
     }
 
+    @SuppressWarnings("java:S4502")
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -66,6 +67,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/products/**").hasAnyRole("EMPLOYEE", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("EMPLOYEE", "ADMIN")
 
+                        .requestMatchers("/api/cart/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
+                        .requestMatchers("/api/invoices/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
+                        .requestMatchers("/api/payments/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
 
                         .requestMatchers(HttpMethod.POST, "/api/orders").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/orders", "/api/orders/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
@@ -83,20 +87,6 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    @Profile("!test")
-    public CommandLineRunner seedDefaultUser(UserAccountRepository userRepo, PasswordEncoder encoder) {
-        return args -> {
-            if (!userRepo.existsByUsername("admin@krumpi.ro")) {
-                userRepo.save(UserAccount.builder()
-                        .username("admin@krumpi.ro")
-                        .password(encoder.encode("password"))
-                        .role(Role.ADMIN)
-                        .build());
-            }
-        };
     }
 
     @Bean
@@ -130,4 +120,5 @@ public class SecurityConfig {
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }
+
 }

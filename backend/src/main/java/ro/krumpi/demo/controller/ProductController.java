@@ -1,11 +1,9 @@
 package ro.krumpi.demo.controller;
 import jakarta.validation.Valid;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
-import ro.krumpi.demo.dto.ProductDTO;
+import ro.krumpi.demo.dto.stock.ProductDTO;
 import ro.krumpi.demo.mapper.ProductMapper;
 import ro.krumpi.demo.model.stock.Product;
 import ro.krumpi.demo.service.ProductService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,24 +36,12 @@ public class ProductController {
     }
 
     @Operation(
-            summary = "Get all products",
-            description = "Returns a list of all products"
+            summary = "Get all stock",
+            description = "Returns a list of all stock"
     )
     @GetMapping
     public List<ProductDTO> getAllProducts() {
         return productService.getAllProducts()
-                .stream()
-                .map(ProductMapper::toDTO)
-                .toList();
-    }
-
-    @Operation(
-            summary = "Get all my products",
-            description = "Returns a list of all the products I added"
-    )
-    @GetMapping("/my")
-    public List<ProductDTO> getMyProducts(Principal principal) {
-        return productService.getProductsByUsername(principal.getName())
                 .stream()
                 .map(ProductMapper::toDTO)
                 .toList();
@@ -99,24 +85,4 @@ public class ProductController {
     }
 
 
-    @Operation(
-            summary = "Unclaim product",
-            description = "Removes the product from the logged-in user's personal list"
-    )
-    @PutMapping("/{id}/unclaim")
-    public ResponseEntity<Void> unclaimProduct(@PathVariable Long id, Principal principal) {
-        productService.removeProductFromUserSelection(id, principal.getName());
-
-        return ResponseEntity.ok().build();
-    }
-
-    @Operation(
-            summary = "Claim a product",
-            description = "Adds a new product to the user"
-    )
-    @PutMapping("/{id}/claim")
-    public ResponseEntity<Void> claimProduct(@PathVariable Long id, Principal principal) {
-        productService.addProductToUserSelection(id, principal.getName());
-        return ResponseEntity.ok().build();
-    }
 }

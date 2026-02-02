@@ -1,7 +1,7 @@
 package ro.krumpi.demo.mapper;
 
 import ro.krumpi.demo.model.employee.Employee;
-import ro.krumpi.demo.dto.EmployeeDTO;
+import ro.krumpi.demo.dto.employee.EmployeeDTO;
 
 public class EmployeeMapper {
 

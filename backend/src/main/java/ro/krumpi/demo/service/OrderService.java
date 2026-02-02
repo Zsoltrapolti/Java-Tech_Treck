@@ -19,11 +19,9 @@ import java.util.Optional;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final DistributorClient distributorClient;
 
-    public OrderService(OrderRepository orderRepository, DistributorClient distributorClient) {
+    public OrderService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
-        this.distributorClient = distributorClient;
     }
 
     // CREATE
@@ -34,8 +32,6 @@ public class OrderService {
         order.getItems().forEach(i -> i.setOrder(order));
 
         Order saved = orderRepository.save(order);
-
-        //distributorClient.sendOrderToDistributor(saved);
 
         saved.setStatus(OrderStatus.SENT);
         return orderRepository.save(saved);

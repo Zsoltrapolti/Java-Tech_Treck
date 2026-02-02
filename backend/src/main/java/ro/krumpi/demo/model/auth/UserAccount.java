@@ -29,11 +29,5 @@ public class UserAccount {
     @Column(nullable = false)
     private Role role;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "user_products",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id"))
-    private Set<Product> favoriteProducts= new HashSet<>();;
 
 }
