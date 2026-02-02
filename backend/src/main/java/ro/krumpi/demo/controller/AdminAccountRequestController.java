@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ro.krumpi.demo.dto.AdminReviewAccountRequestDTO;
+import ro.krumpi.demo.dto.account.AdminReviewAccountRequestDTO;
 import ro.krumpi.demo.model.auth.AccountRequest;
 import ro.krumpi.demo.service.AccountRequestService;
 

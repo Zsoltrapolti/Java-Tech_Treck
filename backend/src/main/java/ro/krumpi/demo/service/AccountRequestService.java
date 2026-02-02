@@ -3,15 +3,15 @@ package ro.krumpi.demo.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ro.krumpi.demo.dto.AccountRequestStatusDTO;
-import ro.krumpi.demo.dto.AskAccountRequestDTO;
+import ro.krumpi.demo.dto.account.AccountRequestStatusDTO;
+import ro.krumpi.demo.dto.account.AskAccountRequestDTO;
+import ro.krumpi.demo.mapper.AccountRequestMapper;
 import ro.krumpi.demo.model.auth.AccountRequest;
 import ro.krumpi.demo.model.auth.AccountRequestStatus;
 import ro.krumpi.demo.model.auth.Role;
 import ro.krumpi.demo.repository.AccountRequestRepository;
+import ro.krumpi.demo.mapper.AccountRequestMapper;
 
-import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -25,14 +25,7 @@ public class AccountRequestService {
             throw new IllegalStateException("Request already exists for this email");
         }
 
-        AccountRequest req = AccountRequest.builder()
-                .firstName(dto.firstName())
-                .lastName(dto.lastName())
-                .email(dto.email().toLowerCase())
-                .status(AccountRequestStatus.PENDING)
-                .assignedRole(null)
-                .build();
-
+        AccountRequest req = AccountRequestMapper.toEntity(dto);
         return repo.save(req);
     }
 
@@ -40,11 +33,7 @@ public class AccountRequestService {
         AccountRequest req = repo.findByEmail(email.toLowerCase())
                 .orElseThrow(() -> new IllegalStateException("No request found for this email"));
 
-        return new AccountRequestStatusDTO(
-                req.getEmail(),
-                req.getStatus().name(),
-                req.getAssignedRole() != null ? req.getAssignedRole().name() : null
-        );
+        return AccountRequestMapper.toStatusDTO(req);
     }
 
     public List<AccountRequest> findAll() {

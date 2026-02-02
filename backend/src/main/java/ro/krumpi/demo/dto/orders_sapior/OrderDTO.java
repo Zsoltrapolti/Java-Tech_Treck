@@ -1,4 +1,4 @@
-package ro.krumpi.demo.dto;
+package ro.krumpi.demo.dto.orders_sapior;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
@@ -7,11 +7,8 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import ro.krumpi.demo.model.order.OrderStatus;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data

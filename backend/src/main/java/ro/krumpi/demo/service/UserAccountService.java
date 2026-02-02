@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ro.krumpi.demo.dto.RegisterRequestDTO;
+import ro.krumpi.demo.dto.account.RegisterRequestDTO;
+import ro.krumpi.demo.mapper.UserAccountMapper;
 import ro.krumpi.demo.model.auth.UserAccount;
 import ro.krumpi.demo.repository.UserAccountRepository;
 import ro.krumpi.demo.model.auth.Role;
@@ -31,11 +32,11 @@ public class UserAccountService {
 
         var approvedReq = accountRequestService.getApprovedRequest(emailAsUsername);
 
-        UserAccount user = UserAccount.builder()
-                .username(emailAsUsername)
-                .password(passwordEncoder.encode(dto.password()))
-                .role(approvedReq.getAssignedRole())
-                .build();
+        UserAccount user = UserAccountMapper.createUserEntity(
+                emailAsUsername,
+                passwordEncoder.encode(dto.password()),
+                approvedReq.getAssignedRole()
+        );
 
         UserAccount saved = userRepo.save(user);
         approvedReq.setStatus(AccountRequestStatus.REGISTERED);
@@ -45,6 +46,8 @@ public class UserAccountService {
     }
 
     public UserAccount createByAdmin(String username, String rawPassword, Role role) {
+        String normalizedUsername = username.toLowerCase();
+
         if (userRepo.existsByUsername(username.toLowerCase())) {
             throw new IllegalStateException("Username already exists");
         }
@@ -52,11 +55,13 @@ public class UserAccountService {
             throw new IllegalStateException("Role is required");
         }
 
-        return userRepo.save(UserAccount.builder()
-                .username(username.toLowerCase())
-                .password(passwordEncoder.encode(rawPassword))
-                .role(role)
-                .build());
+        UserAccount user = UserAccountMapper.createUserEntity(
+                normalizedUsername,
+                passwordEncoder.encode(rawPassword),
+                role
+        );
+
+        return userRepo.save(user);
     }
 
     public UserAccount findByUsername(String username) {

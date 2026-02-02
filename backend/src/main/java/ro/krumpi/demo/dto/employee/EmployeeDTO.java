@@ -1,4 +1,4 @@
-package ro.krumpi.demo.dto;
+package ro.krumpi.demo.dto.employee;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;

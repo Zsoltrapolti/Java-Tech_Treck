@@ -1,4 +1,4 @@
-package ro.krumpi.demo.dto;
+package ro.krumpi.demo.dto.stock;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,4 +30,8 @@ public class ProductDTO {
     @NotNull(message = "Quantity is required")
     @PositiveOrZero(message = "Quantity must be zero or positive")
     private Double quantity;
+
+    @NotNull(message = "Price is required")
+    @PositiveOrZero(message = "Price must be zero or positive")
+    private Double price;
 }

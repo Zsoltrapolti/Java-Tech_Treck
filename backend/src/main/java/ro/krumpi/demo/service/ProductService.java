@@ -31,12 +31,6 @@ public class ProductService {
                 .orElseThrow(() -> new EntityNotFoundException("Product not found with id : " + id));
     }
 
-    public Collection<Product> getProductsByUsername(String username) {
-        return userAccountRepository.findByUsername(username)
-                .map(UserAccount::getFavoriteProducts)
-                .orElseThrow(() -> new EntityNotFoundException("User not found: " + username));
-    }
-
     public Product getProductByName(String name) {
         return productRepository.findByName(name);
     }
@@ -57,6 +51,7 @@ public class ProductService {
         existing.setType(updatedProduct.getType());
         existing.setUnitOfMeasure(updatedProduct.getUnitOfMeasure());
         existing.setQuantity(updatedProduct.getQuantity());
+        existing.setPrice(updatedProduct.getPrice());
 
         return productRepository.save(existing);
     }
@@ -68,29 +63,6 @@ public class ProductService {
 
     public void deleteAllProducts() {
         productRepository.deleteAll();
-    }
-
-    @Transactional
-    public void addProductToUserSelection(Long productId, String username) {
-        UserAccount user = userAccountRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
-        Product product = getProductById(productId);
-
-        user.getFavoriteProducts().add(product);
-        userAccountRepository.save(user);
-    }
-
-    @Transactional
-    public void removeProductFromUserSelection(Long productId, String username) {
-        UserAccount user = userAccountRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
-        Product product = getProductById(productId);
-
-        user.getFavoriteProducts().remove(product);
-
-        userAccountRepository.save(user);
     }
 
 }

@@ -1,4 +1,4 @@
-package ro.krumpi.demo.dto;
+package ro.krumpi.demo.dto.account;
 
 public record AccountRequestStatusDTO(
         String email,
