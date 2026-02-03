@@ -38,14 +38,14 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final RateLimitingFilter rateLimitingFilter;
 
-    @Value("${frontend.origins}")
-    private List<String> frontendOrigins;
-
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, RateLimitingFilter rateLimitingFilter) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.rateLimitingFilter = rateLimitingFilter;
     }
 
+    @SuppressWarnings("java:S4502")
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -67,6 +67,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/products/**").hasAnyRole("EMPLOYEE", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("EMPLOYEE", "ADMIN")
 
+                        .requestMatchers("/api/cart/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
+                        .requestMatchers("/api/invoices/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
+                        .requestMatchers("/api/payments/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
 
                         .requestMatchers(HttpMethod.POST, "/api/orders").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/orders", "/api/orders/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
@@ -75,6 +78,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/employees/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
@@ -86,20 +90,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Profile("!test")
-    public CommandLineRunner seedDefaultUser(UserAccountRepository userRepo, PasswordEncoder encoder) {
-        return args -> {
-            if (!userRepo.existsByUsername("admin@krumpi.ro")) {
-                userRepo.save(UserAccount.builder()
-                        .username("admin@krumpi.ro")
-                        .password(encoder.encode("password"))
-                        .role(Role.ADMIN)
-                        .build());
-            }
-        };
-    }
-
-    @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
             throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
@@ -108,7 +98,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:5174"));
+        configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept"));
         configuration.setAllowCredentials(true);
@@ -130,4 +120,5 @@ public class SecurityConfig {
         provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }
+
 }

@@ -1,11 +1,10 @@
 package ro.krumpi.demo.mapper;
 
-import ro.krumpi.demo.dto.OrderDTO;
-import ro.krumpi.demo.dto.OrderItemDTO;
+import ro.krumpi.demo.dto.orders_sapior.OrderDTO;
+import ro.krumpi.demo.dto.orders_sapior.OrderItemDTO;
 import ro.krumpi.demo.model.employee.Employee;
 import ro.krumpi.demo.model.order.Order;
 import ro.krumpi.demo.model.order.OrderItem;
-import ro.krumpi.demo.model.order.OrderStatus;
 import ro.krumpi.demo.model.stock.Product;
 
 import java.util.function.Function;

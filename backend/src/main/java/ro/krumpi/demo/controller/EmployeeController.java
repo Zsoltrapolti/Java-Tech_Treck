@@ -4,11 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ro.krumpi.demo.dto.EmployeeDTO;
+import ro.krumpi.demo.dto.employee.EmployeeDTO;
 import ro.krumpi.demo.mapper.EmployeeMapper;
 import ro.krumpi.demo.model.employee.Employee;
 import ro.krumpi.demo.service.EmployeeService;
-import ro.krumpi.demo.service.UserAccountService;
 
 import java.util.ArrayList;
 import java.util.List;

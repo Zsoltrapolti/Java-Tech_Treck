@@ -1,4 +1,4 @@
-package ro.krumpi.demo.dto;
+package ro.krumpi.demo.dto.account;
 
 import jakarta.validation.constraints.NotNull;
 import ro.krumpi.demo.model.auth.Role;
