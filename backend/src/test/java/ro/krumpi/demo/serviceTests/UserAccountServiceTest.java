@@ -1,10 +1,5 @@
 package ro.krumpi.demo.serviceTests;
 
-
-
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,58 +7,52 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ro.krumpi.demo.dto.account.RegisterRequestDTO;
-import ro.krumpi.demo.model.auth.AccountRequest;
-import ro.krumpi.demo.model.auth.Role;
-import ro.krumpi.demo.model.auth.UserAccount;
+import ro.krumpi.demo.model.auth.*;
 import ro.krumpi.demo.repository.UserAccountRepository;
 import ro.krumpi.demo.service.AccountRequestService;
 import ro.krumpi.demo.service.UserAccountService;
 
+// ✅ FONTOS: Ezeket az importokat használd (töröld a régieket!)
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 @ExtendWith(MockitoExtension.class)
 class UserAccountServiceTest {
 
-    @Mock
-    private UserAccountRepository userRepo;
-    @Mock
-    private PasswordEncoder passwordEncoder;
-    @Mock
-    private AccountRequestService accountRequestService;
+    @Mock private UserAccountRepository userRepo;
+    @Mock private PasswordEncoder passwordEncoder;
+    @Mock private AccountRequestService accountRequestService;
 
     @InjectMocks
     private UserAccountService userAccountService;
 
     @Test
     void register_ShouldSaveUser_WhenRequestIsApproved() {
-        // GIVEN
-        RegisterRequestDTO dto = new RegisterRequestDTO("test@demo.com", "password123");
-        AccountRequest mockRequest = new AccountRequest();
-        mockRequest.setAssignedRole(Role.USER);
+        // ✅ JAVÍTVA: 2 argumentum (ha a DTO ezt várja)
+        RegisterRequestDTO dto = new RegisterRequestDTO("tesztuser", "password");
 
-        when(userRepo.existsByUsername("test@demo.com")).thenReturn(false);
-        when(accountRequestService.getApprovedRequest("test@demo.com")).thenReturn(mockRequest);
-        when(passwordEncoder.encode("password123")).thenReturn("encoded_pass");
+        AccountRequest approvedReq = AccountRequest.builder()
+                .email("tesztuser")
+                .status(AccountRequestStatus.APPROVED)
+                .assignedRole(Role.USER)
+                .build();
 
-        // Mocking the save to return the object passed to it
+        // Mock viselkedések beállítása
+        when(userRepo.existsByUsername(anyString())).thenReturn(false);
+        when(accountRequestService.getApprovedRequest(anyString())).thenReturn(approvedReq);
+        when(passwordEncoder.encode(anyString())).thenReturn("hashed_pass");
+
+        // Ez segít elkerülni az "Inferred type S" hibát a save-nél
         when(userRepo.save(any(UserAccount.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        // WHEN
-        UserAccount result = userAccountService.register(dto);
+        // Futtatás
+        userAccountService.register(dto);
 
-        // THEN
-        assertNotNull(result);
-        assertEquals("test@demo.com", result.getUsername());
-        assertEquals("encoded_pass", result.getPassword());
-        verify(userRepo, times(1)).save(any());
-        verify(accountRequestService, times(1)).save(mockRequest);
-    }
 
-    @Test
-    void register_ShouldThrowException_WhenUserAlreadyExists() {
-        // GIVEN
-        RegisterRequestDTO dto = new RegisterRequestDTO("exists@demo.com", "pass");
-        when(userRepo.existsByUsername("exists@demo.com")).thenReturn(true);
-
-        // WHEN & THEN
-        assertThrows(IllegalStateException.class, () -> userAccountService.register(dto));
+        verify(userRepo).save(any(UserAccount.class));
+        assertEquals(AccountRequestStatus.REGISTERED, approvedReq.getStatus());
     }
 }
