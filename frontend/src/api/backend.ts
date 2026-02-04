@@ -7,6 +7,12 @@ import type { OrderType } from "../types/Order";
 import type { AccountType } from "../types/Account.ts";
 import type {AccountRequestType} from "../types/AccountRequest.ts";
 import { jwtDecode } from "jwt-decode";
+import { pdf } from '@react-pdf/renderer';
+import type { InvoiceDTO, OrderSummaryDTO } from '../types/Invoice';
+import type {ShoppingCartDTO} from "../types/ShoppingCart.ts";
+import React from 'react';
+import { InvoiceDocument } from '../components/pdf/InvoiceDocument';
+
 
 const BACKEND_URL = "http://localhost:8081/api";
 let authHeader: Record<string, string> = {};
@@ -18,13 +24,18 @@ if (typeof window !== "undefined") {
     }
 }
 
+interface DecodedToken {
+    exp: number;
+    [key: string]: unknown;
+}
+
 function isTokenExpired(token: string): boolean {
     if (!token) return true;
     try {
-        const decoded: any = jwtDecode(token);
+        const decoded = jwtDecode<DecodedToken>(token);
         const currentTime = Date.now() / 1000;
         return decoded.exp < currentTime;
-    } catch (error) {
+    } catch {
         return true;
     }
 }
@@ -78,7 +89,7 @@ function getRoleFromToken(token: string): string {
 
         const role = payload.role || payload.roles?.[0] || payload.authorities?.[0] || "USER";
         return role.replace("ROLE_", "");
-    } catch (e) {
+    } catch {
         return "USER";
     }
 }
@@ -451,4 +462,58 @@ export async function reviewAccountRequest(
 
     if (!resp.ok) await handleError(resp);
     return resp.json();
+}
+
+
+export async function fetchMyCart(): Promise<ShoppingCartDTO> {
+    const resp = await authFetch(`${BACKEND_URL}/cart`);
+    if (!resp.ok) throw new Error("Failed to fetch cart");
+    return resp.json();
+}
+
+export async function addToCart(productId: number, quantity: number): Promise<ShoppingCartDTO> {
+    const resp = await authFetch(`${BACKEND_URL}/cart/items`, {
+        method: "POST",
+        body: JSON.stringify({ productId, quantity })
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function removeFromCart(cartItemId: number): Promise<void> {
+    const resp = await authFetch(`${BACKEND_URL}/cart/items/${cartItemId}`, {
+        method: "DELETE"
+    });
+
+    if (!resp.ok) throw new Error("Failed to remove item");
+}
+
+export async function performCheckout(): Promise<OrderSummaryDTO> {
+    const resp = await authFetch(`${BACKEND_URL}/invoices/checkout`, {
+        method: "POST"
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function payInvoice(invoiceId: number): Promise<InvoiceDTO> {
+    const resp = await authFetch(`${BACKEND_URL}/payments`, {
+        method: "POST",
+        body: JSON.stringify({
+            invoiceId: invoiceId,
+            paymentMethod: "CARD"
+        })
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function generateAndOpenPdf(invoiceData: InvoiceDTO) {
+    const element = React.createElement(InvoiceDocument, { invoice: invoiceData }) as any;
+    const blob = await pdf(element).toBlob();
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
 }

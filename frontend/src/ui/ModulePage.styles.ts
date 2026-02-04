@@ -1,5 +1,5 @@
 import { styled } from "@mui/material/styles";
-import {TableCell, Button, Box, DialogTitle, DialogActions, DialogContent, Typography} from "@mui/material";
+import {TableCell, Button, Box, DialogTitle, DialogActions, DialogContent, Typography, TextField} from "@mui/material";
 
 export const ModulePageContainer = styled(Box)(({ theme }) => ({
     paddingTop: theme.spacing(4),
@@ -136,3 +136,50 @@ export const ModalActions = styled(DialogActions)(({ theme }) => ({
     borderTop: "1px solid #eeeeee"
 }));
 
+
+
+export const StyledDialogTitle = styled(DialogTitle)(() => ({
+    textAlign: 'center',
+    fontWeight: 700,
+    color: '#2C6E49',
+    fontSize: '1.5rem',
+}));
+
+export const StyledDialogContentBox = styled(Box)(() => ({
+    textAlign: 'center',
+    marginBottom: '24px',
+}));
+
+export const QuantityControlBox = styled(Box)(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.spacing(2),
+    marginBottom: theme.spacing(3),
+}));
+
+export const QuantityInput = styled(TextField)(() => ({
+    width: '80px',
+    '& input': {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: '1.2rem',
+    }
+}));
+
+export const TotalPriceBox = styled(Box)(({ theme }) => ({
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: theme.spacing(3),
+    padding: theme.spacing(2),
+    backgroundColor: '#f9fcf9',
+    borderRadius: '8px',
+    border: '1px solid #E0ECD6',
+}));
+
+export const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
+    justifyContent: 'center',
+    paddingBottom: theme.spacing(2),
+    paddingTop: theme.spacing(1),
+}));

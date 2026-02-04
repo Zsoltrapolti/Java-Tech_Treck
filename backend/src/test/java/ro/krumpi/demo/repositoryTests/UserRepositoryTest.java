@@ -49,6 +49,6 @@ class UserRepositoryTest {
 
         var found = userRepository.findByUsername("testUser");
         assertTrue(found.isPresent());
-        assertEquals("USER", found.get().getRole());
+        assertEquals(Role.USER, found.get().getRole());
     }
 }

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 
-type UserRole = "USER" | "EMPLOYEE" | "ADMIN";
+export type UserRole = "USER" | "EMPLOYEE" | "ADMIN";
 
 interface AuthContextType {
     role: UserRole | null;
@@ -30,6 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         </AuthContext.Provider>
     );
 }
+
 
 export function useAuth() {
     const context = useContext(AuthContext);
