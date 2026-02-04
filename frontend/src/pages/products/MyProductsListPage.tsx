@@ -1,81 +1,124 @@
 import { useEffect, useState } from "react";
-import { fetchMyProducts, unclaimProduct } from "../../api/backend";
-import type { ProductType } from "../../types/Product";
+import { fetchMyCart, removeFromCart, performCheckout, payInvoice, generateAndOpenPdf } from "../../api/backend";
+import type { ShoppingCartDTO } from "../../types/ShoppingCart";
 import {
     ModulePageContainer,
     ModuleTableContainer,
     ModulePageHeader,
     ModuleTableHeader,
-    ModuleTableCell, DeleteButton
+    ModuleTableCell,
+    DeleteButton,
+    AddButton
 } from "../../ui/ModulePage.styles";
 import { Table, TableHead, TableRow, TableBody, CircularProgress } from "@mui/material";
-import {showSuccess} from "../../utils/toast.ts";
+import { showSuccess, showError } from "../../utils/toast";
 
 export default function MyProductsListPage() {
-    const [products, setProducts] = useState<ProductType[]>([]);
+    const [cart, setCart] = useState<ShoppingCartDTO | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
 
-    useEffect(() => {
-        fetchMyProducts()
+    const loadCart = () => {
+        if (!cart) setLoading(true);
+
+        fetchMyCart()
             .then((data) => {
-                setProducts(data);
-                setLoading(false);
+                setCart(data);
             })
             .catch((err) => {
-                console.error("Error loading your personal menu:", err);
+                console.error("Cart error:", err);
+            })
+            .finally(() => {
                 setLoading(false);
             });
+    };
+
+    useEffect(() => {
+        loadCart();
     }, []);
 
+    const handleRemoveItem = async (cartItemId: number) => {
+        try {
+            await removeFromCart(cartItemId);
+            setCart(prev => prev ? {
+                ...prev,
+                items: prev.items.filter(item => item.id !== cartItemId),
+                grandTotal: prev.items.filter(item => item.id !== cartItemId).reduce((sum, i) => sum + i.totalLinePrice, 0)
+            } : null);
+            showSuccess("Item removed from cart.");
+        } catch {
+            showError("Failed to remove item.");
+        }
+    };
 
- const handleRemove = async (productId: number) => {
-     try {
-         await unclaimProduct(productId);
-         setProducts(prev => prev.filter(p => p.id !== productId));
-         showSuccess(`Product has been removed successfully.`);
-     } catch (err) {
-         alert("Eroare la eliminarea produsului.");
-     }
- };
+    const handleCheckoutAndPay = async () => {
+        try {
+            const orderSummary = await performCheckout();
+            const invoiceData = await payInvoice(orderSummary.orderId);
+            await generateAndOpenPdf(invoiceData);
+            setCart(null);
+            showSuccess(`Order #${orderSummary.orderId} completed and Invoice generated!`);
+            loadCart();
+        } catch (error) {
+            console.error(error);
+            showError("Checkout processing failed.");
+        }
+    };
 
-    if (loading) {
-        return <CircularProgress style={{ display: 'block', margin: '20px auto' }} />;
-    }
+    if (loading) return <CircularProgress style={{ display: 'block', margin: '20px auto' }} />;
 
     return (
         <ModulePageContainer>
-            <ModulePageHeader>My Personal Krumpi Selection</ModulePageHeader>
+            <ModulePageHeader>My Shopping Cart</ModulePageHeader>
             <ModuleTableContainer>
                 <Table stickyHeader>
                     <TableHead>
                         <TableRow>
-
-                            <ModuleTableHeader>Name</ModuleTableHeader>
-                            <ModuleTableHeader>Unit</ModuleTableHeader>
+                            <ModuleTableHeader>Product Name</ModuleTableHeader>
                             <ModuleTableHeader>Quantity</ModuleTableHeader>
+                            <ModuleTableHeader>Price/Unit</ModuleTableHeader>
+                            <ModuleTableHeader>Line Total</ModuleTableHeader>
                             <ModuleTableHeader>Action</ModuleTableHeader>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {products.length === 0 ? (
+                        {!cart || cart.items.length === 0 ? (
                             <TableRow>
-                                <ModuleTableCell colSpan={4} style={{ textAlign: 'center' }}>
-                                    Your selection is empty. Add products from the Menu.
+                                <ModuleTableCell colSpan={5} style={{ textAlign: 'center' }}>
+                                    Your cart is empty. Go to the Menu to add products.
                                 </ModuleTableCell>
                             </TableRow>
                         ) : (
-                            products.map(p => (
-                                <TableRow key={p.id}>
-                                    <ModuleTableCell>{p.name}</ModuleTableCell>
-                                    <ModuleTableCell>{p.unitOfMeasure}</ModuleTableCell>
-                                    <ModuleTableCell>{p.quantity}</ModuleTableCell>
+                            cart.items.map(item => (
+                                <TableRow key={item.id}>
+                                    <ModuleTableCell>{item.productName}</ModuleTableCell>
                                     <ModuleTableCell>
-                                        <DeleteButton onClick={() => handleRemove(p.id)}>
+                                        {item.quantity} {item.unitOfMeasure}
+                                    </ModuleTableCell>
+                                    <ModuleTableCell>{item.pricePerUnit.toFixed(2)}</ModuleTableCell>
+                                    <ModuleTableCell>{item.totalLinePrice.toFixed(2)}</ModuleTableCell>
+                                    <ModuleTableCell>
+                                        <DeleteButton onClick={() => handleRemoveItem(item.id)}>
                                             Remove
                                         </DeleteButton>
                                     </ModuleTableCell>
                                 </TableRow>
                             ))
+                        )}
+
+                        {cart && cart.items.length > 0 && (
+                            <TableRow>
+                                <ModuleTableCell colSpan={3} style={{ textAlign: 'right', fontWeight: 'bold', fontSize: '1.1rem' }}>
+                                    GRAND TOTAL:
+                                </ModuleTableCell>
+                                <ModuleTableCell style={{ fontWeight: 'bold', fontSize: '1.1rem', color: '#2C6E49' }}>
+                                    {cart.grandTotal?.toFixed(2)} RON
+                                </ModuleTableCell>
+                                <ModuleTableCell>
+                                    <AddButton onClick={handleCheckoutAndPay}>
+                                        CHECKOUT & PAY
+                                    </AddButton>
+                                </ModuleTableCell>
+                            </TableRow>
                         )}
                     </TableBody>
                 </Table>
