@@ -31,7 +31,7 @@ class UserAccountServiceTest {
 
     @Test
     void register_ShouldSaveUser_WhenRequestIsApproved() {
-        // ✅ JAVÍTVA: 2 argumentum (ha a DTO ezt várja)
+
         RegisterRequestDTO dto = new RegisterRequestDTO("tesztuser", "password");
 
         AccountRequest approvedReq = AccountRequest.builder()
@@ -40,15 +40,12 @@ class UserAccountServiceTest {
                 .assignedRole(Role.USER)
                 .build();
 
-        // Mock viselkedések beállítása
         when(userRepo.existsByUsername(anyString())).thenReturn(false);
         when(accountRequestService.getApprovedRequest(anyString())).thenReturn(approvedReq);
         when(passwordEncoder.encode(anyString())).thenReturn("hashed_pass");
 
-        // Ez segít elkerülni az "Inferred type S" hibát a save-nél
         when(userRepo.save(any(UserAccount.class))).thenAnswer(i -> i.getArguments()[0]);
 
-        // Futtatás
         userAccountService.register(dto);
 
 

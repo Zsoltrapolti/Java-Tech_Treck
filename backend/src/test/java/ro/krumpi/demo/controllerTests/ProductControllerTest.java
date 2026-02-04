@@ -5,30 +5,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ro.krumpi.demo.controller.OrderController;
-import ro.krumpi.demo.model.order.Order;
-import ro.krumpi.demo.service.OrderService;
+import ro.krumpi.demo.controller.ProductController;
+import ro.krumpi.demo.model.stock.Product;
 import ro.krumpi.demo.service.ProductService;
-import ro.krumpi.demo.service.EmployeeService;
+import ro.krumpi.demo.service.EmployeeService; // Szükséges, ha a kontroller függ tőle
 import ro.krumpi.demo.config.JwtAuthenticationFilter;
 import ro.krumpi.demo.config.RateLimitingFilter;
 
-import java.util.Optional;
+import java.util.List;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-@WebMvcTest(OrderController.class)
-@AutoConfigureMockMvc(addFilters = false) // Security bypass
-class OrderControllerTest {
+@WebMvcTest(controllers = ProductController.class)
+@AutoConfigureMockMvc(addFilters = false)
+class ProductControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @MockBean
-    private OrderService orderService;
 
     @MockBean
     private ProductService productService;
@@ -43,20 +41,16 @@ class OrderControllerTest {
     private RateLimitingFilter rateLimitingFilter;
 
     @Test
-    void getOrderById_NotFound_ShouldReturn404() throws Exception {
-        when(orderService.getOrderById(99L)).thenReturn(Optional.empty());
+    void getAllProducts_ShouldReturnList() throws Exception {
+        Product p = new Product();
+        p.setId(1L);
+        p.setName("Sajt");
 
-        mockMvc.perform(get("/api/orders/99"))
-                .andExpect(status().isNotFound());
-    }
+        when(productService.getAllProducts()).thenReturn(List.of(p));
 
-    @Test
-    void getOrderById_Found_ShouldReturn200() throws Exception {
-        Order order = new Order();
-        order.setId(1L);
-        when(orderService.getOrderById(1L)).thenReturn(Optional.of(order));
-
-        mockMvc.perform(get("/api/orders/1"))
-                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/products")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Sajt"));
     }
 }

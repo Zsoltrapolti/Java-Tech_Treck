@@ -1,58 +1,57 @@
-//package ro.krumpi.demo.contollerTests;
+//package ro.krumpi.demo.controllerTests;
 //
-//import com.fasterxml.jackson.databind.ObjectMapper;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 //import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 //import org.springframework.boot.test.mock.mockito.MockBean;
-//import org.springframework.context.annotation.Import;
 //import org.springframework.http.MediaType;
 //import org.springframework.security.authentication.AuthenticationManager;
 //import org.springframework.test.web.servlet.MockMvc;
-//import ro.krumpi.demo.config.JwtService;
-//import ro.krumpi.demo.config.TestSecurityConfig;
+//import ro.krumpi.demo.config.JwtAuthenticationFilter;
+//import ro.krumpi.demo.config.RateLimitingFilter;
 //import ro.krumpi.demo.controller.AuthController;
-//import ro.krumpi.demo.dto.account.RegisterRequestDTO;
-//import ro.krumpi.demo.model.auth.Role;
-//import ro.krumpi.demo.model.auth.UserAccount;
 //import ro.krumpi.demo.service.UserAccountService;
 //
-//// ✅ EZEKET AZ IMPORTOKAT HASZNÁLD:
-//import static org.mockito.ArgumentMatchers.any;
-//import static org.mockito.Mockito.when;
 //import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-//import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 //import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 //
 //@WebMvcTest(AuthController.class)
 //@AutoConfigureMockMvc(addFilters = false)
-//@Import(TestSecurityConfig.class)
 //class AuthControllerTest {
 //
-//    @Autowired private MockMvc mockMvc;
-//    @MockBean private UserAccountService userService;
-//    @MockBean private JwtService jwtService;
-//    @MockBean private AuthenticationManager authenticationManager;
-//    @Autowired private ObjectMapper objectMapper;
+//    @Autowired
+//    private MockMvc mockMvc;
+//
+//    @MockBean
+//    private UserAccountService userAccountService;
+//
+//    @MockBean
+//    private AuthenticationManager authenticationManager;
+//
+//    @MockBean
+//    private JwtAuthenticationFilter jwtAuthenticationFilter;
+//
+//    @MockBean
+//    private RateLimitingFilter rateLimitingFilter;
 //
 //    @Test
-//    void register_SikeresRegisztracio() throws Exception {
-//        RegisterRequestDTO dto = new RegisterRequestDTO("teszt_elek", "jelszo123");
-//        UserAccount savedUser = UserAccount.builder()
-//                .id(1L)
-//                .username("teszt_elek")
-//                .role(Role.USER)
-//                .build();
+//    void login_ShouldReturn200() throws Exception {
+//        String loginJson = "{\"username\":\"admin\", \"password\":\"password\"}";
 //
-//        // ✅ Mockito any() használata a ByteBuddy helyett
-//        when(userService.register(any(RegisterRequestDTO.class))).thenReturn(savedUser);
+//        mockMvc.perform(post("/api/auth/login")
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(loginJson))
+//                .andExpect(status().isOk());
+//    }
 //
-//        // ✅ MockMvcRequestBuilders.post használata a MockServerHttpRequest helyett
+//    @Test
+//    void register_ShouldReturn200() throws Exception {
+//        String registerJson = "{\"username\":\"newuser\", \"password\":\"password\", \"email\":\"test@test.com\"}";
+//
 //        mockMvc.perform(post("/api/auth/register")
 //                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(dto)))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$.username").value("teszt_elek"));
+//                        .content(registerJson))
+//                .andExpect(status().isOk());
 //    }
 //}
