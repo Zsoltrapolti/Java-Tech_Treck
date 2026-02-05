@@ -53,31 +53,37 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public Endpoints
-                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
-                        .requestMatchers("/api/account-requests/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
+                                .requestMatchers("/api/account-requests/**").permitAll()
+                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/employees").authenticated()
 
-                        // Product Rules (Existing)
-                        .requestMatchers(HttpMethod.GET, "/api/products/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/products/*/claim").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/products/*/unclaim").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/products/**").hasAnyRole("EMPLOYEE", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, "/api/products/**").hasAnyRole("EMPLOYEE", "ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyAuthority("EMPLOYEE", "ADMIN", "ROLE_EMPLOYEE", "ROLE_ADMIN")
 
-                        .requestMatchers("/api/cart/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
-                        .requestMatchers("/api/invoices/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
-                        .requestMatchers("/api/payments/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
 
-                        .requestMatchers(HttpMethod.POST, "/api/orders").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/orders", "/api/orders/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/orders/*/deliver").hasRole("ADMIN")
-                        .requestMatchers("/api/orders/**").hasRole("ADMIN")
-                        .requestMatchers("/api/employees/**").hasRole("ADMIN")
-                        .anyRequest().authenticated()
-                )
+                                .requestMatchers(HttpMethod.POST, "/api/products/my-selection").authenticated()
+                                .requestMatchers(HttpMethod.GET, "/api/products/my").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/api/invoices/checkout").authenticated()
+
+
+                                .requestMatchers(HttpMethod.GET, "/api/products", "/api/products/**").authenticated()
+
+                                .requestMatchers(HttpMethod.POST, "/api/products/**").hasAnyAuthority("EMPLOYEE", "ADMIN", "ROLE_EMPLOYEE", "ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/api/products/**").hasAnyAuthority("EMPLOYEE", "ADMIN", "ROLE_EMPLOYEE", "ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasAnyAuthority("EMPLOYEE", "ADMIN", "ROLE_EMPLOYEE", "ROLE_ADMIN")
+
+                                .requestMatchers(HttpMethod.POST, "/api/orders").hasAnyAuthority("USER", "EMPLOYEE", "ADMIN", "ROLE_USER", "ROLE_EMPLOYEE", "ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/orders/**").hasAnyAuthority("USER", "EMPLOYEE", "ADMIN", "ROLE_USER", "ROLE_EMPLOYEE", "ROLE_ADMIN")
+
+                                .requestMatchers(HttpMethod.GET, "/api/invoices").hasAnyAuthority("USER", "EMPLOYEE", "ADMIN", "ROLE_USER", "ROLE_EMPLOYEE", "ROLE_ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/invoices/**").hasAnyAuthority("USER", "EMPLOYEE", "ADMIN", "ROLE_USER", "ROLE_EMPLOYEE", "ROLE_ADMIN")
+                                .requestMatchers("/api/cart/**", "/api/invoices/**").hasAnyAuthority("USER", "EMPLOYEE", "ADMIN", "ROLE_USER", "ROLE_EMPLOYEE", "ROLE_ADMIN")
+
+                                .requestMatchers("/api/admin/**", "/api/employees/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN")
+
+                                .anyRequest().authenticated()
+                        )
+
                 .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
