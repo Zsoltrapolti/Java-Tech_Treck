@@ -10,6 +10,7 @@ import ro.krumpi.demo.mapper.InvoiceMapper;
 import ro.krumpi.demo.model.shopping.InvoiceRecord;
 import ro.krumpi.demo.model.shopping.PaymentStatus;
 import ro.krumpi.demo.repository.InvoiceRecordRepository;
+import ro.krumpi.demo.service.EmailService;
 import ro.krumpi.demo.service.InvoiceService;
 
 import java.security.Principal;
@@ -22,6 +23,7 @@ public class InvoiceController {
 
     private final InvoiceService checkoutService;
     private final InvoiceRecordRepository invoiceRepository;
+    private final EmailService emailService;
 
     @Operation(
             summary = "Place Order (Checkout)",
@@ -47,8 +49,9 @@ public class InvoiceController {
     public ResponseEntity<InvoiceDTO> getInvoiceData(@PathVariable Long id) {
         InvoiceRecord inv = invoiceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Invoice not found"));
+
         if (inv.getStatus() != PaymentStatus.PAID) {
-            throw new RuntimeException("Factura fiscală nu este disponibilă. Comanda nu a fost achitată încă.");
+            throw new RuntimeException("Tax invoice is unavailable. The order has not been paid yet.");
         }
         InvoiceDTO dto = InvoiceMapper.toDTO(inv);
         return ResponseEntity.ok(dto);
@@ -72,5 +75,20 @@ public class InvoiceController {
                 .toList();
 
         return ResponseEntity.ok(summaryList);
+    }
+
+    @Operation(summary = "Send Invoice by Email")
+    @PostMapping("/{id}/send-email")
+    public ResponseEntity<Void> sendInvoiceByEmail(
+            @PathVariable Long id,
+            @RequestParam String email) {
+
+        InvoiceRecord invoiceRecord = invoiceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Invoice not found"));
+
+        InvoiceDTO invoiceDTO = InvoiceMapper.toDTO(invoiceRecord);
+        emailService.sendPaymentConfirmation(email, invoiceDTO);
+
+        return ResponseEntity.ok().build();
     }
 }

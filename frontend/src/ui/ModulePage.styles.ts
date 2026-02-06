@@ -1,5 +1,15 @@
 import { styled } from "@mui/material/styles";
-import {TableCell, Button, Box, DialogTitle, DialogActions, DialogContent, Typography, TextField} from "@mui/material";
+import {
+    TableCell,
+    Button,
+    Box,
+    DialogTitle,
+    DialogActions,
+    DialogContent,
+    Typography,
+    TextField,
+    Paper
+} from "@mui/material";
 
 export const ModulePageContainer = styled(Box)(({ theme }) => ({
     paddingTop: theme.spacing(4),
@@ -182,4 +192,65 @@ export const StyledDialogActions = styled(DialogActions)(({ theme }) => ({
     justifyContent: 'center',
     paddingBottom: theme.spacing(2),
     paddingTop: theme.spacing(1),
+}));
+
+
+export const SuccessCard = styled(Paper)(({ theme }) => ({
+    padding: theme.spacing(5),
+    textAlign: 'center',
+    borderRadius: 16,
+    maxWidth: 600,
+    width: '100%',
+    boxShadow: theme.shadows[10],
+    backgroundColor: '#fff',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: theme.spacing(1),
+}));
+
+export const SummaryBox = styled(Box)(({ theme }) => ({
+    width: '100%',
+    padding: theme.spacing(3),
+    backgroundColor: '#e8f5e9',
+    borderRadius: 12,
+    border: '1px solid #c8e6c9',
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+}));
+
+export const PrimaryButton = styled(Button)(({ theme }) => ({
+    backgroundColor: "#2C6E49",
+    color: "#fff",
+    fontWeight: "bold",
+    padding: "10px 24px",
+    borderRadius: "8px",
+    textTransform: "none",
+    fontSize: "1rem",
+    boxShadow: theme.shadows[3],
+    '&:hover': {
+        backgroundColor: "#1b4d32",
+        boxShadow: theme.shadows[5],
+    },
+    '&:disabled': {
+        backgroundColor: "#a5d6a7",
+        color: "#fff",
+    }
+}));
+
+export const OutlinedButton = styled(Button)(() => ({
+    borderColor: "#2C6E49",
+    color: "#2C6E49",
+    fontWeight: "bold",
+    padding: "10px 10px",
+    borderRadius: "8px",
+    backgroundColor: "#e8f5e9",
+    textTransform: "none",
+    fontSize: "1rem",
+    borderWidth: '2px',
+    '&:hover': {
+        borderWidth: '2px',
+        borderColor: "#1b4d32",
+        backgroundColor: "#c4dac6",
+    },
 }));

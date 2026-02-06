@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; 
+import { fetchMyCart, removeFromCart, performCheckout, payInvoice } from "../../api/backend"; 
 import { fetchProducts, addProductToMyList } from "../../api/backend";
 import {
     Table, TableHead, TableRow, TableBody, Button, CircularProgress, Paper, Typography
@@ -6,6 +8,23 @@ import {
 import { ModulePageContainer, ModulePageHeader, ModuleTableContainer, ModuleTableHeader, ModuleTableCell } from "../../ui/ModulePage.styles";
 import { showError } from "../../utils/toast";
 
+export default function MyProductsListPage() {
+    const [cart, setCart] = useState<ShoppingCartDTO | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const navigate = useNavigate();
+
+    const loadCart = () => {
+        fetchMyCart()
+            .then((data) => {
+                setCart(data);
+            })
+            .catch((err) => {
+                console.error("Cart error:", err);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    };
 export default function ProductsListPage() {
     const [products, setProducts] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
@@ -19,6 +38,12 @@ export default function ProductsListPage() {
 
     const handleAddToMyList = async (productId: number) => {
         try {
+            const orderSummary = await performCheckout();
+            const invoiceData = await payInvoice(orderSummary.orderId);
+            setCart(null);
+            navigate("/payment-success", { state: { invoice: invoiceData } });
+
+        } catch (error) {
             await addProductToMyList(productId);
             alert("Success! Item added to your cart.");
         } catch (error: any) {

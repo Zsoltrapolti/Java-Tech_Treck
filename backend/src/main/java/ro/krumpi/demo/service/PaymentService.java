@@ -1,23 +1,24 @@
 package ro.krumpi.demo.service;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.krumpi.demo.dto.shopping.InvoiceDTO;
-import ro.krumpi.demo.dto.shopping.PaymentDTO;
 import ro.krumpi.demo.dto.shopping.PaymentRequest;
 import ro.krumpi.demo.mapper.InvoiceMapper;
+import ro.krumpi.demo.mapper.PaymentMapper;
 import ro.krumpi.demo.mapper.ShoppingCartMapper;
 import ro.krumpi.demo.model.auth.UserAccount;
-import ro.krumpi.demo.model.shopping.*;
+import ro.krumpi.demo.model.shopping.InvoiceLine;
+import ro.krumpi.demo.model.shopping.InvoiceRecord;
+import ro.krumpi.demo.model.shopping.Payment;
+import ro.krumpi.demo.model.shopping.PaymentStatus;
 import ro.krumpi.demo.model.stock.CartItem;
 import ro.krumpi.demo.model.stock.Product;
 import ro.krumpi.demo.model.stock.ShoppingCart;
 import ro.krumpi.demo.repository.*;
-import ro.krumpi.demo.mapper.PaymentMapper;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +29,7 @@ public class PaymentService {
     private final UserAccountRepository userRepository;
     private final ShoppingCartRepository cartRepository;
     private final ProductRepository productRepository;
+    private final EmailService emailService; // Inject EmailService
 
     @Transactional
     public InvoiceDTO processPayment(String username, PaymentRequest request) {
@@ -60,7 +62,13 @@ public class PaymentService {
         invoice.setStatus(PaymentStatus.PAID);
         InvoiceRecord savedInvoice = invoiceRepository.save(invoice);
 
-        return InvoiceMapper.toDTO(savedInvoice);
+        InvoiceDTO invoiceDTO = InvoiceMapper.toDTO(savedInvoice);
+
+        if (user.getUsername() != null && !user.getUsername().isEmpty()) {
+            emailService.sendPaymentConfirmation(user.getUsername(), invoiceDTO);
+        }
+
+        return invoiceDTO;
     }
 
     @Transactional
@@ -101,7 +109,7 @@ public class PaymentService {
                     cart.getItems().add(newItem);
                 }
             } else {
-                System.out.println("Produsul " + line.getProductName() + " nu mai există în ofertă.");
+                System.out.println("Product " + line.getProductName() + " no longer exists in the catalog.");
             }
         }
 
