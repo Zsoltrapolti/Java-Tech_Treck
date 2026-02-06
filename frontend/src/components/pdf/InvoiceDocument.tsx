@@ -38,19 +38,19 @@ export const InvoiceDocument = ({ invoice }: { invoice: InvoiceDTO }) => (
                     <InfoValue bold>MANAGEMENT SRL</InfoValue>
                 </View>
                 <View>
-                    <DocumentTitle>FACTURĂ FISCALĂ</DocumentTitle>
-                    <InfoValue>Serie: {invoice.series} Nr: {invoice.number}</InfoValue>
-                    <InfoValue>Data: {invoice.date}</InfoValue>
+                    <DocumentTitle>TAX INVOICE</DocumentTitle>
+                    <InfoValue>Series: {invoice.series} No: {invoice.number}</InfoValue>
+                    <InfoValue>Date: {invoice.date}</InfoValue>
                 </View>
             </HeaderContainer>
 
             <InfoSection>
                 <InfoColumn>
-                    <Label>FURNIZOR</Label>
+                    <Label>SUPPLIER</Label>
                     <InfoValue bold>{invoice.supplierName}</InfoValue>
                     <InfoValue>{invoice.supplierAddress}</InfoValue>
-                    <InfoValue>CUI: {invoice.supplierCui}</InfoValue>
-                    <InfoValue>Banca: {invoice.supplierBank}</InfoValue>
+                    <InfoValue>TAX ID: {invoice.supplierCui}</InfoValue>
+                    <InfoValue>Bank: {invoice.supplierBank}</InfoValue>
                     <InfoValue>{invoice.supplierIban}</InfoValue>
                 </InfoColumn>
 
@@ -63,11 +63,11 @@ export const InvoiceDocument = ({ invoice }: { invoice: InvoiceDTO }) => (
 
             <TableContainer>
                 <TableHeader>
-                    <HeaderCell width={WIDTHS.prod}>Produs</HeaderCell>
-                    <HeaderCell width={WIDTHS.um} align="center">U.M.</HeaderCell>
-                    <HeaderCell width={WIDTHS.qty} align="center">Cant.</HeaderCell>
-                    <HeaderCell width={WIDTHS.price} align="right">Preț Unit</HeaderCell>
-                    <HeaderCell width={WIDTHS.val} align="right">Valoare</HeaderCell>
+                    <HeaderCell width={WIDTHS.prod}>Product</HeaderCell>
+                    <HeaderCell width={WIDTHS.um} align="center">Unit</HeaderCell>
+                    <HeaderCell width={WIDTHS.qty} align="center">Qty</HeaderCell>
+                    <HeaderCell width={WIDTHS.price} align="right">Unit Price</HeaderCell>
+                    <HeaderCell width={WIDTHS.val} align="right">Amount</HeaderCell>
                 </TableHeader>
 
                 {invoice.items.map((item, index) => (
@@ -82,11 +82,11 @@ export const InvoiceDocument = ({ invoice }: { invoice: InvoiceDTO }) => (
             </TableContainer>
 
             <TotalsSection>
-                <TotalRow label="Total Net:" value={`${invoice.totalNet.toFixed(2)} RON`} />
-                <TotalRow label="TVA (19%):" value={`${invoice.totalVat.toFixed(2)} RON`} />
+                <TotalRow label="Net Total:" value={`${invoice.totalNet.toFixed(2)} RON`} />
+                <TotalRow label="VAT (19%):" value={`${invoice.totalVat.toFixed(2)} RON`} />
                 <TotalRow
                     isGrand
-                    label="TOTAL PLATĂ:"
+                    label="GRAND TOTAL:"
                     value={`${invoice.totalGross.toFixed(2)} RON`}
                 />
             </TotalsSection>

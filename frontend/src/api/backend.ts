@@ -517,3 +517,11 @@ export async function generateAndOpenPdf(invoiceData: InvoiceDTO) {
     const url = URL.createObjectURL(blob);
     window.open(url, '_blank');
 }
+
+export async function sendInvoiceToEmail(invoiceId: number, email: string): Promise<void> {
+    const resp = await authFetch(`${BACKEND_URL}/invoices/${invoiceId}/send-email?email=${encodeURIComponent(email)}`, {
+        method: "POST"
+    });
+
+    if (!resp.ok) await handleError(resp);
+}

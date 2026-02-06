@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { fetchMyCart, removeFromCart, performCheckout, payInvoice, generateAndOpenPdf } from "../../api/backend";
+import { useNavigate } from "react-router-dom"; // <--- IMPORT NOU
+import { fetchMyCart, removeFromCart, performCheckout, payInvoice } from "../../api/backend"; // Am scos generateAndOpenPdf
 import type { ShoppingCartDTO } from "../../types/ShoppingCart";
 import {
     ModulePageContainer,
@@ -16,10 +17,9 @@ import { showSuccess, showError } from "../../utils/toast";
 export default function MyProductsListPage() {
     const [cart, setCart] = useState<ShoppingCartDTO | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const navigate = useNavigate();
 
     const loadCart = () => {
-        if (!cart) setLoading(true);
-
         fetchMyCart()
             .then((data) => {
                 setCart(data);
@@ -54,10 +54,9 @@ export default function MyProductsListPage() {
         try {
             const orderSummary = await performCheckout();
             const invoiceData = await payInvoice(orderSummary.orderId);
-            await generateAndOpenPdf(invoiceData);
             setCart(null);
-            showSuccess(`Order #${orderSummary.orderId} completed and Invoice generated!`);
-            loadCart();
+            navigate("/payment-success", { state: { invoice: invoiceData } });
+
         } catch (error) {
             console.error(error);
             showError("Checkout processing failed.");
