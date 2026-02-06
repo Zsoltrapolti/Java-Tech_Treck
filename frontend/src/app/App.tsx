@@ -45,6 +45,8 @@ function App() {
                     <Route element={<RoleRoute allowed={["USER"]} />}>
                         <Route path="/my-products" element={<MyProductsListPage />} />
                         <Route path="/payment-success" element={<PaymentSuccessPage />} />
+                        <Route path="/orders" element={<OrdersPage />} />
+                        <Route path="/orders/new" element={<OrdersAddPage />} />
                     </Route>
 
                     {/* EMPLOYEE & ADMIN ROUTES */}
