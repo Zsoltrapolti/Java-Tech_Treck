@@ -439,3 +439,40 @@ export async function removeFromCart(cartItemId: number): Promise<void> {
     });
     if (!resp.ok) throw new Error("Failed to remove item");
 }
+
+export async function performCheckout(): Promise<OrderSummaryDTO> {
+    const resp = await authFetch(`${BACKEND_URL}/invoices/checkout`, {
+        method: "POST"
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function payInvoice(invoiceId: number): Promise<InvoiceDTO> {
+    const resp = await authFetch(`${BACKEND_URL}/payments`, {
+        method: "POST",
+        body: JSON.stringify({
+            invoiceId: invoiceId,
+            paymentMethod: "CARD"
+        })
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function generateAndOpenPdf(invoiceData: InvoiceDTO) {
+    const element = React.createElement(InvoiceDocument, { invoice: invoiceData }) as any;
+    const blob = await pdf(element).toBlob();
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+}
+
+export async function sendInvoiceToEmail(invoiceId: number, email: string): Promise<void> {
+    const resp = await authFetch(`${BACKEND_URL}/invoices/${invoiceId}/send-email?email=${encodeURIComponent(email)}`, {
+        method: "POST"
+    });
+
+    if (!resp.ok) await handleError(resp);
+}

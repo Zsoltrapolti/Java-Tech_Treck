@@ -3,6 +3,7 @@ package ro.krumpi.demo.dto.shopping;
 import java.util.List;
 
 public record InvoiceDTO(
+        Long id,
         String series,
         String number,
         String date,

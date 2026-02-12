@@ -38,7 +38,7 @@ public class ShoppingCartService {
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
         if (product.getQuantity() < request.getQuantity()) {
-            throw new RuntimeException("Stoc insuficient! Mai sunt doar " + product.getQuantity() + " bucăți.");
+            throw new RuntimeException("Insufficient stock! Only " + product.getQuantity() + " units left.");
         }
 
         Optional<CartItem> existingItem = cart.getItems().stream()
@@ -50,7 +50,7 @@ public class ShoppingCartService {
             int newQuantity = item.getQuantity() + request.getQuantity();
 
             if (newQuantity > product.getQuantity()) {
-                throw new RuntimeException("Nu poți adăuga atâtea produse. Limita stocului este " + product.getQuantity());
+                throw new RuntimeException("Cannot add that many products. Stock limit is " + product.getQuantity());
             }
 
             item.setQuantity(newQuantity);

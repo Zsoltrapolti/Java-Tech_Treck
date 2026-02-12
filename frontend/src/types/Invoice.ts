@@ -1,4 +1,5 @@
 export interface InvoiceItem {
+    id: number;
     productName: string;
     unitOfMeasure: string;
     quantity: number;
@@ -7,6 +8,7 @@ export interface InvoiceItem {
 }
 
 export interface InvoiceDTO {
+    id: number;
     series: string;
     number: string;
     date: string;
