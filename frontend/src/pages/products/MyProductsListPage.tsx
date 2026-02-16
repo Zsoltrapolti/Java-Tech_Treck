@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // <--- IMPORT NOU
-import { fetchMyCart, removeFromCart, performCheckout, payInvoice } from "../../api/backend"; // Am scos generateAndOpenPdf
+import { useNavigate } from "react-router-dom";
+import { fetchMyCart, removeFromCart, performCheckout, payInvoice } from "../../api/backend"; 
 import type { ShoppingCartDTO } from "../../types/ShoppingCart";
 import {
     ModulePageContainer,

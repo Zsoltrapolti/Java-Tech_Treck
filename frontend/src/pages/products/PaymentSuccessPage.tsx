@@ -149,7 +149,7 @@ export default function PaymentSuccessPage() {
                     <OutlinedButton
                         fullWidth
                         size="large"
-                        onClick={() => navigate("/")}
+                        onClick={() => navigate("/my-products")}
                     >
                         Back to Menu
                     </OutlinedButton>
