@@ -8,81 +8,96 @@ import ro.krumpi.demo.model.shopping.InvoiceRecord;
 import ro.krumpi.demo.model.shopping.PaymentStatus;
 import ro.krumpi.demo.model.stock.CartItem;
 
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class InvoiceMapper {
 
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
-
-    public static InvoiceDTO toDTO(InvoiceRecord invoice) {
-        List<InvoiceItemDTO> items = invoice.getLines().stream()
-                .map(InvoiceMapper::toItemDTO)
-                .collect(Collectors.toList());
-
-        return new InvoiceDTO(
-                invoice.getId(),
-                "KR",
-                invoice.getSeriesNumber(),
-                invoice.getIssuedAt().format(FORMATTER),
-                "KRUMPI MANAGEMENT SRL",
-                "RO12345678",
-                "J40/123/2023",
-                "Str. Cartofului Nr. 1, Brașov",
-                "Banca Transilvania",
-                "RO99BTRL00000000000000XX",
-                invoice.getBuyer().getUsername(),
-                "Adresa Client (UserAccount)",
-                items,
-                invoice.getTotalNet(),
-                invoice.getTotalVat(),
-                invoice.getTotalGross()
-        );
-    }
-
-    private static InvoiceItemDTO toItemDTO(InvoiceLine line) {
-        return new InvoiceItemDTO(
-                line.getId(),
-                line.getProductName(),
-                line.getUnitOfMeasure(),
-                line.getQuantity(),
-                line.getPricePerUnit(),
-                line.getLineTotalValue()
-        );
-    }
-
     public static InvoiceRecord createInvoiceEntity(UserAccount user, List<CartItem> cartItems) {
-        InvoiceRecord invoice = new InvoiceRecord();
-        invoice.setSeriesNumber(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-        invoice.setIssuedAt(java.time.LocalDateTime.now());
-        invoice.setBuyer(user);
-        invoice.setStatus(PaymentStatus.PENDING_PAYMENT);
+        double totalNet = 0.0;
+        List<InvoiceLine> lines = new ArrayList<>();
 
-        double totalNet = 0;
-        List<InvoiceLine> lines = new java.util.ArrayList<>();
+        InvoiceRecord invoice = InvoiceRecord.builder()
+                .seriesNumber("INV-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase())
+                .issuedAt(LocalDateTime.now())
+                .buyer(user)
+                .status(PaymentStatus.PENDING_PAYMENT)
+                .lines(lines)
+                .build();
 
         for (CartItem item : cartItems) {
-            InvoiceLine line = new InvoiceLine();
-            line.setInvoiceRecord(invoice);
-            line.setProductName(item.getProduct().getName());
-            line.setUnitOfMeasure(item.getProduct().getUnitOfMeasure());
-            line.setPricePerUnit(item.getProduct().getPrice());
-            line.setQuantity(item.getQuantity());
-
-            double lineTotal = item.getProduct().getPrice() * item.getQuantity();
-            line.setLineTotalValue(lineTotal);
-
+            double price = item.getProduct().getPrice() != null ? item.getProduct().getPrice() : 0.0;
+            double lineTotal = price * item.getQuantity();
             totalNet += lineTotal;
+
+            InvoiceLine line = InvoiceLine.builder()
+                    .invoiceRecord(invoice)
+                    .productName(item.getProduct().getName())
+                    .unitOfMeasure(item.getProduct().getUnitOfMeasure())
+                    .pricePerUnit(price)
+                    .quantity(item.getQuantity())
+                    .lineTotalValue(lineTotal)
+                    .build();
             lines.add(line);
         }
 
-        invoice.setLines(lines);
+        double vatRate = 0.19;
+        double totalVat = totalNet * vatRate;
+        double totalGross = totalNet + totalVat;
+
         invoice.setTotalNet(totalNet);
-        invoice.setTotalVat(totalNet * 0.19);
-        invoice.setTotalGross(totalNet * 1.19);
+        invoice.setTotalVat(totalVat);
+        invoice.setTotalGross(totalGross);
 
         return invoice;
+    }
+
+    public static InvoiceDTO toDTO(InvoiceRecord invoice) {
+        List<InvoiceItemDTO> items = invoice.getLines().stream()
+                .map(line -> new InvoiceItemDTO(
+                        line.getId(),
+                        line.getProductName(),
+                        line.getUnitOfMeasure(),
+                        line.getQuantity(),
+                        line.getPricePerUnit(),
+                        line.getLineTotalValue()
+                ))
+                .collect(Collectors.toList());
+
+        String fullAddress = String.format("%s, %s, %s, %s",
+                invoice.getClientAddress(),
+                invoice.getClientCity(),
+                invoice.getClientCounty(),
+                invoice.getClientZip()
+        );
+
+        String displayName = invoice.getClientName() != null ? invoice.getClientName() :
+                (invoice.getBuyer() != null ? invoice.getBuyer().getUsername() : "Unknown Client");
+
+        if (invoice.getClientAddress() == null) fullAddress = "Address not provided";
+
+
+        return InvoiceDTO.builder()
+                .id(invoice.getId())
+                .series(invoice.getSeriesNumber().substring(0, 3))
+                .number(invoice.getSeriesNumber().substring(4))
+                .date(invoice.getIssuedAt().toString())
+                .supplierName("Krumpi Management SRL")
+                .supplierCui("RO12345678")
+                .supplierReg("J40/1234/2020")
+                .supplierAddress("Str. Principala nr. 1, Bucuresti")
+                .supplierBank("Banca Transilvania")
+                .supplierIban("RO99BTRL00000000000000XX")
+                .clientName(displayName)
+                .clientAddress(fullAddress)
+                .items(items)
+                .totalNet(invoice.getTotalNet())
+                .totalVat(invoice.getTotalVat())
+                .totalGross(invoice.getTotalGross())
+                .status(invoice.getStatus().name())
+                .build();
     }
 }
