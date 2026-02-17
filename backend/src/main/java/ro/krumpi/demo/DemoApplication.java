@@ -1,8 +1,7 @@
 package ro.krumpi.demo;
 
 
-import ro.krumpi.demo.model.employee.Employee;
-import ro.krumpi.demo.service.EmployeeService;
+
 
 
 
