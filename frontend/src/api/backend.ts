@@ -12,6 +12,7 @@ import type { InvoiceDTO, OrderSummaryDTO } from '../types/Invoice';
 import type {ShoppingCartDTO} from "../types/ShoppingCart.ts";
 import React from 'react';
 import { InvoiceDocument } from '../components/pdf/InvoiceDocument';
+import type {CheckoutRequestDTO} from "../types/CheckoutRequestDTO.ts";
 
 
 const BACKEND_URL = "http://localhost:8081/api";
@@ -489,9 +490,10 @@ export async function removeFromCart(cartItemId: number): Promise<void> {
     if (!resp.ok) throw new Error("Failed to remove item");
 }
 
-export async function performCheckout(): Promise<OrderSummaryDTO> {
+export async function performCheckout(billingData: CheckoutRequestDTO): Promise<OrderSummaryDTO> {
     const resp = await authFetch(`${BACKEND_URL}/invoices/checkout`, {
-        method: "POST"
+        method: "POST",
+        body: JSON.stringify(billingData)
     });
 
     if (!resp.ok) await handleError(resp);

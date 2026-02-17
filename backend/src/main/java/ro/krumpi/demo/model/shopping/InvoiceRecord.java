@@ -33,4 +33,10 @@ public class InvoiceRecord {
 
     @OneToMany(mappedBy = "invoiceRecord", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InvoiceLine> lines = new ArrayList<>();
+
+    private String clientName;
+    private String clientAddress;
+    private String clientCity;
+    private String clientCounty;
+    private String clientZip;
 }

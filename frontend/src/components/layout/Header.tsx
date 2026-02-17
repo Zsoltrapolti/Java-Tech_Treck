@@ -31,9 +31,7 @@ export function Header() {
 
                         <NavButton to="/my-products">My Shopping Cart</NavButton>
 
-                        <NavButton to="/create-order">New Order</NavButton>
-
-                        <NavButton to="/my-orders">My Orders</NavButton>
+                        <NavButton to="/my-orders">History Payments</NavButton>
                     </>
                 )}
 

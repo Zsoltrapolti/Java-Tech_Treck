@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ro.krumpi.demo.dto.shopping.CheckoutRequestDTO;
 import ro.krumpi.demo.dto.shopping.InvoiceDTO;
 import ro.krumpi.demo.dto.shopping.OrderSummaryDTO;
 import ro.krumpi.demo.mapper.InvoiceMapper;
@@ -27,11 +28,15 @@ public class InvoiceController {
 
     @Operation(
             summary = "Place Order (Checkout)",
-            description = "Processes the checkout for the current user's shopping cart and returns the invoice ID"
+            description = "Processes the checkout for the current user's shopping cart using provided billing details"
     )
     @PostMapping("/checkout")
-    public ResponseEntity<OrderSummaryDTO> performCheckout(Principal principal) {
-        InvoiceRecord pendingOrder = checkoutService.checkout(principal.getName());
+    public ResponseEntity<OrderSummaryDTO> performCheckout(
+            @RequestBody CheckoutRequestDTO checkoutData,
+            Principal principal) {
+
+        InvoiceRecord pendingOrder = checkoutService.checkout(principal.getName(), checkoutData);
+
         OrderSummaryDTO summary = new OrderSummaryDTO(
                 pendingOrder.getId(),
                 "Order " + pendingOrder.getSeriesNumber(),
