@@ -27,7 +27,7 @@ export default function PaymentSuccessPage() {
 
     const invoice = location.state?.invoice as InvoiceDTO | undefined;
 
-    const [email, setEmail] = useState<string>(invoice?.clientName || "");
+    const [email, setEmail] = useState<string>(localStorage.getItem("username") || "");
     const [sendingEmail, setSendingEmail] = useState(false);
 
     if (!invoice) {
@@ -149,7 +149,7 @@ export default function PaymentSuccessPage() {
                     <OutlinedButton
                         fullWidth
                         size="large"
-                        onClick={() => navigate("/")}
+                        onClick={() => navigate("/my-products")}
                     >
                         Back to Menu
                     </OutlinedButton>
