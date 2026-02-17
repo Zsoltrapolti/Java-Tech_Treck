@@ -12,16 +12,17 @@ import EmployeesAddPage from "../pages/employees/EmployeesAddPage";
 import EmployeesEditPage from "../pages/employees/EmployeesEditPage";
 import OrdersPage from "../pages/orders/OrdersPage";
 import OrdersAddPage from "../pages/orders/OrdersAddPage";
-import OrdersEditPage from "../pages/orders/OrdersEditPage";
+//import OrdersEditPage from "../pages/orders/OrdersEditPage";
 import ProductsListPage from "../pages/products/ProductsListPage";
 import MyProductsListPage from "../pages/products/MyProductsListPage";
+import PaymentPage from "../pages/products/PaymentPage"; // Import your new Payment Page
+import PaymentSuccessPage from "../pages/products/PaymentSuccessPage.tsx";
 import UnauthorizedPage from "../pages/home/UnauthorizedPage";
 import ErrorToast from "../components/layout/ErrorToast";
 import CheckRequestStatusPage from "../pages/login/CheckRequestStatusPage.tsx";
 import AccountsPage from "../pages/accounts/AccountsPage.tsx";
 import AccountsEditPage from "../pages/accounts/AccountsEditPage.tsx";
 import AccountRequestsPage from "../pages/accounts/AccountRequestsPage.tsx";
-import PaymentSuccessPage from "../pages/products/PaymentSuccessPage.tsx";
 
 function App() {
     return (
@@ -36,14 +37,15 @@ function App() {
                 {/* Protected Routes inside Layout */}
                 <Route element={<Layout />}>
 
-                    {/* RUTE COMUNE: Produsele pot fi văzute de toți utilizatorii logați */}
+                    {/* COMMON ROUTES: Products seen by everyone logged in */}
                     <Route element={<RoleRoute allowed={["USER", "EMPLOYEE", "ADMIN"]} />}>
                         <Route path="/products" element={<ProductsListPage />} />
                     </Route>
 
-                    {/* USER ONLY ROUTES */}
+                    {/* USER ONLY ROUTES (Matches your 4 Buttons) */}
                     <Route element={<RoleRoute allowed={["USER"]} />}>
                         <Route path="/my-products" element={<MyProductsListPage />} />
+                        <Route path="/payment" element={<PaymentPage />} />
                         <Route path="/payment-success" element={<PaymentSuccessPage />} />
                         <Route path="/orders" element={<OrdersPage />} />
                         <Route path="/orders/new" element={<OrdersAddPage />} />
@@ -61,9 +63,8 @@ function App() {
                         <Route path="/employees" element={<EmployeesPage />} />
                         <Route path="/employees/new" element={<EmployeesAddPage />} />
                         <Route path="/employees/:id/edit" element={<EmployeesEditPage />} />
-                        <Route path="/orders" element={<OrdersPage />} />
-                        <Route path="/orders/new" element={<OrdersAddPage />} />
-                        <Route path="/orders/:id/edit" element={<OrdersEditPage />} />
+                        {/* Admin view of orders uses the same component or a specialized admin one */}
+                        <Route path="/admin/orders" element={<OrdersPage />} />
                         <Route path="/accounts" element={<AccountsPage />} />
                         <Route path="/accounts/:id/edit" element={<AccountsEditPage />} />
                         <Route path="/account-requests" element={<AccountRequestsPage />} />

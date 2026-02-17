@@ -1,33 +1,43 @@
 import { useEffect, useState } from "react";
-import { fetchProducts, addProductToMyList } from "../../api/backend";
+import { fetchProducts, addToCart } from "../../api/backend"; // Use addToCart for specific quantity
 import {
     Table, TableHead, TableRow, TableBody, Button, CircularProgress, Paper
 } from "@mui/material";
-import { ModulePageContainer, ModulePageHeader, ModuleTableContainer, ModuleTableHeader, ModuleTableCell } from "../../ui/ModulePage.styles";
-import { showError } from "../../utils/toast";
+import {
+    ModulePageContainer,
+    ModulePageHeader,
+    ModuleTableContainer,
+    ModuleTableHeader,
+    ModuleTableCell
+} from "../../ui/ModulePage.styles";
+import { showError, showSuccess } from "../../utils/toast";
+import type { ProductType } from "../../types/Product";
 
 export default function ProductsListPage() {
-    const [products, setProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<ProductType[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchProducts()
             .then(setProducts)
-            .catch(console.error)
+            .catch((err) => {
+                console.error(err);
+                showError(new Error("Failed to load the menu."));
+            })
             .finally(() => setLoading(false));
     }, []);
 
-    const handleAddToMyList = async (productId: number) => {
+    const handleAddToCart = async (productId: number) => {
         try {
-            await addProductToMyList(productId);
-            alert("Success! Item added to your cart.");
+            // Defaulting to 1 for the 'Add' button
+            await addToCart(productId, 1);
+            showSuccess("Item added to your cart!");
         } catch (error: any) {
-            console.error(error);
-            showError(new Error("Failed to add product."));
+            showError(new Error("Could not add item to cart."));
         }
     };
 
-    if (loading) return <CircularProgress sx={{ display: 'block', m: 'auto', mt: 5 }} />;
+    if (loading) return <CircularProgress sx={{ display: 'block', m: 'auto', mt: 5, color: '#2C6E49' }} />;
 
     return (
         <ModulePageContainer>
@@ -45,15 +55,15 @@ export default function ProductsListPage() {
                     <TableBody>
                         {products.map((p) => (
                             <TableRow key={p.id}>
-                                <ModuleTableCell>{p.name}</ModuleTableCell>
+                                <ModuleTableCell sx={{ fontWeight: 500 }}>{p.name}</ModuleTableCell>
                                 <ModuleTableCell>{p.unitOfMeasure}</ModuleTableCell>
                                 <ModuleTableCell>{p.quantity}</ModuleTableCell>
                                 <ModuleTableCell>
                                     <Button
                                         variant="contained"
-                                        color="success"
                                         size="small"
-                                        onClick={() => handleAddToMyList(p.id)}
+                                        sx={{ bgcolor: '#2C6E49', '&:hover': { bgcolor: '#1e4a32' } }}
+                                        onClick={() => handleAddToCart(p.id!)}
                                     >
                                         ADD TO MY ITEMS
                                     </Button>

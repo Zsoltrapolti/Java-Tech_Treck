@@ -9,8 +9,11 @@ import type { OrderSummaryDTO, InvoiceDTO } from "../types/Invoice";
 import type { ShoppingCartDTO } from "../types/ShoppingCart";
 import { showError } from "../utils/toast";
 import { jwtDecode } from "jwt-decode";
+import {pdf} from "@react-pdf/renderer";
+import {InvoiceDocument} from "../ui/InvoiceDocument.styles.tsx";
+import React from "react";
 
-const BACKEND_URL = "http://localhost:8081/api";
+const BACKEND_URL = "http://localhost:8080/api";
 let authHeader: Record<string, string> = {};
 
 if (typeof window !== "undefined") {
@@ -49,29 +52,21 @@ async function handleError(resp: Response) {
 }
 
 async function authFetch(url: string, options: RequestInit = {}) {
-    const token = window.localStorage.getItem("authToken");
+    const token = window.localStorage.getItem("authToken"); // Get fresh token
 
     if (!token || isTokenExpired(token)) {
-        console.warn("Token expired or missing. Logging out...");
         logout();
         throw new Error("Session expired. Please login again.");
     }
 
-    const resp = await fetch(url, {
+    return fetch(url, {
         ...options,
         headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`, // Inject token here directly
             ...(options.headers || {}),
-            ...authHeader,
         },
     });
-
-    if (resp.status === 401) {
-        logout();
-        throw new Error("Unauthorized");
-    }
-
-    return resp;
 }
 
 function getRoleFromToken(token: string): string {
@@ -262,6 +257,7 @@ export async function updateProduct(product: ProductType) {
     return resp.json();
 }
 
+
 export async function updateEmployee(employee: EmployeeType) {
     const resp = await authFetch(`${BACKEND_URL}/employees/${employee.id}`, {
         method: "PUT",
@@ -358,27 +354,27 @@ export async function addProductToMyList(productId: number): Promise<void> {
     }
 }
 
-export async function performCheckout(): Promise<OrderSummaryDTO> {
-    const resp = await authFetch(`${BACKEND_URL}/invoices/checkout`, {
-        method: "POST"
-    });
-    if (!resp.ok) throw new Error("Checkout failed");
-    return resp.json();
-}
+// export async function performCheckout(): Promise<OrderSummaryDTO> {
+//     const resp = await authFetch(`${BACKEND_URL}/invoices/checkout`, {
+//         method: "POST"
+//     });
+//     if (!resp.ok) throw new Error("Checkout failed");
+//     return resp.json();
+// }
+//
+// export async function payInvoice(invoiceId: number, method: string = "CARD"): Promise<InvoiceDTO> {
+//     const resp = await authFetch(`${BACKEND_URL}/payments`, {
+//         method: "POST",
+//         body: JSON.stringify({ invoiceId, paymentMethod: method }),
+//         headers: { "Content-Type": "application/json" }
+//     });
 
-export async function payInvoice(invoiceId: number, method: string = "CARD"): Promise<InvoiceDTO> {
-    const resp = await authFetch(`${BACKEND_URL}/payments`, {
-        method: "POST",
-        body: JSON.stringify({ invoiceId, paymentMethod: method }),
-        headers: { "Content-Type": "application/json" }
-    });
-
-    if (!resp.ok) {
-        const err = await resp.json();
-        throw new Error(err.message || "Payment failed");
-    }
-    return resp.json();
-}
+//     if (!resp.ok) {
+//         const err = await resp.json();
+//         throw new Error(err.message || "Payment failed");
+//     }
+//     return resp.json();
+// }
 
 export async function claimProduct(productId: number): Promise<void> {
     const resp = await authFetch(`${BACKEND_URL}/products/${productId}/claim`, { method: "PUT" });
@@ -445,15 +441,21 @@ export async function performCheckout(): Promise<OrderSummaryDTO> {
         method: "POST"
     });
 
-    if (!resp.ok) await handleError(resp);
+    if (!resp.ok) {
+        const errorData = await resp.json().catch(() => ({}));
+        // This catches "Cannot checkout empty cart"
+        throw new Error(errorData.message || "Checkout failed: Cart is empty on server.");
+    }
     return resp.json();
 }
 
 export async function payInvoice(invoiceId: number): Promise<InvoiceDTO> {
-    const resp = await authFetch(`${BACKEND_URL}/payments`, {
+    console.log("Attempting payment for Invoice ID:", invoiceId); // DEBUG THIS
+
+    const resp = await authFetch(`${BACKEND_URL}/api/payments`, { // Ensure this matches your @RequestMapping
         method: "POST",
         body: JSON.stringify({
-            invoiceId: invoiceId,
+            invoiceId: invoiceId, // This MUST NOT be null
             paymentMethod: "CARD"
         })
     });

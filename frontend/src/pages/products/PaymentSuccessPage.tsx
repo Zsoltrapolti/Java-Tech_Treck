@@ -1,17 +1,13 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-    Box, Typography, TextField, CircularProgress, Divider
-} from "@mui/material";
+import { Box, Typography, TextField, CircularProgress, Divider } from "@mui/material";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EmailIcon from '@mui/icons-material/Email';
-
 import { pdf } from '@react-pdf/renderer';
 import { InvoiceDocument } from "../../components/pdf/InvoiceDocument";
 import { sendInvoiceToEmail } from "../../api/backend";
 import { showSuccess, showError } from "../../utils/toast";
 import type { InvoiceDTO } from "../../types/Invoice";
-
 import {
     ModulePageContainer,
     SuccessCard,
@@ -24,7 +20,6 @@ import {
 export default function PaymentSuccessPage() {
     const location = useLocation();
     const navigate = useNavigate();
-
     const invoice = location.state?.invoice as InvoiceDTO | undefined;
 
     const [email, setEmail] = useState<string>(invoice?.clientName || "");
@@ -34,10 +29,8 @@ export default function PaymentSuccessPage() {
         return (
             <ModulePageContainer>
                 <SuccessCard>
-                    <Typography variant="h5" color="error">No invoice data found.</Typography>
-                    <PrimaryButton onClick={() => navigate("/")}>
-                        Go Home
-                    </PrimaryButton>
+                    <Typography variant="h5" color="error" gutterBottom>No invoice data found.</Typography>
+                    <PrimaryButton onClick={() => navigate("/")}>Go Home</PrimaryButton>
                 </SuccessCard>
             </ModulePageContainer>
         );
@@ -50,7 +43,6 @@ export default function PaymentSuccessPage() {
             const url = URL.createObjectURL(blob);
             window.open(url, '_blank');
         } catch (e) {
-            console.error(e);
             showError("Could not generate PDF.");
         }
     };
@@ -63,12 +55,8 @@ export default function PaymentSuccessPage() {
 
         setSendingEmail(true);
         try {
-            if (!invoice || !invoice.id) {
-                showError("Error: Missing Invoice ID.");
-                return;
-            }
-
-            await sendInvoiceToEmail(invoice.id, email);
+            // invoice.id is required by the backend endpoint
+            await sendInvoiceToEmail(invoice.id!, email);
             showSuccess(`Invoice sent to ${email}`);
         } catch (e) {
             showError("Error sending email.");
@@ -81,10 +69,7 @@ export default function PaymentSuccessPage() {
         <ModulePageContainer>
             <SuccessCard>
                 <CheckCircleIcon sx={{ fontSize: 60, color: '#2C6E49' }} />
-
-                <ModulePageHeader sx={{ mb: 1 }}>
-                    Payment Successful!
-                </ModulePageHeader>
+                <ModulePageHeader sx={{ mb: 1 }}>Payment Successful!</ModulePageHeader>
 
                 <SummaryBox>
                     <Typography variant="subtitle2" color="text.secondary" textTransform="uppercase">
@@ -105,52 +90,28 @@ export default function PaymentSuccessPage() {
                     </Typography>
                     <Box display="flex" gap={1}>
                         <TextField
-                            fullWidth
-                            size="small"
-                            variant="outlined"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            fullWidth size="small" variant="outlined"
+                            value={email} onChange={(e) => setEmail(e.target.value)}
                             placeholder="example@email.com"
-                            InputProps={{
-                                style: { borderRadius: 8, backgroundColor: '#fff' }
-                            }}
-                            sx={{
-                                '& .MuiOutlinedInput-root': {
-                                    '&.Mui-focused fieldset': {
-                                        borderColor: '#2C6E49',
-                                    },
-                                    '&:hover fieldset': {
-                                        borderColor: '#2C6E49',
-                                    },
-                                },
-                            }}
+                            sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
                         />
                         <PrimaryButton
                             disabled={sendingEmail}
                             onClick={handleSendEmail}
-                            sx={{ minWidth: '60px', padding: '0' }}
+                            sx={{ minWidth: '60px' }}
                         >
                             {sendingEmail ? <CircularProgress size={24} color="inherit" /> : <EmailIcon />}
                         </PrimaryButton>
                     </Box>
                 </Box>
 
-                <Divider sx={{ width: '100%', my: 1 }} />
+                <Divider sx={{ width: '100%', my: 2 }} />
 
                 <Box display="flex" flexDirection="column" gap={2} width="100%">
-                    <OutlinedButton
-                        fullWidth
-                        size="large"
-                        onClick={handleViewPdf}
-                    >
+                    <OutlinedButton fullWidth size="large" onClick={handleViewPdf}>
                         View Invoice PDF
                     </OutlinedButton>
-
-                    <OutlinedButton
-                        fullWidth
-                        size="large"
-                        onClick={() => navigate("/")}
-                    >
+                    <OutlinedButton fullWidth size="large" onClick={() => navigate("/")}>
                         Back to Menu
                     </OutlinedButton>
                 </Box>
