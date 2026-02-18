@@ -8,88 +8,81 @@ import ro.krumpi.demo.model.shopping.InvoiceRecord;
 import ro.krumpi.demo.model.shopping.PaymentStatus;
 import ro.krumpi.demo.model.stock.CartItem;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class InvoiceMapper {
 
-    private static final String FURNIZOR_NUME = "SC KRUMPI MANAGEMENT SRL";
-    private static final String FURNIZOR_CUI = "RO12345678";
-    private static final String FURNIZOR_REG = "J12/1234/2024";
-    private static final String FURNIZOR_ADRESA = "Str. Cartofilor Nr. 1, Cluj-Napoca";
-    private static final String FURNIZOR_BANCA = "Banca Transilvania";
-    private static final String FURNIZOR_IBAN = "RO99 BTRL 0000 0000 0000 00XX";
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
-    public static InvoiceDTO toDTO(InvoiceRecord inv) {
-
-        List<InvoiceItemDTO> items = inv.getLines().stream()
-                .map(line -> new InvoiceItemDTO(
-                        line.getProductName(),
-                        line.getUnitOfMeasure(),
-                        line.getQuantity(),
-                        line.getPricePerUnit(),
-                        line.getLineTotalValue()
-                )).toList();
+    public static InvoiceDTO toDTO(InvoiceRecord invoice) {
+        List<InvoiceItemDTO> items = invoice.getLines().stream()
+                .map(InvoiceMapper::toItemDTO)
+                .collect(Collectors.toList());
 
         return new InvoiceDTO(
-                inv.getSeriesNumber(),
-                String.valueOf(inv.getId()),
-                inv.getIssuedAt().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-                FURNIZOR_NUME,
-                FURNIZOR_CUI,
-                FURNIZOR_REG,
-                FURNIZOR_ADRESA,
-                FURNIZOR_BANCA,
-                FURNIZOR_IBAN,
-                inv.getBuyer().getUsername(),
-                "Romania",
+                invoice.getId(),
+                "KR",
+                invoice.getSeriesNumber(),
+                invoice.getIssuedAt().format(FORMATTER),
+                "KRUMPI MANAGEMENT SRL",
+                "RO12345678",
+                "J40/123/2023",
+                "Str. Cartofului Nr. 1, Brașov",
+                "Banca Transilvania",
+                "RO99BTRL00000000000000XX",
+                invoice.getBuyer().getUsername(),
+                "Adresa Client (UserAccount)",
                 items,
-                inv.getTotalNet(),
-                inv.getTotalVat(),
-                inv.getTotalGross()
+                invoice.getTotalNet(),
+                invoice.getTotalVat(),
+                invoice.getTotalGross()
         );
     }
 
-    public static InvoiceRecord createInvoiceEntity(UserAccount buyer, List<CartItem> cartItems) {
-        if (cartItems == null || cartItems.isEmpty()) {
-            throw new RuntimeException("Cannot create invoice from empty cart");
-        }
-        InvoiceRecord invoice = InvoiceRecord.builder()
-                .seriesNumber("INV-" + System.currentTimeMillis())
-                .issuedAt(LocalDateTime.now())
-                .buyer(buyer)
-                .status(PaymentStatus.PENDING_PAYMENT)
-                .lines(new ArrayList<>())
-                .build();
+    private static InvoiceItemDTO toItemDTO(InvoiceLine line) {
+        return new InvoiceItemDTO(
+                line.getId(),
+                line.getProductName(),
+                line.getUnitOfMeasure(),
+                line.getQuantity(),
+                line.getPricePerUnit(),
+                line.getLineTotalValue()
+        );
+    }
 
-        double totalNet = 0.0;
+    public static InvoiceRecord createInvoiceEntity(UserAccount user, List<CartItem> cartItems) {
+        InvoiceRecord invoice = new InvoiceRecord();
+        invoice.setSeriesNumber(UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        invoice.setIssuedAt(java.time.LocalDateTime.now());
+        invoice.setBuyer(user);
+        invoice.setStatus(PaymentStatus.PENDING_PAYMENT);
+
+        double totalNet = 0;
+        List<InvoiceLine> lines = new java.util.ArrayList<>();
+
         for (CartItem item : cartItems) {
-            double price = (item.getProduct().getPrice() != null) ? item.getProduct().getPrice() : 0.0;
-            double lineVal = price * item.getQuantity();
+            InvoiceLine line = new InvoiceLine();
+            line.setInvoiceRecord(invoice);
+            line.setProductName(item.getProduct().getName());
+            line.setUnitOfMeasure(item.getProduct().getUnitOfMeasure());
+            line.setPricePerUnit(item.getProduct().getPrice());
+            line.setQuantity(item.getQuantity());
 
-            InvoiceLine line = createInvoiceLine(invoice, item, price, lineVal);
+            double lineTotal = item.getProduct().getPrice() * item.getQuantity();
+            line.setLineTotalValue(lineTotal);
 
-            invoice.getLines().add(line);
-            totalNet += lineVal;
+            totalNet += lineTotal;
+            lines.add(line);
         }
 
+        invoice.setLines(lines);
         invoice.setTotalNet(totalNet);
         invoice.setTotalVat(totalNet * 0.19);
         invoice.setTotalGross(totalNet * 1.19);
 
         return invoice;
-    }
-
-    private static InvoiceLine createInvoiceLine(InvoiceRecord parentInvoice, CartItem item, double price, double lineVal) {
-        return InvoiceLine.builder()
-                .invoiceRecord(parentInvoice)
-                .productName(item.getProduct().getName())
-                .unitOfMeasure(item.getProduct().getUnitOfMeasure())
-                .quantity(item.getQuantity())
-                .pricePerUnit(price)
-                .lineTotalValue(lineVal)
-                .build();
     }
 }
