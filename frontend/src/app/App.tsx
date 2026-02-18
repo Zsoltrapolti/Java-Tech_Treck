@@ -21,7 +21,8 @@ import CheckRequestStatusPage from "../pages/login/CheckRequestStatusPage.tsx";
 import AccountsPage from "../pages/accounts/AccountsPage.tsx";
 import AccountsEditPage from "../pages/accounts/AccountsEditPage.tsx";
 import AccountRequestsPage from "../pages/accounts/AccountRequestsPage.tsx";
-import PaymentSuccessPage from "../pages/products/PaymentSuccessPage.tsx";
+import MyOrdersPage from "../pages/orders/MyOrdersPage.tsx";
+import {UserCreateOrderPage} from "../pages/orders/UserCreateOrderPage.tsx";
 
 function App() {
     return (
@@ -44,7 +45,8 @@ function App() {
                     {/* USER ONLY ROUTES */}
                     <Route element={<RoleRoute allowed={["USER"]} />}>
                         <Route path="/my-products" element={<MyProductsListPage />} />
-                        <Route path="/payment-success" element={<PaymentSuccessPage />} />
+                        <Route path="/my-orders" element={<MyOrdersPage />} />
+                        <Route path="/new-order" element={<UserCreateOrderPage />} />
                     </Route>
 
                     {/* EMPLOYEE & ADMIN ROUTES */}

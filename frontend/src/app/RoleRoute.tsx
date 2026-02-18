@@ -1,6 +1,7 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../components/form/AuthContext.tsx";
 import type {UserRole} from "../types/Auth.ts";
+
 export function RoleRoute({ allowed }: { allowed: UserRole[] }) {
     const { role } = useAuth();
         
