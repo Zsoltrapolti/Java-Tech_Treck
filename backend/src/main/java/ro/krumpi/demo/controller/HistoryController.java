@@ -51,6 +51,17 @@ public class HistoryController {
         return ResponseEntity.ok(dtos);
     }
 
+    @GetMapping("/admin/all-user-orders")
+    public ResponseEntity<List<InvoiceDTO>> getAllUserOrders() {
+        List<InvoiceRecord> allInvoices = invoiceRecordRepository.findAll();
+
+        List<InvoiceDTO> dtos = allInvoices.stream()
+                .map(this::mapToInvoiceDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
+    }
+
     private UserAccount getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return userAccountRepository.findByUsername(username)

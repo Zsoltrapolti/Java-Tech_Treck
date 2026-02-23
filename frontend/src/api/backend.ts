@@ -500,3 +500,12 @@ export async function fetchMyOrderHistory(): Promise<InvoiceDTO[]> {
     if (!resp.ok) await handleError(resp);
     return resp.json();
 }
+
+export async function fetchAllUserOrders(): Promise<InvoiceDTO[]> {
+    const resp = await authFetch(`${BACKEND_URL}/history/admin/all-user-orders`, {
+        method: "GET"
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
