@@ -3,6 +3,7 @@ package ro.krumpi.demo.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ro.krumpi.demo.dto.shopping.CheckoutRequestDTO;
 import ro.krumpi.demo.mapper.InvoiceMapper;
 import ro.krumpi.demo.model.auth.UserAccount;
 import ro.krumpi.demo.model.stock.CartItem;
@@ -26,7 +27,7 @@ public class InvoiceService {
     private final UserAccountRepository userRepository;
 
     @Transactional
-    public InvoiceRecord checkout(String username) {
+    public InvoiceRecord checkout(String username, CheckoutRequestDTO billingData) {
         UserAccount user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -38,6 +39,13 @@ public class InvoiceService {
         }
 
         InvoiceRecord invoice = InvoiceMapper.createInvoiceEntity(user, cart.getItems());
+
+        invoice.setClientName(billingData.getCardHolderName());
+        invoice.setClientAddress(billingData.getStreet());
+        invoice.setClientCity(billingData.getCity());
+        invoice.setClientCounty(billingData.getCounty());
+        invoice.setClientZip(billingData.getZip());
+
         InvoiceRecord savedInvoice = invoiceRepository.save(invoice);
 
         cart.getItems().clear();
@@ -51,5 +59,15 @@ public class InvoiceService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return invoiceRepository.findByBuyer(user);
+    }
+
+    public List<InvoiceRecord> getMyOverdueInvoices(String username) {
+        UserAccount user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return invoiceRepository.findByBuyerAndStatusAndDueDateBefore(
+                user,
+                ro.krumpi.demo.model.shopping.PaymentStatus.PENDING_PAYMENT,
+                LocalDateTime.now()
+        );
     }
 }

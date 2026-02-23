@@ -27,13 +27,11 @@ export function Header() {
                 {/* --- USER LINKS --- */}
                 {role === "USER" && (
                     <>
-                        <NavButton to="/products">All Products</NavButton>
+                        <NavButton to="/products">Menu</NavButton>
 
-                        <NavButton to="/my-products">My Shopping Cart</NavButton>
+                        <NavButton to="/my-products">My Items</NavButton>
 
-                        <NavButton to="/create-order">New Order</NavButton>
-
-                        <NavButton to="/my-orders">My Orders</NavButton>
+                        <NavButton to="/my-orders">History Payments</NavButton>
                     </>
                 )}
 

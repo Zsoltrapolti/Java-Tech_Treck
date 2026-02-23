@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { fetchMyCart, removeFromCart, performCheckout, payInvoice, generateAndOpenPdf } from "../../api/backend";
+import { useNavigate } from "react-router-dom";
+import { fetchMyCart, removeFromCart } from "../../api/backend";
 import type { ShoppingCartDTO } from "../../types/ShoppingCart";
 import {
     ModulePageContainer,
@@ -16,10 +17,9 @@ import { showSuccess, showError } from "../../utils/toast";
 export default function MyProductsListPage() {
     const [cart, setCart] = useState<ShoppingCartDTO | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
+    const navigate = useNavigate();
 
     const loadCart = () => {
-        if (!cart) setLoading(true);
-
         fetchMyCart()
             .then((data) => {
                 setCart(data);
@@ -39,29 +39,15 @@ export default function MyProductsListPage() {
     const handleRemoveItem = async (cartItemId: number) => {
         try {
             await removeFromCart(cartItemId);
-            setCart(prev => prev ? {
-                ...prev,
-                items: prev.items.filter(item => item.id !== cartItemId),
-                grandTotal: prev.items.filter(item => item.id !== cartItemId).reduce((sum, i) => sum + i.totalLinePrice, 0)
-            } : null);
+            loadCart();
             showSuccess("Item removed from cart.");
         } catch {
             showError("Failed to remove item.");
         }
     };
 
-    const handleCheckoutAndPay = async () => {
-        try {
-            const orderSummary = await performCheckout();
-            const invoiceData = await payInvoice(orderSummary.orderId);
-            await generateAndOpenPdf(invoiceData);
-            setCart(null);
-            showSuccess(`Order #${orderSummary.orderId} completed and Invoice generated!`);
-            loadCart();
-        } catch (error) {
-            console.error(error);
-            showError("Checkout processing failed.");
-        }
+    const goToCheckout = () => {
+        navigate("/checkout");
     };
 
     if (loading) return <CircularProgress style={{ display: 'block', margin: '20px auto' }} />;
@@ -114,8 +100,8 @@ export default function MyProductsListPage() {
                                     {cart.grandTotal?.toFixed(2)} RON
                                 </ModuleTableCell>
                                 <ModuleTableCell>
-                                    <AddButton onClick={handleCheckoutAndPay}>
-                                        CHECKOUT & PAY
+                                    <AddButton onClick={goToCheckout}>
+                                        PROCEED TO CHECKOUT
                                     </AddButton>
                                 </ModuleTableCell>
                             </TableRow>

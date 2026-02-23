@@ -19,6 +19,11 @@ public class InvoiceRecord {
     private String seriesNumber;
 
     private LocalDateTime issuedAt;
+    private LocalDateTime dueDate;
+
+    @Column(name = "reminder_sent")
+    @Builder.Default
+    private boolean reminderSent = false;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -33,4 +38,10 @@ public class InvoiceRecord {
 
     @OneToMany(mappedBy = "invoiceRecord", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InvoiceLine> lines = new ArrayList<>();
+
+    private String clientName;
+    private String clientAddress;
+    private String clientCity;
+    private String clientCounty;
+    private String clientZip;
 }
