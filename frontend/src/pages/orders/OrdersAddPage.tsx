@@ -1,29 +1,28 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 import { createOrder, fetchEmployees } from "../../api/backend";
+
 import { EditFormPage } from "../../components/form/EditFormPage";
 import { EditFormField } from "../../components/form/EditFormField";
 import { EditFormActions } from "../../components/form/EditFormActions";
+
 import {
     AddItemButton,
     EditLabel,
     EditSelect,
     OrderItemRow
 } from "../../ui/ModulePageEdit.styles";
-import { showError } from "../../utils/toast";
-import { MenuItem } from "@mui/material";
-
 
 import type { EmployeeType } from "../../types/Employee";
 import type { OrderType } from "../../types/Order";
 import type { OrderItemType } from "../../types/OrderItem";
 
+import { MenuItem } from "@mui/material";
+import { showError } from "../../utils/toast";
+
 export default function OrdersAddPage() {
     const navigate = useNavigate();
-
-    const [employees, setEmployees] = useState<EmployeeType[]>([]);
 
     const [order, setOrder] = useState<OrderType>({
         customerName: "",
@@ -31,16 +30,10 @@ export default function OrdersAddPage() {
         items: [],
     });
 
+    const [employees, setEmployees] = useState<EmployeeType[]>([]);
+
     useEffect(() => {
-        fetchEmployees()
-            .then((data) => {
-                console.log("Employees fetched:", data);
-                setEmployees(data);
-            })
-            .catch((err) => {
-                console.error(err);
-                showError(new Error("Could not load employees"));
-            });
+        fetchEmployees().then(setEmployees);
     }, []);
 
     function addItem() {
@@ -68,13 +61,14 @@ export default function OrdersAddPage() {
             if (!order.customerName.trim()) {
                 throw new Error("Customer name is required");
             }
+
             if (!order.responsibleEmployeeId) {
                 throw new Error("Responsible employee is required");
             }
 
             await createOrder(order);
             navigate("/orders");
-        } catch (e: any) {
+        } catch (e) {
             showError(e);
         }
     }
@@ -92,8 +86,8 @@ export default function OrdersAddPage() {
             <EditLabel>Responsible Employee</EditLabel>
             <EditSelect
                 select
-                value={order.responsibleEmployeeId || ""}
-                onChange={(e: any) =>
+                value={order.responsibleEmployeeId ?? ""}
+                onChange={e =>
                     setOrder({
                         ...order,
                         responsibleEmployeeId: Number(e.target.value),
@@ -103,7 +97,6 @@ export default function OrdersAddPage() {
                 <MenuItem value="">
                     <em>Select employee</em>
                 </MenuItem>
-
                 {employees.map(emp => (
                     <MenuItem key={emp.id} value={emp.id}>
                         {emp.firstName} {emp.lastName}
