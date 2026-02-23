@@ -1229,9 +1229,21 @@
       "item": [
         {
           "name": "Get Cart",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
           "request": {
             "method": "GET",
             "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
             "url": {
               "raw": "{{base_url}}/api/cart",
               "host": [
@@ -1302,14 +1314,14 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{base_url}}/api/cart/item/{{cartItemId}}",
+              "raw": "{{base_url}}/api/cart/items/{{cartItemId}}",
               "host": [
                 "{{base_url}}"
               ],
               "path": [
                 "api",
                 "cart",
-                "item",
+                "items",
                 "{{cartItemId}}"
               ]
             }
@@ -1317,18 +1329,20 @@
           "response": []
         },
         {
-          "name": "Get Invoice",
+          "name": "Checkout",
           "event": [
             {
               "listen": "test",
               "script": {
                 "exec": [
-                  "if (pm.response.code === 201 || pm.response.code === 200) {\r",
-                  "\r",
-                  "  const json = pm.response.json();\r",
-                  "\r",
-                  "  if (json.id) pm.collectionVariables.set('invoiceId', json.id);\r",
-                  "\r",
+                  "if (pm.response.code === 200) {\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "        if (jsonData.orderId) {\r",
+                  "        pm.collectionVariables.set(\"invoiceId\", jsonData.orderId);\r",
+                  "        console.log(\"Invoice ID salvat: \" + jsonData.orderId);\r",
+                  "    } else {\r",
+                  "        console.log(\"Nu am găsit orderId în răspuns!\");\r",
+                  "    }\r",
                   "}"
                 ],
                 "type": "text/javascript",
@@ -1342,7 +1356,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"orderId\": 1,     \r\n    \"description\": \"Order INV-{{$randomInt}}.\",\r\n    \"totalToPay\": {{$randomInt}},\r\n    \"status\": \"PENDING_PAYMENT\"\r\n}",
+              "raw": "{\r\n  \"street\": \"Strada Exemplului Nr. 10, Ap. 4\",\r\n  \"city\": \"București\",\r\n  \"county\": \"Sector 1\",\r\n  \"zip\": \"010101\",\r\n  \"cardHolderName\": \"Ion Popescu\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1388,7 +1402,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\r\n    \"invoiceId\": 1,\r\n    \"paymentMethod\": \"CARD\"\r\n}",
+              "raw": "{\r\n    \"invoiceId\": {{invoiceId}},\r\n    \"paymentMethod\": \"CARD\"\r\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -1433,7 +1447,7 @@
         "bearer": [
           {
             "key": "token",
-            "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBrcnVtcGkucm8iLCJyb2xlIjoiUk9MRV9BRE1JTiIsImlhdCI6MTc3MDAyOTY5OSwiZXhwIjoxNzcwMDMzMjk5fQ.UbCfnb6p3MQkBueCg3DvtycycWyB6nRTPYLPpuVBGBg",
+            "value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBrcnVtcGkucm8iLCJyb2xlIjoiUk9MRV9BRE1JTiIsImlhdCI6MTc3MTM0MDgyMiwiZXhwIjoxNzcxMzQ0NDIyfQ.8Ozp_IBkZ8mLGsbNN1Xa_pMh-8JTTwx9_Y0HKFW3HIk",
             "type": "string"
           }
         ]

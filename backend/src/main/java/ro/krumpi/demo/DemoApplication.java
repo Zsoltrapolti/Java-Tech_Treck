@@ -1,6 +1,9 @@
 package ro.krumpi.demo;
 
 
+import org.springframework.scheduling.annotation.EnableScheduling;
+import ro.krumpi.demo.model.employee.Employee;
+import ro.krumpi.demo.service.EmployeeService;
 
 
 
@@ -9,6 +12,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
+@EnableScheduling
 public class DemoApplication {
 
     public static void main(String[] args) {

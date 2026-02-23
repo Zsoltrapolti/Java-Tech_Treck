@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchMyCart, removeFromCart } from "../../api/backend"; 
+import { fetchMyCart, removeFromCart } from "../../api/backend";
 import type { ShoppingCartDTO } from "../../types/ShoppingCart";
 import {
     ModulePageContainer,
