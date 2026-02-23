@@ -2,10 +2,12 @@ import type { ModuleType } from "../types/Module";
 import type { StockEntryType } from "../types/StockEntry";
 import type { ProductType } from "../types/Product";
 import type { EmployeeType } from "../types/Employee";
-import { showError } from "../utils/toast";
 import type { OrderType } from "../types/Order";
-import type { AccountType } from "../types/Account.ts";
-import type {AccountRequestType} from "../types/AccountRequest.ts";
+import type { AccountType } from "../types/Account";
+import type { AccountRequestType } from "../types/AccountRequest";
+import type { OrderSummaryDTO, InvoiceDTO } from "../types/Invoice";
+import type { ShoppingCartDTO } from "../types/ShoppingCart";
+import { showError } from "../utils/toast";
 import { jwtDecode } from "jwt-decode";
 import { pdf } from '@react-pdf/renderer';
 import type { InvoiceDTO, OrderSummaryDTO } from '../types/Invoice';
@@ -53,7 +55,6 @@ async function handleError(resp: Response) {
     throw new Error(message);
 }
 
-
 async function authFetch(url: string, options: RequestInit = {}) {
     const token = window.localStorage.getItem("authToken");
 
@@ -85,9 +86,6 @@ function getRoleFromToken(token: string): string {
         const base64Url = token.split('.')[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
         const payload = JSON.parse(window.atob(base64));
-
-        console.log("JWT PAYLOAD:", payload);
-
         const role = payload.role || payload.roles?.[0] || payload.authorities?.[0] || "USER";
         return role.replace("ROLE_", "");
     } catch {
@@ -106,7 +104,6 @@ export async function login(username: string, password: string) {
 
     const data = await response.json();
     const token = data.token;
-
     const role = getRoleFromToken(token);
 
     authHeader = { Authorization: `Bearer ${token}` };
@@ -130,43 +127,25 @@ export function logout() {
     window.location.href = "/";
 }
 
-
-export async function registerUser(
-    username: string,
-    password: string,
-    role: "USER" | "EMPLOYEE" | "ADMIN" = "USER"
-) {
+export async function registerUser(username: string, password: string, role: "USER" | "EMPLOYEE" | "ADMIN" = "USER") {
     const resp = await fetch(`${BACKEND_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password, role })
     });
-
     if (!resp.ok) {
         const err = await resp.json();
         throw new Error(err.message || "Register failed");
     }
-
     return true;
 }
 
-export async function requestAccount(
-    firstName: string,
-    lastName: string,
-    email: string
-): Promise<void> {
+export async function requestAccount(firstName: string, lastName: string, email: string): Promise<void> {
     const response = await fetch(`${BACKEND_URL}/account-requests`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            firstName,
-            lastName,
-            email
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ firstName, lastName, email })
     });
-
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || "Failed to submit account request");
@@ -174,25 +153,17 @@ export async function requestAccount(
 }
 
 export async function checkRequestStatus(email: string): Promise<string> {
-    const response = await fetch(
-        `${BACKEND_URL}/account-requests/status?email=${encodeURIComponent(email)}`,
-        {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json"
-            }
-        }
-    );
-
+    const response = await fetch(`${BACKEND_URL}/account-requests/status?email=${encodeURIComponent(email)}`, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" }
+    });
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || "Failed to check request status");
     }
-
     const data = await response.json();
     return data.status;
 }
-
 
 export async function fetchMe() {
     const resp = await authFetch(`${BACKEND_URL}/auth/me`);
@@ -202,21 +173,9 @@ export async function fetchMe() {
 
 export async function fetchModules(): Promise<ModuleType[]> {
     return [
-        {
-            id: 1,
-            name: "Raw Material Management",
-            description: "Manage raw material stock and warehouse inventory."
-        },
-        {
-            id: 2,
-            name: "Employee Management",
-            description: "Manage employee records, roles, and assignments."
-        },
-        {
-            id: 3,
-            name: "Order Management",
-            description: "Manage customer orders, processing, and delivery status."
-        }
+        { id: 1, name: "Raw Material Management", description: "Manage raw material stock and warehouse inventory." },
+        { id: 2, name: "Employee Management", description: "Manage employee records, roles, and assignments." },
+        { id: 3, name: "Order Management", description: "Manage customer orders, processing, and delivery status." }
     ];
 }
 
@@ -234,7 +193,6 @@ export async function fetchProducts(): Promise<ProductType[]> {
 
 export async function fetchStockEntries(): Promise<StockEntryType[]> {
     const products = await fetchProducts();
-
     return products.map((p) => ({
         id: p.id,
         product: p,
@@ -265,7 +223,6 @@ export async function fetchAccountRequests(): Promise<AccountRequestType[]> {
     if (!resp.ok) throw new Error("Failed to fetch account requests");
     return resp.json();
 }
-
 
 export async function fetchOrderById(id: number): Promise<OrderType> {
     const resp = await authFetch(`${BACKEND_URL}/orders/${id}`);
@@ -299,7 +256,6 @@ export async function updateOrder(order: OrderType) {
         method: "PUT",
         body: JSON.stringify(order),
     });
-
     if (!resp.ok) await handleError(resp);
     return resp.json();
 }
@@ -309,7 +265,6 @@ export async function updateProduct(product: ProductType) {
         method: "PUT",
         body: JSON.stringify(product),
     });
-
     if (!resp.ok) await handleError(resp);
     return resp.json();
 }
@@ -319,36 +274,27 @@ export async function updateEmployee(employee: EmployeeType) {
         method: "PUT",
         body: JSON.stringify(employee),
     });
-
     if (!resp.ok) await handleError(resp);
     return resp.json();
 }
 
-export async function updateAccountRole(
-    id: number,
-    assignedRole: string
-): Promise<AccountType> {
+export async function updateAccountRole(id: number, assignedRole: string): Promise<AccountType> {
     const resp = await authFetch(
         `${BACKEND_URL}/admin/accounts/${id}/role`,
         {
             method: "PUT",
             body: JSON.stringify(assignedRole),
-            headers: {
-                "Content-Type": "application/json"
-            }
+            headers: { "Content-Type": "application/json" }
         }
     );
-
     if (!resp.ok) await handleError(resp);
     return resp.json();
 }
-
 
 export async function deleteProduct(id: number) {
     const resp = await authFetch(`${BACKEND_URL}/products/${id}`, {
         method: "DELETE",
     });
-
     if (!resp.ok) throw new Error("Failed to delete product");
 }
 
@@ -356,7 +302,6 @@ export async function deleteOrder(id: number) {
     const resp = await authFetch(`${BACKEND_URL}/orders/${id}`, {
         method: "DELETE",
     });
-
     if (!resp.ok) throw new Error("Failed to delete order");
 }
 
@@ -364,7 +309,6 @@ export async function deleteEmployee(id: number) {
     const resp = await authFetch(`${BACKEND_URL}/employees/${id}`, {
         method: "DELETE",
     });
-
     if (!resp.ok) throw new Error("Failed to delete employee");
 }
 
@@ -372,7 +316,6 @@ export async function deleteAccountRequest(id: number): Promise<void> {
     const resp = await authFetch(`${BACKEND_URL}/admin/account-requests/${id}`, {
         method: "DELETE"
     });
-
     if (!resp.ok) throw new Error("Failed to delete request");
 }
 
@@ -381,7 +324,6 @@ export async function createProduct(product: ProductType) {
         method: "POST",
         body: JSON.stringify(product)
     });
-
     if (!resp.ok) await handleError(resp);
     return resp.json();
 }
@@ -389,17 +331,13 @@ export async function createProduct(product: ProductType) {
 export async function createOrder(order: OrderType) {
     const payload = {
         ...order,
-        creationDate: order.creationDate
-            ? new Date(order.creationDate).toISOString().slice(0, 19)
-            : new Date().toISOString().slice(0, 19),
+        creationDate: order.creationDate ? new Date(order.creationDate).toISOString() : new Date().toISOString(),
         status: order.status || "PENDING"
     };
-
     const resp = await authFetch(`${BACKEND_URL}/orders`, {
         method: "POST",
         body: JSON.stringify(payload),
     });
-
     if (!resp.ok) await handleError(resp);
     return resp.json();
 }
@@ -409,27 +347,48 @@ export async function createEmployee(employee: EmployeeType) {
         method: "POST",
         body: JSON.stringify(employee),
     });
-
     if (!resp.ok) await handleError(resp);
     return resp.json();
 }
 
+
 export async function addProductToMyList(productId: number): Promise<void> {
     const resp = await authFetch(`${BACKEND_URL}/products/my-selection`, {
         method: "POST",
-        body: JSON.stringify({ productId })
+        // Sending as object: { "productId": 5 }
+        body: JSON.stringify({ productId: productId }),
+        headers: { "Content-Type": "application/json" }
     });
 
     if (!resp.ok) {
-        throw new Error("Could not add product to your selection");
+        throw new Error("Could not add product. Check SecurityConfig!");
     }
 }
 
-export async function claimProduct(productId: number): Promise<void> {
-    const resp = await authFetch(`${BACKEND_URL}/products/${productId}/claim`, {
-        method: "PUT",
+export async function performCheckout(): Promise<OrderSummaryDTO> {
+    const resp = await authFetch(`${BACKEND_URL}/invoices/checkout`, {
+        method: "POST"
+    });
+    if (!resp.ok) throw new Error("Checkout failed");
+    return resp.json();
+}
+
+export async function payInvoice(invoiceId: number, method: string = "CARD"): Promise<InvoiceDTO> {
+    const resp = await authFetch(`${BACKEND_URL}/payments`, {
+        method: "POST",
+        body: JSON.stringify({ invoiceId, paymentMethod: method }),
+        headers: { "Content-Type": "application/json" }
     });
 
+    if (!resp.ok) {
+        const err = await resp.json();
+        throw new Error(err.message || "Payment failed");
+    }
+    return resp.json();
+}
+
+export async function claimProduct(productId: number): Promise<void> {
+    const resp = await authFetch(`${BACKEND_URL}/products/${productId}/claim`, { method: "PUT" });
     if (!resp.ok) {
         const data = await resp.json().catch(() => ({}));
         throw new Error(data.message || "Failed to claim product");
@@ -437,34 +396,34 @@ export async function claimProduct(productId: number): Promise<void> {
 }
 
 export async function unclaimProduct(productId: number): Promise<void> {
-    const resp = await authFetch(`${BACKEND_URL}/products/${productId}/unclaim`, {
-        method: "PUT"
-    });
-
-    if (!resp.ok) {
-        throw new Error("Could not eliminate product.");
-    }
+    const resp = await authFetch(`${BACKEND_URL}/products/${productId}/unclaim`, { method: "PUT" });
+    if (!resp.ok) throw new Error("Could not eliminate product.");
 }
 
-export async function reviewAccountRequest(
-    id: number,
-    approve: boolean,
-    assignedRole?: string
-): Promise<AccountRequestType> {
-    const body = {
-        approve,
-        assignedRole: approve ? assignedRole : null
-    };
-
+export async function reviewAccountRequest(id: number, approve: boolean, assignedRole?: string): Promise<AccountRequestType> {
+    const body = { approve, assignedRole: approve ? assignedRole : null };
     const resp = await authFetch(`${BACKEND_URL}/admin/account-requests/${id}/review`, {
         method: "PUT",
         body: JSON.stringify(body)
     });
-
     if (!resp.ok) await handleError(resp);
     return resp.json();
 }
 
+export async function fetchMyInvoices(): Promise<OrderSummaryDTO[]> {
+    const resp = await authFetch(`${BACKEND_URL}/invoices`);
+    if (!resp.ok) throw new Error("Failed to fetch invoices");
+    return resp.json();
+}
+
+export async function fetchInvoiceDetails(id: number): Promise<InvoiceDTO> {
+    const resp = await authFetch(`${BACKEND_URL}/invoices/${id}`);
+    if (!resp.ok) {
+        const error = await resp.json();
+        throw new Error(error.message || "Failed to fetch invoice details");
+    }
+    return resp.json();
+}
 
 export async function fetchMyCart(): Promise<ShoppingCartDTO> {
     const resp = await authFetch(`${BACKEND_URL}/cart`);
@@ -477,7 +436,6 @@ export async function addToCart(productId: number, quantity: number): Promise<Sh
         method: "POST",
         body: JSON.stringify({ productId, quantity })
     });
-
     if (!resp.ok) await handleError(resp);
     return resp.json();
 }
@@ -486,7 +444,6 @@ export async function removeFromCart(cartItemId: number): Promise<void> {
     const resp = await authFetch(`${BACKEND_URL}/cart/items/${cartItemId}`, {
         method: "DELETE"
     });
-
     if (!resp.ok) throw new Error("Failed to remove item");
 }
 

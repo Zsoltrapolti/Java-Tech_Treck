@@ -1,4 +1,4 @@
-package ro.krumpi.demo.contollerTests;
+package ro.krumpi.demo.controllerTests;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
