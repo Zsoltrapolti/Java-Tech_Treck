@@ -10,8 +10,6 @@ import type { ShoppingCartDTO } from "../types/ShoppingCart";
 import { showError } from "../utils/toast";
 import { jwtDecode } from "jwt-decode";
 import { pdf } from '@react-pdf/renderer';
-import type { InvoiceDTO, OrderSummaryDTO } from '../types/Invoice';
-import type {ShoppingCartDTO} from "../types/ShoppingCart.ts";
 import React from 'react';
 import { InvoiceDocument } from '../components/pdf/InvoiceDocument';
 import type {CheckoutRequestDTO} from "../types/CheckoutRequestDTO.ts";
@@ -365,27 +363,27 @@ export async function addProductToMyList(productId: number): Promise<void> {
     }
 }
 
-export async function performCheckout(): Promise<OrderSummaryDTO> {
-    const resp = await authFetch(`${BACKEND_URL}/invoices/checkout`, {
-        method: "POST"
-    });
-    if (!resp.ok) throw new Error("Checkout failed");
-    return resp.json();
-}
+// export async function performCheckout(): Promise<OrderSummaryDTO> {
+//     const resp = await authFetch(`${BACKEND_URL}/invoices/checkout`, {
+//         method: "POST"
+//     });
+//     if (!resp.ok) throw new Error("Checkout failed");
+//     return resp.json();
+// }
 
-export async function payInvoice(invoiceId: number, method: string = "CARD"): Promise<InvoiceDTO> {
-    const resp = await authFetch(`${BACKEND_URL}/payments`, {
-        method: "POST",
-        body: JSON.stringify({ invoiceId, paymentMethod: method }),
-        headers: { "Content-Type": "application/json" }
-    });
-
-    if (!resp.ok) {
-        const err = await resp.json();
-        throw new Error(err.message || "Payment failed");
-    }
-    return resp.json();
-}
+// export async function payInvoice(invoiceId: number, method: string = "CARD"): Promise<InvoiceDTO> {
+//     const resp = await authFetch(`${BACKEND_URL}/payments`, {
+//         method: "POST",
+//         body: JSON.stringify({ invoiceId, paymentMethod: method }),
+//         headers: { "Content-Type": "application/json" }
+//     });
+//
+//     if (!resp.ok) {
+//         const err = await resp.json();
+//         throw new Error(err.message || "Payment failed");
+//     }
+//     return resp.json();
+// }
 
 export async function claimProduct(productId: number): Promise<void> {
     const resp = await authFetch(`${BACKEND_URL}/products/${productId}/claim`, { method: "PUT" });
@@ -483,4 +481,22 @@ export async function sendInvoiceToEmail(invoiceId: number, email: string): Prom
     });
 
     if (!resp.ok) await handleError(resp);
+}
+
+export async function fetchMyPaymentHistory(): Promise<PaymentDTO[]> {
+    const resp = await authFetch(`${BACKEND_URL}/history/payments`, {
+        method: "GET"
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function fetchMyOrderHistory(): Promise<InvoiceDTO[]> {
+    const resp = await authFetch(`${BACKEND_URL}/history/orders`, {
+        method: "GET"
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
 }
