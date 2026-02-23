@@ -24,29 +24,29 @@ export function Header() {
             <HeaderTitle>Krumpi Management System</HeaderTitle>
 
             <NavContainer>
-                {/* --- USER LINKS --- */}
+            {/* --- USER LINKS --- */}
                 {role === "USER" && (
                     <>
                         <NavButton to="/products">Menu</NavButton>
-
                         <NavButton to="/my-products">My Items</NavButton>
-
                         <NavButton to="/my-orders">History Payments</NavButton>
                     </>
                 )}
 
                 {/* --- EMPLOYEE / ADMIN LINKS --- */}
                 {(role === "EMPLOYEE" || role === "ADMIN") && (
-                    <NavButton to="/stock">Stock</NavButton>
+                    <>
+                        <NavButton to="/stock">Stock</NavButton>
+                        <NavButton to="/orders">All Orders</NavButton>
+                    </>
                 )}
 
+                {/* --- ADMIN ONLY LINKS --- */}
                 {role === "ADMIN" && (
                     <>
                         <NavButton to="/employees">Employees</NavButton>
-                        <NavButton to="/orders">All Orders</NavButton>
                         <NavButton to="/accounts">All Accounts</NavButton>
                         <NavButton to="/account-requests">Account Requests</NavButton>
-
                     </>
                 )}
 
