@@ -60,4 +60,14 @@ public class InvoiceService {
 
         return invoiceRepository.findByBuyer(user);
     }
+
+    public List<InvoiceRecord> getMyOverdueInvoices(String username) {
+        UserAccount user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return invoiceRepository.findByBuyerAndStatusAndDueDateBefore(
+                user,
+                ro.krumpi.demo.model.shopping.PaymentStatus.PENDING_PAYMENT,
+                LocalDateTime.now()
+        );
+    }
 }

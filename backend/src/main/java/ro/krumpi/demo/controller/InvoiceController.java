@@ -96,4 +96,25 @@ public class InvoiceController {
 
         return ResponseEntity.ok().build();
     }
+
+    @Operation(
+            summary = "Get my overdue invoices",
+            description = "Returns a list of overdue invoices for the currently logged-in user to display notifications."
+    )
+    @GetMapping("/my-overdue")
+    public ResponseEntity<List<OrderSummaryDTO>> getMyOverdueNotifications(Principal principal) {
+        List<InvoiceRecord> overdueInvoices = checkoutService.getMyOverdueInvoices(principal.getName());
+
+        List<OrderSummaryDTO> overdueList = overdueInvoices.stream()
+                .map(inv -> new OrderSummaryDTO(
+                        inv.getId(),
+                        "Restanță la factura " + inv.getSeriesNumber(),
+                        inv.getTotalGross(),
+                        inv.getStatus().name()
+                ))
+                .toList();
+
+        return ResponseEntity.ok(overdueList);
+    }
 }
+

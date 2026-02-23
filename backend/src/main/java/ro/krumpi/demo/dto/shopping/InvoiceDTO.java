@@ -8,6 +8,7 @@ public record InvoiceDTO(
         String series,
         String number,
         String date,
+        String dueDate,
         String supplierName,
         String supplierCui,
         String supplierReg,

@@ -19,6 +19,11 @@ public class InvoiceRecord {
     private String seriesNumber;
 
     private LocalDateTime issuedAt;
+    private LocalDateTime dueDate;
+
+    @Column(name = "reminder_sent")
+    @Builder.Default
+    private boolean reminderSent = false;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

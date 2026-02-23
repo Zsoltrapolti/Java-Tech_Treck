@@ -23,6 +23,7 @@ public class InvoiceMapper {
         InvoiceRecord invoice = InvoiceRecord.builder()
                 .seriesNumber("INV-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase())
                 .issuedAt(LocalDateTime.now())
+                .dueDate(LocalDateTime.now().plusDays(14))
                 .buyer(user)
                 .status(PaymentStatus.PENDING_PAYMENT)
                 .lines(lines)
@@ -79,12 +80,16 @@ public class InvoiceMapper {
 
         if (invoice.getClientAddress() == null) fullAddress = "Address not provided";
 
+        String dueDateStr = (invoice.getDueDate() != null)
+                ? invoice.getDueDate().toLocalDate().toString()
+                : invoice.getIssuedAt().plusDays(14).toLocalDate().toString();
 
         return InvoiceDTO.builder()
                 .id(invoice.getId())
                 .series(invoice.getSeriesNumber().substring(0, 3))
                 .number(invoice.getSeriesNumber().substring(4))
                 .date(invoice.getIssuedAt().toString())
+                .dueDate(dueDateStr)
                 .supplierName("Krumpi Management SRL")
                 .supplierCui("RO12345678")
                 .supplierReg("J40/1234/2020")
