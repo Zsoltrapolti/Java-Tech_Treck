@@ -25,6 +25,7 @@ import PaymentSuccessPage from "../pages/products/PaymentSuccessPage.tsx";
 import CheckoutPage from "../pages/products/CheckoutPage.tsx";
 import PaymentWaitingPage from "../pages/products/PaymentWaitingPage.tsx";
 import PayInvoicePage from "../pages/products/PayInvoicePage.tsx";
+import {HistoryPage} from "../pages/orders/HistoryPage.tsx";
 
 function App() {
     return (
@@ -52,6 +53,9 @@ function App() {
                         <Route path="/payment-waiting" element={<PaymentWaitingPage />} />
                         <Route path="/pay-invoice/:id" element={<PayInvoicePage />} />
                     </Route>
+
+                    {/* ---> ADDED HISTORY ROUTE HERE <--- */}
+                    <Route path="/my-orders" element={<HistoryPage />} />
 
                     {/* EMPLOYEE & ADMIN ROUTES */}
                     <Route element={<RoleRoute allowed={["EMPLOYEE", "ADMIN"]} />}>

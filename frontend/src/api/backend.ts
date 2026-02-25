@@ -506,3 +506,31 @@ export const payInvoice = async (invoiceId: number): Promise<InvoiceDTO> => {
     if (!resp.ok) await handleError(resp);
     return resp.json();
 };
+
+
+export async function fetchMyPaymentHistory(): Promise<PaymentDTO[]> {
+    const resp = await authFetch(`${BACKEND_URL}/history/payments`, {
+        method: "GET"
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function fetchMyOrderHistory(): Promise<InvoiceDTO[]> {
+    const resp = await authFetch(`${BACKEND_URL}/history/orders`, {
+        method: "GET"
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function fetchAllUserOrders(): Promise<InvoiceDTO[]> {
+    const resp = await authFetch(`${BACKEND_URL}/history/admin/all-user-orders`, {
+        method: "GET"
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
