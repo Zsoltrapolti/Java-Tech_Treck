@@ -490,23 +490,10 @@ export async function removeFromCart(cartItemId: number): Promise<void> {
     if (!resp.ok) throw new Error("Failed to remove item");
 }
 
-export async function performCheckout(billingData: CheckoutRequestDTO): Promise<OrderSummaryDTO> {
+export async function performCheckout(billingData: CheckoutRequestDTO): Promise<InvoiceDTO> {
     const resp = await authFetch(`${BACKEND_URL}/invoices/checkout`, {
         method: "POST",
         body: JSON.stringify(billingData)
-    });
-
-    if (!resp.ok) await handleError(resp);
-    return resp.json();
-}
-
-export async function payInvoice(invoiceId: number): Promise<InvoiceDTO> {
-    const resp = await authFetch(`${BACKEND_URL}/payments`, {
-        method: "POST",
-        body: JSON.stringify({
-            invoiceId: invoiceId,
-            paymentMethod: "CARD"
-        })
     });
 
     if (!resp.ok) await handleError(resp);
@@ -527,3 +514,40 @@ export async function sendInvoiceToEmail(invoiceId: number, email: string): Prom
 
     if (!resp.ok) await handleError(resp);
 }
+
+export async function fetchMyOverdueInvoices(): Promise<OrderSummaryDTO[]> {
+    const resp = await authFetch(`${BACKEND_URL}/invoices/my-overdue`);
+    if (!resp.ok) {
+        throw new Error("Failed to fetch overdue invoices");
+    }
+    return resp.json();
+}
+
+export const fetchMyPendingInvoices = async (): Promise<InvoiceDTO[]> => {
+    const resp = await authFetch(`${BACKEND_URL}/invoices/my-pending`);
+    if (!resp.ok) {
+        throw new Error("Failed to fetch pending invoices");
+    }
+    return resp.json();
+};
+
+export const fetchInvoiceById = async (id: number): Promise<InvoiceDTO> => {
+    const resp = await authFetch(`${BACKEND_URL}/invoices/${id}`);
+    if (!resp.ok) {
+        throw new Error("Failed to fetch invoice details");
+    }
+    return resp.json();
+};
+
+export const payInvoice = async (invoiceId: number): Promise<InvoiceDTO> => {
+    const resp = await authFetch(`${BACKEND_URL}/payments`, {
+        method: "POST",
+        body: JSON.stringify({
+            invoiceId: invoiceId,
+            paymentMethod: "CARD"
+        })
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+};
