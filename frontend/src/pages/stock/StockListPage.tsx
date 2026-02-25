@@ -42,12 +42,14 @@ export default function StockListPage() {
                         name: s.product.name,
                         unitOfMeasure: s.product.unitOfMeasure,
                         quantity: s.quantity
+                        , price: s.product.price
                     }))}
                     columns={[
                         { label: "ID", key: "id" },
                         { label: "Name", key: "name" },
                         { label: "Unit", key: "unitOfMeasure" },
-                        { label: "Quantity", key: "quantity" }
+                        { label: "Quantity", key: "quantity" },
+                        {label: "Price", key: "price"}
                     ]}
                     onEdit={id => navigate(`/stock/${id}/edit`)}
                     onDelete={handleDelete}

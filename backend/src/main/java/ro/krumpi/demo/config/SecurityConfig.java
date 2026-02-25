@@ -71,6 +71,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/invoices/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
                         .requestMatchers("/api/payments/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
 
+                        .requestMatchers("/api/history/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
+
                         .requestMatchers(HttpMethod.POST, "/api/orders").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/orders", "/api/orders/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/orders/*/deliver").hasRole("ADMIN")

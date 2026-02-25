@@ -1,41 +1,30 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-    TextField,
-    Button,
-    MenuItem,
-    Select,
-    InputLabel,
-    FormControl,
-    Grid,
-    IconButton,
-    Typography,
-    Card,
-    CardContent
+    TextField, Button, MenuItem, Select, InputLabel,
+    FormControl, Grid, IconButton, Typography, Card, CardContent
 } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 import { fetchProducts, createOrder, fetchMe } from "../../api/backend";
 import { showError, showSuccess } from "../../utils/toast";
-import type { OrderType, OrderItemType, OrderStatus } from "../../types/Order";
+import type { OrderType, OrderItemType } from "../../types/Order";
 import type { ProductType } from "../../types/Product";
 import { ModulePageContainer, ModulePageHeader } from "../../ui/ModulePage.styles";
 
-export default function UserCreateOrderPage() {
+export function UserCreateOrderPage() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [products, setProducts] = useState<ProductType[]>([]);
 
-
-
-     const [order, setOrder] = useState<OrderType>({
-         customerName: localStorage.getItem("username") || "",
-         creationDate: new Date().toISOString().slice(0, 16),
-         status: "PENDING",
-         responsibleEmployeeId: 2, //employee-ul hardcodat
-         items: [{ productId: 999, quantity: 1, unitPrice: 10.0 }]
-        });
+    const [order, setOrder] = useState<OrderType>({
+        customerName: localStorage.getItem("username") || "",
+        creationDate: new Date().toISOString().slice(0, 16),
+        status: "PENDING",
+        responsibleEmployeeId: 1, // Ensure this matches a valid ID in your DB
+        items: [] // Start empty for a better UX
+    });
 
     useEffect(() => {
         const initData = async () => {
@@ -45,63 +34,53 @@ export default function UserCreateOrderPage() {
 
                 const userData = await fetchMe();
                 if (userData) {
-                    setOrder(prev => ({
-                        ...prev,
-                        customerName: userData.username
-                    }));
+                    setOrder(prev => ({...prev, customerName: userData.username}));
                 }
             } catch (err: any) {
-                showError(new Error("Failed to load initial data"));
+                showError(new Error("Failed to load products."));
             }
         };
         initData();
     }, []);
 
-
     const addItemRow = () => {
         setOrder(prev => ({
             ...prev,
-            items: [...prev.items, { productId: 0, quantity: 1, unitPrice: 0 }]
+            items: [...prev.items, {productId: 0, quantity: 1, unitPrice: 0}]
         }));
     };
 
-
     const removeItemRow = (index: number) => {
-        const newItems = [...order.items];
-        newItems.splice(index, 1);
-        setOrder(prev => ({ ...prev, items: newItems }));
+        setOrder(prev => ({
+            ...prev,
+            items: prev.items.filter((_, i) => i !== index)
+        }));
     };
-
 
     const handleItemChange = (index: number, field: keyof OrderItemType, value: any) => {
         const newItems = [...order.items];
-        const item = { ...newItems[index], [field]: value };
+        const item = {...newItems[index], [field]: value};
 
-
+        // Auto-fill price when product is selected
         if (field === 'productId') {
             const selectedProduct = products.find(p => p.id === value);
-
-            item.unitPrice = 10.0;
+            // Accessing price directly from ProductDTO structure
+            item.unitPrice = selectedProduct ? selectedProduct.price : 0;
         }
 
         newItems[index] = item;
-        setOrder(prev => ({ ...prev, items: newItems }));
+        setOrder(prev => ({...prev, items: newItems}));
     };
 
-    // Submit the Order
     const handleSubmit = async () => {
         if (order.items.length === 0) {
-            showError(new Error("Please add at least one product to the order."));
-            return;
-        }
-
-        if (order.items.some(i => i.productId === 0)) {
-            showError(new Error("Please select a product for all items."));
+            showError(new Error("Your order is empty."));
             return;
         }
 
         setLoading(true);
         try {
+            // Formatting date to match backend LocalDateTime expectations
             const payload = {
                 ...order,
                 creationDate: new Date(order.creationDate).toISOString().slice(0, 19)
@@ -111,110 +90,93 @@ export default function UserCreateOrderPage() {
             showSuccess("Order placed successfully!");
             navigate("/my-orders");
         } catch (error: any) {
-            console.error("Create Order Error:", error);
-            showError(new Error("Failed to create order."));
+            showError(new Error("Failed to create order. Please check stock levels."));
         } finally {
             setLoading(false);
         }
     };
 
-return (
+    return (
         <ModulePageContainer>
-            <ModulePageHeader>Create New Order</ModulePageHeader>
-
-            <Card style={{ maxWidth: 800, margin: '0 auto', padding: '20px' }}>
+            <ModulePageHeader>Manual Order Entry</ModulePageHeader>
+            <Card style={{maxWidth: 800, margin: '0 auto', boxShadow: '0 4px 12px rgba(0,0,0,0.1)'}}>
                 <CardContent>
                     <Grid container spacing={3}>
-
-                        {/* Customer & Date Info */}
                         <Grid item xs={12} sm={6}>
-                            <TextField
-                                label="Customer Name"
-                                fullWidth
-                                value={order.customerName}
-                                disabled
-                            />
+                            <TextField label="Customer" fullWidth value={order.customerName} disabled variant="filled"/>
                         </Grid>
-
                         <Grid item xs={12} sm={6}>
                             <TextField
-                                label="Date"
+                                label="Order Date"
                                 type="datetime-local"
                                 fullWidth
-                                InputLabelProps={{ shrink: true }}
                                 value={order.creationDate}
                                 onChange={(e) => setOrder({...order, creationDate: e.target.value})}
                             />
                         </Grid>
 
-                        {/* Products Section */}
                         <Grid item xs={12}>
-                            <Typography variant="h6" style={{ marginTop: 10, borderBottom: '1px solid #eee', paddingBottom: 10 }}>
-                                Products
-                            </Typography>
+                            <Typography variant="subtitle1" weight="bold">Order Items</Typography>
                         </Grid>
 
                         {order.items.map((item, index) => (
                             <Grid container item spacing={2} key={index} alignItems="center">
-                                <Grid item xs={6}>
+                                <Grid item xs={5}>
                                     <FormControl fullWidth size="small">
-                                        <InputLabel>Product</InputLabel>
+                                        <InputLabel>Select Product</InputLabel>
                                         <Select
-                                            value={item.productId === 0 ? "" : item.productId}
-                                            label="Product"
+                                            value={item.productId || ""}
+                                            label="Select Product"
                                             onChange={(e) => handleItemChange(index, 'productId', Number(e.target.value))}
                                         >
                                             {products.map(p => (
                                                 <MenuItem key={p.id} value={p.id}>
-                                                    {p.name} ({p.unitOfMeasure})
+                                                    {p.name} — {p.price.toFixed(2)} RON /{p.unitOfMeasure}
                                                 </MenuItem>
                                             ))}
                                         </Select>
                                     </FormControl>
                                 </Grid>
-                                <Grid item xs={4}>
+                                <Grid item xs={3}>
                                     <TextField
-                                        label="Quantity"
+                                        label="Qty"
                                         type="number"
                                         size="small"
-                                        fullWidth
                                         value={item.quantity}
                                         onChange={(e) => handleItemChange(index, 'quantity', Number(e.target.value))}
                                     />
                                 </Grid>
-                                <Grid item xs={2}>
-                                    <IconButton color="error" onClick={() => removeItemRow(index)} disabled={order.items.length === 1}>
-                                        <DeleteIcon />
+                                <Grid item xs={3}>
+                                    <Typography variant="body2" color="textSecondary">
+                                        Total: {(item.quantity * item.unitPrice).toFixed(2)} RON
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={1}>
+                                    <IconButton color="error" onClick={() => removeItemRow(index)}>
+                                        <DeleteIcon/>
                                     </IconButton>
                                 </Grid>
                             </Grid>
                         ))}
 
                         <Grid item xs={12}>
-                            <Button
-                                startIcon={<AddCircleOutlineIcon />}
-                                onClick={addItemRow}
-                                variant="outlined"
-                                color="secondary"
-                            >
-                                Add Another Product
+                            <Button startIcon={<AddCircleOutlineIcon/>} onClick={addItemRow} variant="text">
+                                Add Item
                             </Button>
                         </Grid>
 
-                        {/* Submit Action */}
-                        <Grid item xs={12} style={{ marginTop: 20 }}>
+                        <Grid item xs={12}>
                             <Button
                                 variant="contained"
                                 color="primary"
                                 fullWidth
-                                size="large"
                                 onClick={handleSubmit}
-                                disabled={loading}
+                                disabled={loading || order.items.length === 0}
+                                style={{backgroundColor: '#2C6E49', padding: '12px'}}
                             >
-                                {loading ? "Placing Order..." : "Submit Order"}
+                                {loading ? "Processing..." : "Confirm Order"}
                             </Button>
                         </Grid>
-
                     </Grid>
                 </CardContent>
             </Card>
