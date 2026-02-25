@@ -55,9 +55,15 @@ function App() {
 
                     {/* EMPLOYEE & ADMIN ROUTES */}
                     <Route element={<RoleRoute allowed={["EMPLOYEE", "ADMIN"]} />}>
-                        <Route path="/stock" element={<StockListPage />} />
-                        <Route path="/stock/new" element={<StockAddPage />} />
-                        <Route path="/stock/:id/edit" element={<StockEditPage />} />
+                       {/* Stock Management */}
+                       <Route path="/stock" element={<StockListPage />} />
+                       <Route path="/stock/new" element={<StockAddPage />} />
+                       <Route path="/stock/:id/edit" element={<StockEditPage />} />
+
+                       {/* Order Management */}
+                       <Route path="/orders" element={<OrdersPage />} />
+                       <Route path="/orders/new" element={<OrdersAddPage />} />
+                       <Route path="/orders/:id/edit" element={<OrdersEditPage />} />
                     </Route>
 
                     {/* ADMIN ONLY ROUTES */}
