@@ -14,4 +14,5 @@ public interface InvoiceRecordRepository extends JpaRepository<InvoiceRecord, Lo
     List<InvoiceRecord> findByBuyerAndStatusAndDueDateBefore(UserAccount buyer, PaymentStatus status, LocalDateTime date);
     List<InvoiceRecord> findAllByStatusAndDueDateBeforeAndReminderSentFalse(PaymentStatus status, LocalDateTime date);
     List<InvoiceRecord> findByBuyerAndStatus(UserAccount buyer, PaymentStatus status);
+    List<InvoiceRecord> findByBuyer_ManagedBy(UserAccount managedBy);
 }

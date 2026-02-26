@@ -71,13 +71,20 @@ public class SecurityConfig {
                         .requestMatchers("/api/invoices/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
                         .requestMatchers("/api/payments/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
 
+                        .requestMatchers("/api/client-management/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                        .requestMatchers("/api/invoices/managed-clients-orders").hasAnyRole("EMPLOYEE", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/invoices/*/modify").hasAnyRole("EMPLOYEE", "ADMIN")
                         .requestMatchers("/api/history/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
+                        .requestMatchers("/api/history/admin/**").hasAnyRole("EMPLOYEE", "ADMIN")
 
                         .requestMatchers(HttpMethod.POST, "/api/orders").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/orders", "/api/orders/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/orders/*/deliver").hasRole("ADMIN")
-                        .requestMatchers("/api/orders/**").hasRole("ADMIN")
+
                         .requestMatchers("/api/employees/**").hasRole("ADMIN")
+                        .requestMatchers("/api/employees/unassigned-clients").hasAnyRole("EMPLOYEE", "ADMIN")
+                        .requestMatchers("/api/employees/*/my-clients").hasAnyRole("EMPLOYEE", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/employees/*/claim-client/*").hasAnyRole("EMPLOYEE", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class)

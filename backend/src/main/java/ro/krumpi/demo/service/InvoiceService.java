@@ -5,18 +5,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ro.krumpi.demo.dto.shopping.CheckoutRequestDTO;
 import ro.krumpi.demo.mapper.InvoiceMapper;
+import ro.krumpi.demo.model.auth.Role;
 import ro.krumpi.demo.model.auth.UserAccount;
 import ro.krumpi.demo.model.shopping.PaymentStatus;
-import ro.krumpi.demo.model.stock.CartItem;
-import ro.krumpi.demo.model.stock.ShoppingCart;
-import ro.krumpi.demo.model.shopping.InvoiceLine;
 import ro.krumpi.demo.model.shopping.InvoiceRecord;
 import ro.krumpi.demo.repository.InvoiceRecordRepository;
 import ro.krumpi.demo.repository.ShoppingCartRepository;
 import ro.krumpi.demo.repository.UserAccountRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,7 +29,7 @@ public class InvoiceService {
         UserAccount user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        ShoppingCart cart = cartRepository.findByUser(user)
+        var cart = cartRepository.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("Cart is empty"));
 
         if (cart.getItems().isEmpty()) {
@@ -58,7 +55,6 @@ public class InvoiceService {
     public List<InvoiceRecord> getMyInvoices(String username) {
         UserAccount user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
         return invoiceRepository.findByBuyer(user);
     }
 
@@ -72,5 +68,46 @@ public class InvoiceService {
     public List<InvoiceRecord> getMyPendingInvoices(String username) {
         UserAccount user = userRepository.findByUsername(username).orElseThrow();
         return invoiceRepository.findByBuyerAndStatus(user, PaymentStatus.PENDING_PAYMENT);
+    }
+
+    public List<InvoiceRecord> getOrdersForMyClients(Long employeeUserId) {
+        UserAccount employee = userRepository.findById(employeeUserId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        if (employee.getRole() != Role.EMPLOYEE && employee.getRole() != Role.ADMIN) {
+            throw new RuntimeException("Only EMPLOYEE or ADMIN can view client orders");
+        }
+
+        return invoiceRepository.findByBuyer_ManagedBy(employee);
+    }
+
+    @Transactional
+    public InvoiceRecord modifyClientOrder(Long employeeUserId, Long orderId, CheckoutRequestDTO updatedData) {
+        UserAccount employee = userRepository.findById(employeeUserId)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        if (employee.getRole() != Role.EMPLOYEE && employee.getRole() != Role.ADMIN) {
+            throw new RuntimeException("Only EMPLOYEE or ADMIN can modify orders");
+        }
+
+        InvoiceRecord invoice = invoiceRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Invoice not found"));
+
+        UserAccount client = invoice.getBuyer();
+        if (client.getManagedBy() == null || !client.getManagedBy().getId().equals(employee.getId())) {
+            throw new RuntimeException("Access denied: You do not manage this client's orders.");
+        }
+
+        if (invoice.getStatus() != PaymentStatus.PENDING_PAYMENT) {
+            throw new RuntimeException("Cannot modify an order that is already PAID or CANCELLED.");
+        }
+
+        invoice.setClientName(updatedData.getCardHolderName());
+        invoice.setClientAddress(updatedData.getStreet());
+        invoice.setClientCity(updatedData.getCity());
+        invoice.setClientCounty(updatedData.getCounty());
+        invoice.setClientZip(updatedData.getZip());
+
+        return invoiceRepository.save(invoice);
     }
 }

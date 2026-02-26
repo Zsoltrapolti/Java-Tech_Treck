@@ -16,14 +16,16 @@ import type {CheckoutRequestDTO} from "../types/CheckoutRequestDTO.ts";
 
 
 const BACKEND_URL = "http://localhost:8081/api";
-let authHeader: Record<string, string> = {};
 
-if (typeof window !== "undefined") {
-    const savedToken = window.localStorage.getItem("authToken");
-    if (savedToken) {
-        authHeader = { Authorization: `Bearer ${savedToken}` };
-    }
+export interface PaymentDTO {
+    id: number;
+    invoiceId: number;
+    amount: number;
+    paymentMethod: string;
+    paymentDate: string;
+    status: string;
 }
+
 
 interface DecodedToken {
     exp: number;
@@ -67,7 +69,7 @@ async function authFetch(url: string, options: RequestInit = {}) {
         headers: {
             "Content-Type": "application/json",
             ...(options.headers || {}),
-            ...authHeader,
+            Authorization: `Bearer ${token}`,
         },
     });
 
@@ -104,7 +106,6 @@ export async function login(username: string, password: string) {
     const token = data.token;
     const role = getRoleFromToken(token);
 
-    authHeader = { Authorization: `Bearer ${token}` };
     localStorage.setItem("username", username);
     localStorage.setItem("authToken", token);
     localStorage.setItem("role", role);
@@ -121,7 +122,6 @@ export function logout() {
     window.localStorage.removeItem("role");
     window.localStorage.removeItem("username");
     window.localStorage.removeItem("userId");
-    authHeader = {};
     window.location.href = "/";
 }
 
@@ -363,28 +363,6 @@ export async function addProductToMyList(productId: number): Promise<void> {
     }
 }
 
-// export async function performCheckout(): Promise<OrderSummaryDTO> {
-//     const resp = await authFetch(`${BACKEND_URL}/invoices/checkout`, {
-//         method: "POST"
-//     });
-//     if (!resp.ok) throw new Error("Checkout failed");
-//     return resp.json();
-// }
-
-// export async function payInvoice(invoiceId: number, method: string = "CARD"): Promise<InvoiceDTO> {
-//     const resp = await authFetch(`${BACKEND_URL}/payments`, {
-//         method: "POST",
-//         body: JSON.stringify({ invoiceId, paymentMethod: method }),
-//         headers: { "Content-Type": "application/json" }
-//     });
-//
-//     if (!resp.ok) {
-//         const err = await resp.json();
-//         throw new Error(err.message || "Payment failed");
-//     }
-//     return resp.json();
-// }
-
 export async function claimProduct(productId: number): Promise<void> {
     const resp = await authFetch(`${BACKEND_URL}/products/${productId}/claim`, { method: "PUT" });
     if (!resp.ok) {
@@ -486,14 +464,6 @@ export const fetchMyPendingInvoices = async (): Promise<InvoiceDTO[]> => {
     return resp.json();
 };
 
-export const fetchInvoiceById = async (id: number): Promise<InvoiceDTO> => {
-    const resp = await authFetch(`${BACKEND_URL}/invoices/${id}`);
-    if (!resp.ok) {
-        throw new Error("Failed to fetch invoice details");
-    }
-    return resp.json();
-};
-
 export const payInvoice = async (invoiceId: number): Promise<InvoiceDTO> => {
     const resp = await authFetch(`${BACKEND_URL}/payments`, {
         method: "POST",
@@ -534,3 +504,38 @@ export async function fetchAllUserOrders(): Promise<InvoiceDTO[]> {
     if (!resp.ok) await handleError(resp);
     return resp.json();
 }
+
+export const fetchInvoiceById = async (id: number) => {
+    const resp = await authFetch(`${BACKEND_URL}/invoices/${id}`);
+    if (!resp.ok) throw new Error("Failed to fetch invoice details");
+    return resp.json();
+};
+
+export const fetchUnassignedClients = async () => {
+    const resp = await authFetch(`${BACKEND_URL}/client-management/unassigned-clients`);
+    if (!resp.ok) throw new Error("Failed to fetch unassigned clients");
+    return resp.json();
+};
+
+export const fetchMyClients = async () => {
+    const resp = await authFetch(`${BACKEND_URL}/client-management/my-clients`);
+    if (!resp.ok) throw new Error("Failed to fetch my clients");
+    return resp.json();
+};
+
+export const claimClient = async (clientId: number) => {
+    const resp = await authFetch(`${BACKEND_URL}/client-management/claim-client/${clientId}`, {
+        method: "POST"
+    });
+    if (!resp.ok) throw new Error("Failed to claim client");
+};
+
+export const modifyClientOrder = async (orderId: number, data: any) => {
+    const resp = await authFetch(`${BACKEND_URL}/invoices/${orderId}/modify`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+    if (!resp.ok) throw new Error("Failed to modify order");
+    return resp.json();
+};

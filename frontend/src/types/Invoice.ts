@@ -25,6 +25,7 @@ export interface InvoiceDTO {
     totalNet: number;
     totalVat: number;
     totalGross: number;
+    status?: string;
 }
 
 export interface OrderSummaryDTO {

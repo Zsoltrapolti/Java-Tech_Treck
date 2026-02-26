@@ -10,7 +10,7 @@ import StockEditPage from "../pages/stock/StockEditPage";
 import EmployeesPage from "../pages/employees/EmployeesPage";
 import EmployeesAddPage from "../pages/employees/EmployeesAddPage";
 import EmployeesEditPage from "../pages/employees/EmployeesEditPage";
-import OrdersPage from "../pages/orders/OrdersPage";
+import UserOrdersPage from "../pages/orders/UserOrdersPage.tsx";
 import OrdersAddPage from "../pages/orders/OrdersAddPage";
 import OrdersEditPage from "../pages/orders/OrdersEditPage";
 import ProductsListPage from "../pages/products/ProductsListPage";
@@ -26,6 +26,8 @@ import CheckoutPage from "../pages/products/CheckoutPage.tsx";
 import PaymentWaitingPage from "../pages/products/PaymentWaitingPage.tsx";
 import PayInvoicePage from "../pages/products/PayInvoicePage.tsx";
 import {HistoryPage} from "../pages/orders/HistoryPage.tsx";
+import UserOrderEditPage from "../pages/orders/UserOrderEditPage.tsx";
+import {AssignClientsPage} from "../pages/employees/AssignClientsPage.tsx";
 
 function App() {
     return (
@@ -62,6 +64,12 @@ function App() {
                         <Route path="/stock" element={<StockListPage />} />
                         <Route path="/stock/new" element={<StockAddPage />} />
                         <Route path="/stock/:id/edit" element={<StockEditPage />} />
+
+                        <Route path="/orders" element={<UserOrdersPage />} />
+                        <Route path="/orders/new" element={<OrdersAddPage />} />
+                        <Route path="/orders/:id/edit" element={<OrdersEditPage />} />
+                        <Route path="/user-orders/:id/edit" element={<UserOrderEditPage />} />
+                        <Route path="/assign-clients" element={<AssignClientsPage />} />
                     </Route>
 
                     {/* ADMIN ONLY ROUTES */}
@@ -69,7 +77,7 @@ function App() {
                         <Route path="/employees" element={<EmployeesPage />} />
                         <Route path="/employees/new" element={<EmployeesAddPage />} />
                         <Route path="/employees/:id/edit" element={<EmployeesEditPage />} />
-                        <Route path="/orders" element={<OrdersPage />} />
+                        <Route path="/orders" element={<UserOrdersPage />} />
                         <Route path="/orders/new" element={<OrdersAddPage />} />
                         <Route path="/orders/:id/edit" element={<OrdersEditPage />} />
                         <Route path="/accounts" element={<AccountsPage />} />
