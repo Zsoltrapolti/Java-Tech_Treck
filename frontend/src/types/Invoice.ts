@@ -12,6 +12,7 @@ export interface InvoiceDTO {
     series: string;
     number: string;
     date: string;
+    dueDate: string;
     supplierName: string;
     supplierCui: string;
     supplierReg: string;
