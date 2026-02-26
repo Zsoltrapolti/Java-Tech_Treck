@@ -23,9 +23,8 @@ import AccountsEditPage from "../pages/accounts/AccountsEditPage.tsx";
 import AccountRequestsPage from "../pages/accounts/AccountRequestsPage.tsx";
 import PaymentSuccessPage from "../pages/products/PaymentSuccessPage.tsx";
 import CheckoutPage from "../pages/products/CheckoutPage.tsx";
-import PaymentWaitingPage from "../pages/products/PaymentWaitingPage.tsx";
-import PayInvoicePage from "../pages/products/PayInvoicePage.tsx";
-import {HistoryPage} from "../pages/orders/HistoryPage.tsx";
+import { HistoryPage } from '../pages/orders/HistoryPage';
+import MyInvoicesPage from "../pages/orders/MyInvoicesPage";
 
 function App() {
     return (
@@ -50,8 +49,10 @@ function App() {
                         <Route path="/my-products" element={<MyProductsListPage />} />
                         <Route path="/payment-success" element={<PaymentSuccessPage />} />
                         <Route path="/checkout" element={<CheckoutPage />} />
-                        <Route path="/payment-waiting" element={<PaymentWaitingPage />} />
-                        <Route path="/pay-invoice/:id" element={<PayInvoicePage />} />
+
+                        {/* ---> ADDED HISTORY AND INVOICES ROUTE HERE <--- */}
+                        <Route path="/my-orders" element={<HistoryPage />} />
+                        <Route path="/my-invoices" element={<MyInvoicesPage />} />
                     </Route>
 
                     {/* ---> ADDED HISTORY ROUTE HERE <--- */}
