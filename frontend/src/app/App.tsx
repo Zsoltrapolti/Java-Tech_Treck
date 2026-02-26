@@ -23,7 +23,9 @@ import AccountsEditPage from "../pages/accounts/AccountsEditPage.tsx";
 import AccountRequestsPage from "../pages/accounts/AccountRequestsPage.tsx";
 import PaymentSuccessPage from "../pages/products/PaymentSuccessPage.tsx";
 import CheckoutPage from "../pages/products/CheckoutPage.tsx";
-import { HistoryPage } from '../pages/orders/HistoryPage';
+import PaymentWaitingPage from "../pages/products/PaymentWaitingPage.tsx";
+import PayInvoicePage from "../pages/products/PayInvoicePage.tsx";
+import {HistoryPage} from "../pages/orders/HistoryPage.tsx";
 
 function App() {
     return (
@@ -48,22 +50,18 @@ function App() {
                         <Route path="/my-products" element={<MyProductsListPage />} />
                         <Route path="/payment-success" element={<PaymentSuccessPage />} />
                         <Route path="/checkout" element={<CheckoutPage />} />
-
-                        {/* ---> ADDED HISTORY ROUTE HERE <--- */}
-                        <Route path="/my-orders" element={<HistoryPage />} />
+                        <Route path="/payment-waiting" element={<PaymentWaitingPage />} />
+                        <Route path="/pay-invoice/:id" element={<PayInvoicePage />} />
                     </Route>
+
+                    {/* ---> ADDED HISTORY ROUTE HERE <--- */}
+                    <Route path="/my-orders" element={<HistoryPage />} />
 
                     {/* EMPLOYEE & ADMIN ROUTES */}
                     <Route element={<RoleRoute allowed={["EMPLOYEE", "ADMIN"]} />}>
-                       {/* Stock Management */}
-                       <Route path="/stock" element={<StockListPage />} />
-                       <Route path="/stock/new" element={<StockAddPage />} />
-                       <Route path="/stock/:id/edit" element={<StockEditPage />} />
-
-                       {/* Order Management */}
-                       <Route path="/orders" element={<OrdersPage />} />
-                       <Route path="/orders/new" element={<OrdersAddPage />} />
-                       <Route path="/orders/:id/edit" element={<OrdersEditPage />} />
+                        <Route path="/stock" element={<StockListPage />} />
+                        <Route path="/stock/new" element={<StockAddPage />} />
+                        <Route path="/stock/:id/edit" element={<StockEditPage />} />
                     </Route>
 
                     {/* ADMIN ONLY ROUTES */}
