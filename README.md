@@ -158,3 +158,129 @@ http://localhost:8099/swagger-ui.html
 
 ## Contact
 For questions/issues, contact me 
+
+---
+
+## Configurare pe fiecare  (local)
+
+### Cerinte
+1. PostgreSQL pornit pe `localhost:5436`
+2. User DB: `postgres`
+3. Parola DB: `root`
+4. Din root proiect:
+```bash
+cd Java-Tech_Treck
+```
+
+### Setup initial (o singura data)
+1. Instaleaza dependintele frontend:
+```bash
+cd frontend
+npm install
+cd ..
+```
+2. Curata build backend:
+```bash
+cd backend
+./mvnw clean
+cd ..
+```
+
+# Zsolt
+
+## Backend
+1. Creeaza baza locala:
+```bash
+cd backend
+PGPASSWORD=root createdb -h localhost -p 5436 -U postgres krumpi_zsolt_db 2>/dev/null || true
+```
+2. Porneste backend cu configurarea lui:
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.arguments="--spring.config.name=application,app_zsolt"
+```
+3. Creeaza/actualizeaza user admin:
+```bash
+ADMIN_HASH='$2a$10$3SwEfchO6yuvfnD1Ehnhx./hJCL.ox1aG9xHxOaYBE4S2k.HWOyHe'
+PGPASSWORD=root psql -h localhost -p 5436 -U postgres -d krumpi_zsolt_db -c "INSERT INTO users (username, password, role) VALUES ('zsolt@krumpi.ro', '$ADMIN_HASH', 'ADMIN') ON CONFLICT (username) DO UPDATE SET password = EXCLUDED.password, role = 'ADMIN';"
+```
+
+## Frontend
+1. In `frontend/src/api/backend.ts` seteaza local:
+```ts
+const BACKEND_URL = "http://localhost:8082/api";
+```
+2. Ruleaza frontend:
+```bash
+cd ../frontend
+npm run dev
+```
+
+## Login
+- Username: `zsolt@krumpi.ro`
+- Password: `Admin123!`
+
+# Catalina
+
+## Backend
+1. Creeaza baza locala:
+```bash
+cd backend
+PGPASSWORD=root createdb -h localhost -p 5436 -U postgres krumpi_catalina_db 2>/dev/null || true
+```
+2. Porneste backend cu configurarea ei:
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.arguments="--spring.config.name=application,app_catalina"
+```
+3. Creeaza/actualizeaza user admin:
+```bash
+ADMIN_HASH='$2a$10$3SwEfchO6yuvfnD1Ehnhx./hJCL.ox1aG9xHxOaYBE4S2k.HWOyHe'
+PGPASSWORD=root psql -h localhost -p 5436 -U postgres -d krumpi_catalina_db -c "INSERT INTO users (username, password, role) VALUES ('catalina@krumpi.ro', '$ADMIN_HASH', 'ADMIN') ON CONFLICT (username) DO UPDATE SET password = EXCLUDED.password, role = 'ADMIN';"
+```
+
+## Frontend
+1. In `frontend/src/api/backend.ts` seteaza local:
+```ts
+const BACKEND_URL = "http://localhost:8083/api";
+```
+2. Ruleaza frontend:
+```bash
+cd ../frontend
+npm run dev
+```
+
+## Login
+- Username: `catalina@krumpi.ro`
+- Password: `Admin123!`
+
+# Andreea
+
+## Backend
+1. Creeaza baza locala:
+```bash
+cd backend
+PGPASSWORD=root createdb -h localhost -p 5436 -U postgres krumpi_andreea_db 2>/dev/null || true
+```
+2. Porneste backend cu configurarea ei:
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.arguments="--spring.config.name=application,app_andreea"
+```
+3. Creeaza/actualizeaza user admin:
+```bash
+ADMIN_HASH='$2a$10$3SwEfchO6yuvfnD1Ehnhx./hJCL.ox1aG9xHxOaYBE4S2k.HWOyHe'
+PGPASSWORD=root psql -h localhost -p 5436 -U postgres -d krumpi_andreea_db -c "INSERT INTO users (username, password, role) VALUES ('andreea@krumpi.ro', '$ADMIN_HASH', 'ADMIN') ON CONFLICT (username) DO UPDATE SET password = EXCLUDED.password, role = 'ADMIN';"
+```
+
+## Frontend
+1. In `frontend/src/api/backend.ts` seteaza local:
+```ts
+const BACKEND_URL = "http://localhost:8084/api";
+```
+2. Ruleaza frontend:
+```bash
+cd ../frontend
+npm run dev
+```
+
+## Login
+- Username: `andreea@krumpi.ro`
+- Password: `Admin123!`

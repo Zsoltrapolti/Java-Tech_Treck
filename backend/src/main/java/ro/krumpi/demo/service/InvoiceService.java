@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ro.krumpi.demo.dto.shopping.CheckoutRequestDTO;
 import ro.krumpi.demo.mapper.InvoiceMapper;
 import ro.krumpi.demo.model.auth.UserAccount;
+import ro.krumpi.demo.model.shopping.PaymentStatus;
 import ro.krumpi.demo.model.stock.CartItem;
 import ro.krumpi.demo.model.stock.ShoppingCart;
 import ro.krumpi.demo.model.shopping.InvoiceLine;
@@ -59,5 +60,17 @@ public class InvoiceService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return invoiceRepository.findByBuyer(user);
+    }
+
+    public List<InvoiceRecord> getMyOverdueInvoices(String username) {
+        UserAccount user = userRepository.findByUsername(username).orElseThrow();
+        return invoiceRepository.findByBuyerAndStatusAndDueDateBefore(
+                user, PaymentStatus.PENDING_PAYMENT, LocalDateTime.now()
+        );
+    }
+
+    public List<InvoiceRecord> getMyPendingInvoices(String username) {
+        UserAccount user = userRepository.findByUsername(username).orElseThrow();
+        return invoiceRepository.findByBuyerAndStatus(user, PaymentStatus.PENDING_PAYMENT);
     }
 }

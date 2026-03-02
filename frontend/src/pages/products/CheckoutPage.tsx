@@ -8,7 +8,7 @@ import Grid from "@mui/material/Grid";
 
 import { fetchMyCart, performCheckout, payInvoice } from "../../api/backend";
 import type { ShoppingCartDTO } from "../../types/ShoppingCart";
-import { showError } from "../../utils/toast";
+import { showError, showSuccess } from "../../utils/toast";
 
 import {
     ModulePageContainer, ModulePageHeader,
@@ -30,7 +30,7 @@ export default function CheckoutPage() {
 
     const [card, setCard] = useState({
         number: "",
-        name: "",
+        name: localStorage.getItem("username") || "",
         expiry: "",
         cvv: ""
     });
@@ -43,24 +43,33 @@ export default function CheckoutPage() {
     }, []);
 
     const handlePay = async () => {
-        if (!address.street || !address.city || !card.number || !card.cvv || !card.name) {
-            showError("Please fill in all address and payment details.");
+        if (!address.street || !address.city || !address.county || !address.zip || !card.name || !card.number || !card.expiry || !card.cvv) {
+            showError("Please fill in all billing and card details.");
             return;
         }
 
-        setProcessing(true);
+        const billingData = {
+            street: address.street,
+            city: address.city,
+            county: address.county,
+            zip: address.zip,
+            cardHolderName: card.name
+        };
+
         try {
-            const billingData = {
-                street: address.street,
-                city: address.city,
-                county: address.county,
-                zip: address.zip,
-                cardHolderName: card.name
-            };
-            const orderSummary = await performCheckout(billingData);
-            await new Promise(r => setTimeout(r, 1500));
-            const invoiceData = await payInvoice(orderSummary.orderId);
-            navigate("/payment-success", { state: { invoice: invoiceData } });
+            setProcessing(true);
+
+            const createdInvoice = await performCheckout(billingData);
+
+            if (!createdInvoice || !createdInvoice.id) {
+                throw new Error("Nu s-a putut genera ID-ul facturii!");
+            }
+
+            const paidInvoice = await payInvoice(createdInvoice.id);
+
+            showSuccess("Payment successful!");
+
+            navigate("/payment-success", { state: { invoice: paidInvoice } });
 
         } catch (error) {
             console.error(error);
@@ -151,6 +160,7 @@ export default function CheckoutPage() {
                             <Grid size={{ xs: 12 }}>
                                 <TextField
                                     label="Cardholder Name"
+                                    placeholder="Name"
                                     fullWidth
                                     value={card.name}
                                     onChange={e => setCard({...card, name: e.target.value})}
@@ -187,7 +197,7 @@ export default function CheckoutPage() {
                             borderRadius: 4,
                             position: { md: "sticky" },
                             top: 100
-                    }}
+                        }}
                     >
                         <Typography variant="h6" fontWeight="bold" mb={3}>
                             Order Summary

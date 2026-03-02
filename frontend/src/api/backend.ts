@@ -10,8 +10,6 @@ import type { ShoppingCartDTO } from "../types/ShoppingCart";
 import { showError } from "../utils/toast";
 import { jwtDecode } from "jwt-decode";
 import { pdf } from '@react-pdf/renderer';
-import type { InvoiceDTO, OrderSummaryDTO } from '../types/Invoice';
-import type {ShoppingCartDTO} from "../types/ShoppingCart.ts";
 import React from 'react';
 import { InvoiceDocument } from '../components/pdf/InvoiceDocument';
 import type {CheckoutRequestDTO} from "../types/CheckoutRequestDTO.ts";
@@ -365,27 +363,27 @@ export async function addProductToMyList(productId: number): Promise<void> {
     }
 }
 
-export async function performCheckout(): Promise<OrderSummaryDTO> {
-    const resp = await authFetch(`${BACKEND_URL}/invoices/checkout`, {
-        method: "POST"
-    });
-    if (!resp.ok) throw new Error("Checkout failed");
-    return resp.json();
-}
+// export async function performCheckout(): Promise<OrderSummaryDTO> {
+//     const resp = await authFetch(`${BACKEND_URL}/invoices/checkout`, {
+//         method: "POST"
+//     });
+//     if (!resp.ok) throw new Error("Checkout failed");
+//     return resp.json();
+// }
 
-export async function payInvoice(invoiceId: number, method: string = "CARD"): Promise<InvoiceDTO> {
-    const resp = await authFetch(`${BACKEND_URL}/payments`, {
-        method: "POST",
-        body: JSON.stringify({ invoiceId, paymentMethod: method }),
-        headers: { "Content-Type": "application/json" }
-    });
-
-    if (!resp.ok) {
-        const err = await resp.json();
-        throw new Error(err.message || "Payment failed");
-    }
-    return resp.json();
-}
+// export async function payInvoice(invoiceId: number, method: string = "CARD"): Promise<InvoiceDTO> {
+//     const resp = await authFetch(`${BACKEND_URL}/payments`, {
+//         method: "POST",
+//         body: JSON.stringify({ invoiceId, paymentMethod: method }),
+//         headers: { "Content-Type": "application/json" }
+//     });
+//
+//     if (!resp.ok) {
+//         const err = await resp.json();
+//         throw new Error(err.message || "Payment failed");
+//     }
+//     return resp.json();
+// }
 
 export async function claimProduct(productId: number): Promise<void> {
     const resp = await authFetch(`${BACKEND_URL}/products/${productId}/claim`, { method: "PUT" });
@@ -447,23 +445,10 @@ export async function removeFromCart(cartItemId: number): Promise<void> {
     if (!resp.ok) throw new Error("Failed to remove item");
 }
 
-export async function performCheckout(billingData: CheckoutRequestDTO): Promise<OrderSummaryDTO> {
+export async function performCheckout(billingData: CheckoutRequestDTO): Promise<InvoiceDTO> {
     const resp = await authFetch(`${BACKEND_URL}/invoices/checkout`, {
         method: "POST",
         body: JSON.stringify(billingData)
-    });
-
-    if (!resp.ok) await handleError(resp);
-    return resp.json();
-}
-
-export async function payInvoice(invoiceId: number): Promise<InvoiceDTO> {
-    const resp = await authFetch(`${BACKEND_URL}/payments`, {
-        method: "POST",
-        body: JSON.stringify({
-            invoiceId: invoiceId,
-            paymentMethod: "CARD"
-        })
     });
 
     if (!resp.ok) await handleError(resp);
@@ -483,4 +468,69 @@ export async function sendInvoiceToEmail(invoiceId: number, email: string): Prom
     });
 
     if (!resp.ok) await handleError(resp);
+}
+
+export async function fetchMyOverdueInvoices(): Promise<OrderSummaryDTO[]> {
+    const resp = await authFetch(`${BACKEND_URL}/invoices/my-overdue`);
+    if (!resp.ok) {
+        throw new Error("Failed to fetch overdue invoices");
+    }
+    return resp.json();
+}
+
+export const fetchMyPendingInvoices = async (): Promise<InvoiceDTO[]> => {
+    const resp = await authFetch(`${BACKEND_URL}/invoices/my-pending`);
+    if (!resp.ok) {
+        throw new Error("Failed to fetch pending invoices");
+    }
+    return resp.json();
+};
+
+export const fetchInvoiceById = async (id: number): Promise<InvoiceDTO> => {
+    const resp = await authFetch(`${BACKEND_URL}/invoices/${id}`);
+    if (!resp.ok) {
+        throw new Error("Failed to fetch invoice details");
+    }
+    return resp.json();
+};
+
+export const payInvoice = async (invoiceId: number): Promise<InvoiceDTO> => {
+    const resp = await authFetch(`${BACKEND_URL}/payments`, {
+        method: "POST",
+        body: JSON.stringify({
+            invoiceId: invoiceId,
+            paymentMethod: "CARD"
+        })
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+};
+
+
+export async function fetchMyPaymentHistory(): Promise<PaymentDTO[]> {
+    const resp = await authFetch(`${BACKEND_URL}/history/payments`, {
+        method: "GET"
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function fetchMyOrderHistory(): Promise<InvoiceDTO[]> {
+    const resp = await authFetch(`${BACKEND_URL}/history/orders`, {
+        method: "GET"
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function fetchAllUserOrders(): Promise<InvoiceDTO[]> {
+    const resp = await authFetch(`${BACKEND_URL}/history/admin/all-user-orders`, {
+        method: "GET"
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
 }

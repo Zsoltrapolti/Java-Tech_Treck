@@ -31,19 +31,14 @@ public class InvoiceController {
             description = "Processes the checkout for the current user's shopping cart using provided billing details"
     )
     @PostMapping("/checkout")
-    public ResponseEntity<OrderSummaryDTO> performCheckout(
+    public ResponseEntity<InvoiceDTO> performCheckout(
             @RequestBody CheckoutRequestDTO checkoutData,
             Principal principal) {
 
         InvoiceRecord pendingOrder = checkoutService.checkout(principal.getName(), checkoutData);
 
-        OrderSummaryDTO summary = new OrderSummaryDTO(
-                pendingOrder.getId(),
-                "Order " + pendingOrder.getSeriesNumber(),
-                pendingOrder.getTotalGross(),
-                pendingOrder.getStatus().name()
-        );
-        return ResponseEntity.ok(summary);
+        InvoiceDTO dto = InvoiceMapper.toDTO(pendingOrder);
+        return ResponseEntity.ok(dto);
     }
 
     @Operation(
@@ -54,12 +49,7 @@ public class InvoiceController {
     public ResponseEntity<InvoiceDTO> getInvoiceData(@PathVariable Long id) {
         InvoiceRecord inv = invoiceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Invoice not found"));
-
-        if (inv.getStatus() != PaymentStatus.PAID) {
-            throw new RuntimeException("Tax invoice is unavailable. The order has not been paid yet.");
-        }
-        InvoiceDTO dto = InvoiceMapper.toDTO(inv);
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(InvoiceMapper.toDTO(inv));
     }
 
     @Operation(
@@ -96,4 +86,38 @@ public class InvoiceController {
 
         return ResponseEntity.ok().build();
     }
+
+    @Operation(
+            summary = "Get my overdue invoices",
+            description = "Returns a list of overdue invoices for the currently logged-in user to display notifications."
+    )
+    @GetMapping("/my-overdue")
+    public ResponseEntity<List<OrderSummaryDTO>> getMyOverdueNotifications(Principal principal) {
+        List<InvoiceRecord> overdueInvoices = checkoutService.getMyOverdueInvoices(principal.getName());
+
+        List<OrderSummaryDTO> overdueList = overdueInvoices.stream()
+                .map(inv -> new OrderSummaryDTO(
+                        inv.getId(),
+                        "Restanță la factura " + inv.getSeriesNumber(),
+                        inv.getTotalGross(),
+                        inv.getStatus().name()
+                ))
+                .toList();
+
+        return ResponseEntity.ok(overdueList);
+    }
+
+    @Operation(summary = "Get my pending invoices",
+            description = "Returns a list of pending invoices for the currently logged-in user to display notifications.")
+    @GetMapping("/my-pending")
+    public ResponseEntity<List<InvoiceDTO>> getMyPendingInvoices(Principal principal) {
+        List<InvoiceRecord> pendingInvoices = checkoutService.getMyPendingInvoices(principal.getName());
+
+        List<InvoiceDTO> dtos = pendingInvoices.stream()
+                .map(InvoiceMapper::toDTO)
+                .toList();
+
+        return ResponseEntity.ok(dtos);
+    }
 }
+
