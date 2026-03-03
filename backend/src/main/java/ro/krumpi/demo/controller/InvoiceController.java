@@ -9,8 +9,8 @@ import ro.krumpi.demo.dto.shopping.InvoiceDTO;
 import ro.krumpi.demo.dto.shopping.OrderSummaryDTO;
 import ro.krumpi.demo.mapper.InvoiceMapper;
 import ro.krumpi.demo.model.shopping.InvoiceRecord;
-import ro.krumpi.demo.model.shopping.PaymentStatus;
 import ro.krumpi.demo.repository.InvoiceRecordRepository;
+import ro.krumpi.demo.repository.UserAccountRepository;
 import ro.krumpi.demo.service.EmailService;
 import ro.krumpi.demo.service.InvoiceService;
 
@@ -24,27 +24,20 @@ public class InvoiceController {
 
     private final InvoiceService checkoutService;
     private final InvoiceRecordRepository invoiceRepository;
+    private final UserAccountRepository userAccountRepository;
     private final EmailService emailService;
 
-    @Operation(
-            summary = "Place Order (Checkout)",
-            description = "Processes the checkout for the current user's shopping cart using provided billing details"
-    )
+    @Operation(summary = "Place Order (Checkout)")
     @PostMapping("/checkout")
     public ResponseEntity<InvoiceDTO> performCheckout(
             @RequestBody CheckoutRequestDTO checkoutData,
             Principal principal) {
 
         InvoiceRecord pendingOrder = checkoutService.checkout(principal.getName(), checkoutData);
-
-        InvoiceDTO dto = InvoiceMapper.toDTO(pendingOrder);
-        return ResponseEntity.ok(dto);
+        return ResponseEntity.ok(InvoiceMapper.toDTO(pendingOrder));
     }
 
-    @Operation(
-            summary = "Get invoice by ID",
-            description = "Returns the invoice details for a given invoice ID"
-    )
+    @Operation(summary = "Get invoice by ID")
     @GetMapping("/{id}")
     public ResponseEntity<InvoiceDTO> getInvoiceData(@PathVariable Long id) {
         InvoiceRecord inv = invoiceRepository.findById(id)
@@ -52,10 +45,7 @@ public class InvoiceController {
         return ResponseEntity.ok(InvoiceMapper.toDTO(inv));
     }
 
-    @Operation(
-            summary = "Get all my orders",
-            description = "Returns a list of all orders (Pending, Paid, Cancelled) for the current user."
-    )
+    @Operation(summary = "Get all my orders")
     @GetMapping
     public ResponseEntity<List<OrderSummaryDTO>> getMyInvoices(Principal principal) {
         List<InvoiceRecord> invoices = checkoutService.getMyInvoices(principal.getName());
@@ -87,10 +77,7 @@ public class InvoiceController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(
-            summary = "Get my overdue invoices",
-            description = "Returns a list of overdue invoices for the currently logged-in user to display notifications."
-    )
+    @Operation(summary = "Get my overdue invoices")
     @GetMapping("/my-overdue")
     public ResponseEntity<List<OrderSummaryDTO>> getMyOverdueNotifications(Principal principal) {
         List<InvoiceRecord> overdueInvoices = checkoutService.getMyOverdueInvoices(principal.getName());
@@ -107,8 +94,7 @@ public class InvoiceController {
         return ResponseEntity.ok(overdueList);
     }
 
-    @Operation(summary = "Get my pending invoices",
-            description = "Returns a list of pending invoices for the currently logged-in user to display notifications.")
+    @Operation(summary = "Get my pending invoices")
     @GetMapping("/my-pending")
     public ResponseEntity<List<InvoiceDTO>> getMyPendingInvoices(Principal principal) {
         List<InvoiceRecord> pendingInvoices = checkoutService.getMyPendingInvoices(principal.getName());
@@ -119,5 +105,35 @@ public class InvoiceController {
 
         return ResponseEntity.ok(dtos);
     }
-}
 
+    @Operation(summary = "Get orders for managed clients (EMPLOYEE ONLY)")
+    @GetMapping("/managed-clients-orders")
+    public ResponseEntity<List<InvoiceDTO>> getOrdersForMyClients(Principal principal) {
+        String username = principal.getName();
+        var employee = userAccountRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<InvoiceRecord> clientOrders = checkoutService.getOrdersForMyClients(employee.getId());
+
+        List<InvoiceDTO> dtos = clientOrders.stream()
+                .map(InvoiceMapper::toDTO)
+                .toList();
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    @Operation(summary = "Modify client order (EMPLOYEE ONLY)")
+    @PutMapping("/{orderId}/modify")
+    public ResponseEntity<InvoiceDTO> modifyClientOrder(
+            @PathVariable Long orderId,
+            @RequestBody CheckoutRequestDTO updatedData,
+            Principal principal) {
+
+        String username = principal.getName();
+        var employee = userAccountRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        InvoiceRecord updatedOrder = checkoutService.modifyClientOrder(employee.getId(), orderId, updatedData);
+        return ResponseEntity.ok(InvoiceMapper.toDTO(updatedOrder));
+    }
+}
