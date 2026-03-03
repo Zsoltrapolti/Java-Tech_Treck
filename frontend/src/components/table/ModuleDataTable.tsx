@@ -10,12 +10,14 @@ export function ModuleDataTable({
                               rows,
                               columns,
                               onEdit,
-                              onDelete
-                          }: {
+                              onDelete,
+                              editLabel
+}: {
     rows: any[],
     columns: { label: string, key: string }[],
-    onEdit: (id: number) => void,
-    onDelete: (id: number) => void
+    onEdit?: (id: number) => void,
+    onDelete?: (id: number) => void,
+    editLabel?: string
 }) {
     return (
         <Table>
@@ -26,8 +28,8 @@ export function ModuleDataTable({
                             {col.label}
                         </ModuleTableHeader>
                     ))}
-                    <ModuleTableHeader>Edit</ModuleTableHeader>
-                    <ModuleTableHeader>Delete</ModuleTableHeader>
+                    {onEdit && <ModuleTableHeader>{editLabel || "Edit"}</ModuleTableHeader>}
+                    {onDelete && <ModuleTableHeader>Delete</ModuleTableHeader>}
                 </TableRow>
             </TableHead>
 
@@ -40,17 +42,21 @@ export function ModuleDataTable({
                             </ModuleTableCell>
                         ))}
 
-                        <ModuleTableCell>
-                            <EditButton onClick={() => onEdit(row.id)}>
-                                Edit
-                            </EditButton>
-                        </ModuleTableCell>
+                        {onEdit && (
+                            <ModuleTableCell>
+                                <EditButton onClick={() => onEdit(row.id)}>
+                                    {editLabel || "Edit"}
+                                </EditButton>
+                            </ModuleTableCell>
+                        )}
 
-                        <ModuleTableCell>
-                            <DeleteButton onClick={() => onDelete(row.id)}>
-                                Delete
-                            </DeleteButton>
-                        </ModuleTableCell>
+                        {onDelete && (
+                            <ModuleTableCell>
+                                <DeleteButton onClick={() => onDelete(row.id)}>
+                                    Delete
+                                </DeleteButton>
+                            </ModuleTableCell>
+                        )}
                     </TableRow>
                 ))}
             </TableBody>

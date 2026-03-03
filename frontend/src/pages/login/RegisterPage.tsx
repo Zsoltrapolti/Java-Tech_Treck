@@ -25,10 +25,9 @@ export default function RegisterPage() {
         setError(null);
 
         try {
-            // send only username + password; backend will assign role
             await registerUser(username, password);
 
-            const loggedRole = await login(username, password);
+            const loggedRole = (await login(username, password)) as "ADMIN" | "EMPLOYEE" | "USER";
             setAuthRole(loggedRole);
 
             navigate(
