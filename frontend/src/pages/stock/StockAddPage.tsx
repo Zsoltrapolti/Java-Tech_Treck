@@ -13,11 +13,12 @@ export default function StockAddPage() {
     const navigate = useNavigate();
 
     const [product, setProduct] = useState({
+        id: 0,
         name: "",
         type: "",
         unitOfMeasure: "",
         quantity: 0,
-        price: 0 // Added to match DTO
+        price: 0
     });
 
     return (

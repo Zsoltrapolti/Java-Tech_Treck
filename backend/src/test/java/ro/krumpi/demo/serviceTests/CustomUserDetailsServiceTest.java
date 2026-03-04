@@ -29,7 +29,7 @@ class CustomUserDetailsServiceTest {
     @Test
     void loadUserByUsername_ShouldReturnUserDetails_WhenUserExists() {
         // GIVEN
-        UserAccount user = new UserAccount(1L, "krumpi", "encoded_pass", Role.ADMIN);
+        UserAccount user = new UserAccount(1L, "krumpi", "encoded_pass", Role.ADMIN, null);
         when(userRepo.findByUsername("krumpi")).thenReturn(Optional.of(user));
 
         // WHEN

@@ -28,6 +28,8 @@ export default function OrdersAddPage() {
         customerName: "",
         responsibleEmployeeId: 0,
         items: [],
+        creationDate: new Date().toISOString().slice(0, 16),
+        status: "PENDING",
     });
 
     const [employees, setEmployees] = useState<EmployeeType[]>([]);
