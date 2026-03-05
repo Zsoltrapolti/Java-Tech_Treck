@@ -15,7 +15,6 @@ export default function ClientBalancePage() {
     useEffect(() => {
         fetchAccounts()
             .then(data => {
-                // Optionally: filter back to only show "USER" roles so admins don't clutter the list
                 const onlyUsers = data.filter((acc: any) => acc.role === "USER");
                 setClients(onlyUsers.length > 0 ? onlyUsers : data);
             })

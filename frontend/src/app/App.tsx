@@ -25,6 +25,7 @@ import PaymentSuccessPage from "../pages/products/PaymentSuccessPage.tsx";
 import CheckoutPage from "../pages/products/CheckoutPage.tsx";
 import { HistoryPage } from '../pages/orders/HistoryPage';
 import MyInvoicesPage from "../pages/orders/MyInvoicesPage";
+import ClientBalancePage from "../pages/orders/ClientBalancePage";
 
 function App() {
     return (
@@ -50,7 +51,6 @@ function App() {
                         <Route path="/payment-success" element={<PaymentSuccessPage />} />
                         <Route path="/checkout" element={<CheckoutPage />} />
 
-                        {/* ---> ADDED HISTORY AND INVOICES ROUTE HERE <--- */}
                         <Route path="/my-orders" element={<HistoryPage />} />
                         <Route path="/my-invoices" element={<MyInvoicesPage />} />
                     </Route>
@@ -66,6 +66,7 @@ function App() {
                        <Route path="/orders" element={<OrdersPage />} />
                        <Route path="/orders/new" element={<OrdersAddPage />} />
                        <Route path="/orders/:id/edit" element={<OrdersEditPage />} />
+                       <Route path="/client-balance" element={<ClientBalancePage />} />
                     </Route>
 
                     {/* ADMIN ONLY ROUTES */}

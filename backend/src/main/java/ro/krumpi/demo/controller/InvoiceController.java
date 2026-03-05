@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ro.krumpi.demo.dto.shopping.CheckoutRequestDTO;
+import ro.krumpi.demo.dto.shopping.ClientBalanceDTO;
 import ro.krumpi.demo.dto.shopping.InvoiceDTO;
 import ro.krumpi.demo.dto.shopping.OrderSummaryDTO;
 import ro.krumpi.demo.mapper.InvoiceMapper;
@@ -15,6 +16,8 @@ import ro.krumpi.demo.service.EmailService;
 import ro.krumpi.demo.service.InvoiceService;
 
 import java.security.Principal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -44,6 +47,60 @@ public class InvoiceController {
                 pendingOrder.getStatus().name()
         );
         return ResponseEntity.ok(summary);
+    }
+
+    // ---> NEW METHOD ADDED HERE (Must be above the /{id} route!) <---
+    @Operation(
+            summary = "Get Client Tax Balance",
+            description = "Returns the financial balance for a specific client within a date range."
+    )
+    @GetMapping("/balance")
+    public ResponseEntity<ClientBalanceDTO> getClientBalance(
+            @RequestParam Long clientId,
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        // 1. Parse strings to LocalDateTime (From 00:00 to 23:59)
+        LocalDateTime start = LocalDate.parse(startDate).atStartOfDay();
+        LocalDateTime end = LocalDate.parse(endDate).atTime(23, 59, 59);
+
+        // 2. Fetch invoices for this client within the date range
+        List<InvoiceRecord> invoices = invoiceRepository.findByBuyerIdAndIssuedAtBetween(clientId, start, end);
+
+        // 3. Calculate totals
+        double totalInvoiced = 0.0;
+        double totalPaid = 0.0;
+        double totalPending = 0.0;
+
+        for (InvoiceRecord inv : invoices) {
+            double gross = inv.getTotalGross() != null ? inv.getTotalGross() : 0.0;
+            totalInvoiced += gross;
+
+            if (inv.getStatus() == PaymentStatus.PAID) {
+                totalPaid += gross;
+            } else {
+                totalPending += gross;
+            }
+        }
+
+        // 4. Map invoices to DTOs for the table
+        List<OrderSummaryDTO> invoiceDTOs = invoices.stream()
+                .map(inv -> new OrderSummaryDTO(
+                        inv.getId(),
+                        "Order " + inv.getSeriesNumber(),
+                        inv.getTotalGross(),
+                        inv.getStatus().name()
+                ))
+                .toList();
+
+        // 5. Build and return the balance DTO
+        String username = invoices.isEmpty() ? "Unknown" : invoices.get(0).getBuyer().getUsername();
+
+        ClientBalanceDTO balance = new ClientBalanceDTO(
+                clientId, username, totalInvoiced, totalPaid, totalPending, invoiceDTOs
+        );
+
+        return ResponseEntity.ok(balance);
     }
 
     @Operation(
@@ -117,4 +174,3 @@ public class InvoiceController {
         return ResponseEntity.ok(overdueList);
     }
 }
-
