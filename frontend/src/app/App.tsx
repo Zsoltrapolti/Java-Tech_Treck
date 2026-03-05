@@ -25,7 +25,6 @@ import PaymentSuccessPage from "../pages/products/PaymentSuccessPage.tsx";
 import CheckoutPage from "../pages/products/CheckoutPage.tsx";
 import { HistoryPage } from '../pages/orders/HistoryPage';
 import MyInvoicesPage from "../pages/orders/MyInvoicesPage";
-import ClientBalancePage from "../pages/orders/ClientBalancePage";
 
 function App() {
     return (
@@ -67,7 +66,6 @@ function App() {
                        <Route path="/orders" element={<OrdersPage />} />
                        <Route path="/orders/new" element={<OrdersAddPage />} />
                        <Route path="/orders/:id/edit" element={<OrdersEditPage />} />
-                       <Route path="/client-balance" element={<ClientBalancePage />} />
                     </Route>
 
                     {/* ADMIN ONLY ROUTES */}

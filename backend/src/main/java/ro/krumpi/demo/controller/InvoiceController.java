@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import ro.krumpi.demo.dto.shopping.CheckoutRequestDTO;
 import ro.krumpi.demo.dto.shopping.InvoiceDTO;
 import ro.krumpi.demo.dto.shopping.OrderSummaryDTO;
-import ro.krumpi.demo.dto.shopping.ClientBalanceDTO;
 import ro.krumpi.demo.mapper.InvoiceMapper;
 import ro.krumpi.demo.model.shopping.InvoiceRecord;
 import ro.krumpi.demo.model.shopping.PaymentStatus;
@@ -116,54 +115,6 @@ public class InvoiceController {
                 .toList();
 
         return ResponseEntity.ok(overdueList);
-    }
-
-    @Operation(
-            summary = "Get Client Tax Balance",
-            description = "Returns the financial balance for a specific client within a date range."
-    )
-    @GetMapping("/balance")
-    public ResponseEntity<ClientBalanceDTO> getClientBalance(
-            @RequestParam Long clientId,
-            @RequestParam String startDate,
-            @RequestParam String endDate) {
-
-        java.time.LocalDateTime start = java.time.LocalDate.parse(startDate).atStartOfDay();
-        java.time.LocalDateTime end = java.time.LocalDate.parse(endDate).atTime(23, 59, 59);
-
-        List<InvoiceRecord> invoices = invoiceRepository.findByBuyerIdAndIssuedAtBetween(clientId, start, end);
-
-        double totalInvoiced = 0.0;
-        double totalPaid = 0.0;
-        double totalPending = 0.0;
-
-        for (InvoiceRecord inv : invoices) {
-            double gross = inv.getTotalGross() != null ? inv.getTotalGross() : 0.0;
-            totalInvoiced += gross;
-
-            if (inv.getStatus() == PaymentStatus.PAID) {
-                totalPaid += gross;
-            } else {
-                totalPending += gross;
-            }
-        }
-
-        List<OrderSummaryDTO> invoiceDTOs = invoices.stream()
-                .map(inv -> new OrderSummaryDTO(
-                        inv.getId(),
-                        "Order " + inv.getSeriesNumber(),
-                        inv.getTotalGross(),
-                        inv.getStatus().name()
-                ))
-                .toList();
-
-        String username = invoices.isEmpty() ? "Unknown" : invoices.get(0).getBuyer().getUsername();
-
-        ClientBalanceDTO balance = new ClientBalanceDTO(
-                clientId, username, totalInvoiced, totalPaid, totalPending, invoiceDTOs
-        );
-
-        return ResponseEntity.ok(balance);
     }
 }
 

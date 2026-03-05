@@ -97,6 +97,7 @@ export const AddButton = styled(Button)(() => ({
         backgroundColor: "#135229",
     },
     color: "#ffffff",
+    marginRight: 5,
 }));
 
 export const DenyButton = styled(Button)(() => ({
