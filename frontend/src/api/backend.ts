@@ -13,6 +13,7 @@ import { pdf } from '@react-pdf/renderer';
 import React from 'react';
 import { InvoiceDocument } from '../components/pdf/InvoiceDocument';
 import type {CheckoutRequestDTO} from "../types/CheckoutRequestDTO.ts";
+import type { ClientBalanceDTO } from "../dto/shopping/ClientBalanceDTO";
 
 
 const BACKEND_URL = "http://localhost:8081/api";
@@ -505,37 +506,12 @@ export async function fetchAllUserOrders(): Promise<InvoiceDTO[]> {
     return resp.json();
 }
 
-export const fetchInvoiceById = async (id: number) => {
-    const resp = await authFetch(`${BACKEND_URL}/invoices/${id}`);
-    if (!resp.ok) throw new Error("Failed to fetch invoice details");
-    return resp.json();
-};
-
-export const fetchUnassignedClients = async () => {
-    const resp = await authFetch(`${BACKEND_URL}/client-management/unassigned-clients`);
-    if (!resp.ok) throw new Error("Failed to fetch unassigned clients");
-    return resp.json();
-};
-
-export const fetchMyClients = async () => {
-    const resp = await authFetch(`${BACKEND_URL}/client-management/my-clients`);
-    if (!resp.ok) throw new Error("Failed to fetch my clients");
-    return resp.json();
-};
-
-export const claimClient = async (clientId: number) => {
-    const resp = await authFetch(`${BACKEND_URL}/client-management/claim-client/${clientId}`, {
-        method: "POST"
+export async function fetchClientBalance(clientId: number, startDate: string, endDate: string) {
+    const url = `${BACKEND_URL}/invoices/balance?clientId=${clientId}&startDate=${startDate}&endDate=${endDate}`;
+    const resp = await authFetch(url, {
+        method: "GET"
     });
-    if (!resp.ok) throw new Error("Failed to claim client");
-};
 
-export const modifyClientOrder = async (orderId: number, data: any) => {
-    const resp = await authFetch(`${BACKEND_URL}/invoices/${orderId}/modify`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-    });
-    if (!resp.ok) throw new Error("Failed to modify order");
+    if (!resp.ok) await handleError(resp);
     return resp.json();
-};
+}
