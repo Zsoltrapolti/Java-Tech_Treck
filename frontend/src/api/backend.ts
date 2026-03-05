@@ -15,8 +15,7 @@ import { InvoiceDocument } from '../components/pdf/InvoiceDocument';
 import type {CheckoutRequestDTO} from "../types/CheckoutRequestDTO.ts";
 
 
-const BACKEND_URL = "http://localhost:8081/api";
-
+const BACKEND_URL = "/api";
 
 interface DecodedToken {
     exp: number;
