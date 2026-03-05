@@ -13,6 +13,7 @@ import { pdf } from '@react-pdf/renderer';
 import React from 'react';
 import { InvoiceDocument } from '../components/pdf/InvoiceDocument';
 import type {CheckoutRequestDTO} from "../types/CheckoutRequestDTO.ts";
+import type { ClientBalanceDTO } from "../dto/shopping/ClientBalanceDTO";
 
 
 const BACKEND_URL = "http://localhost:8081/api";
@@ -503,6 +504,16 @@ export async function fetchMyOrderHistory(): Promise<InvoiceDTO[]> {
 
 export async function fetchAllUserOrders(): Promise<InvoiceDTO[]> {
     const resp = await authFetch(`${BACKEND_URL}/history/admin/all-user-orders`, {
+        method: "GET"
+    });
+
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function fetchClientBalance(clientId: number, startDate: string, endDate: string) {
+    const url = `${BACKEND_URL}/invoices/balance?clientId=${clientId}&startDate=${startDate}&endDate=${endDate}`;
+    const resp = await authFetch(url, {
         method: "GET"
     });
 
