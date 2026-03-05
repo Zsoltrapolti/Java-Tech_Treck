@@ -49,7 +49,6 @@ public class InvoiceController {
         return ResponseEntity.ok(summary);
     }
 
-    // ---> NEW METHOD ADDED HERE (Must be above the /{id} route!) <---
     @Operation(
             summary = "Get Client Tax Balance",
             description = "Returns the financial balance for a specific client within a date range."
@@ -60,14 +59,11 @@ public class InvoiceController {
             @RequestParam String startDate,
             @RequestParam String endDate) {
 
-        // 1. Parse strings to LocalDateTime (From 00:00 to 23:59)
         LocalDateTime start = LocalDate.parse(startDate).atStartOfDay();
         LocalDateTime end = LocalDate.parse(endDate).atTime(23, 59, 59);
 
-        // 2. Fetch invoices for this client within the date range
         List<InvoiceRecord> invoices = invoiceRepository.findByBuyerIdAndIssuedAtBetween(clientId, start, end);
 
-        // 3. Calculate totals
         double totalInvoiced = 0.0;
         double totalPaid = 0.0;
         double totalPending = 0.0;
@@ -83,7 +79,6 @@ public class InvoiceController {
             }
         }
 
-        // 4. Map invoices to DTOs for the table
         List<OrderSummaryDTO> invoiceDTOs = invoices.stream()
                 .map(inv -> new OrderSummaryDTO(
                         inv.getId(),
@@ -93,7 +88,6 @@ public class InvoiceController {
                 ))
                 .toList();
 
-        // 5. Build and return the balance DTO
         String username = invoices.isEmpty() ? "Unknown" : invoices.get(0).getBuyer().getUsername();
 
         ClientBalanceDTO balance = new ClientBalanceDTO(
