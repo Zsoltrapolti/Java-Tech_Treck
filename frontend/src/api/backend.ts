@@ -17,14 +17,16 @@ import type { ClientBalanceDTO } from "../dto/shopping/ClientBalanceDTO";
 
 
 const BACKEND_URL = "http://localhost:8081/api";
-let authHeader: Record<string, string> = {};
 
-if (typeof window !== "undefined") {
-    const savedToken = window.localStorage.getItem("authToken");
-    if (savedToken) {
-        authHeader = { Authorization: `Bearer ${savedToken}` };
-    }
+export interface PaymentDTO {
+    id: number;
+    invoiceId: number;
+    amount: number;
+    paymentMethod: string;
+    paymentDate: string;
+    status: string;
 }
+
 
 interface DecodedToken {
     exp: number;
@@ -68,7 +70,7 @@ async function authFetch(url: string, options: RequestInit = {}) {
         headers: {
             "Content-Type": "application/json",
             ...(options.headers || {}),
-            ...authHeader,
+            Authorization: `Bearer ${token}`,
         },
     });
 
@@ -105,7 +107,6 @@ export async function login(username: string, password: string) {
     const token = data.token;
     const role = getRoleFromToken(token);
 
-    authHeader = { Authorization: `Bearer ${token}` };
     localStorage.setItem("username", username);
     localStorage.setItem("authToken", token);
     localStorage.setItem("role", role);
@@ -122,7 +123,6 @@ export function logout() {
     window.localStorage.removeItem("role");
     window.localStorage.removeItem("username");
     window.localStorage.removeItem("userId");
-    authHeader = {};
     window.location.href = "/";
 }
 
@@ -364,28 +364,6 @@ export async function addProductToMyList(productId: number): Promise<void> {
     }
 }
 
-// export async function performCheckout(): Promise<OrderSummaryDTO> {
-//     const resp = await authFetch(`${BACKEND_URL}/invoices/checkout`, {
-//         method: "POST"
-//     });
-//     if (!resp.ok) throw new Error("Checkout failed");
-//     return resp.json();
-// }
-
-// export async function payInvoice(invoiceId: number, method: string = "CARD"): Promise<InvoiceDTO> {
-//     const resp = await authFetch(`${BACKEND_URL}/payments`, {
-//         method: "POST",
-//         body: JSON.stringify({ invoiceId, paymentMethod: method }),
-//         headers: { "Content-Type": "application/json" }
-//     });
-//
-//     if (!resp.ok) {
-//         const err = await resp.json();
-//         throw new Error(err.message || "Payment failed");
-//     }
-//     return resp.json();
-// }
-
 export async function claimProduct(productId: number): Promise<void> {
     const resp = await authFetch(`${BACKEND_URL}/products/${productId}/claim`, { method: "PUT" });
     if (!resp.ok) {
@@ -483,14 +461,6 @@ export const fetchMyPendingInvoices = async (): Promise<InvoiceDTO[]> => {
     const resp = await authFetch(`${BACKEND_URL}/invoices/my-pending`);
     if (!resp.ok) {
         throw new Error("Failed to fetch pending invoices");
-    }
-    return resp.json();
-};
-
-export const fetchInvoiceById = async (id: number): Promise<InvoiceDTO> => {
-    const resp = await authFetch(`${BACKEND_URL}/invoices/${id}`);
-    if (!resp.ok) {
-        throw new Error("Failed to fetch invoice details");
     }
     return resp.json();
 };

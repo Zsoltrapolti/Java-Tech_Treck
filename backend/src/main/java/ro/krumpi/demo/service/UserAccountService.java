@@ -23,7 +23,6 @@ public class UserAccountService {
 
     @Transactional
     public UserAccount register(RegisterRequestDTO dto) {
-
         String emailAsUsername = dto.username().toLowerCase();
 
         if (userRepo.existsByUsername(emailAsUsername)) {
@@ -48,7 +47,7 @@ public class UserAccountService {
     public UserAccount createByAdmin(String username, String rawPassword, Role role) {
         String normalizedUsername = username.toLowerCase();
 
-        if (userRepo.existsByUsername(username.toLowerCase())) {
+        if (userRepo.existsByUsername(normalizedUsername)) {
             throw new IllegalStateException("Username already exists");
         }
         if (role == null) {
@@ -84,6 +83,4 @@ public class UserAccountService {
     public boolean existsById(Long id) {
         return userRepo.existsById(id);
     }
-
-
 }

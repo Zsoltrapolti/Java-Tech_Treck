@@ -2,6 +2,7 @@ package ro.krumpi.demo.model.auth;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ro.krumpi.demo.model.employee.Employee;
 import ro.krumpi.demo.model.stock.Product;
 
 import java.util.HashSet;
@@ -29,5 +30,7 @@ public class UserAccount {
     @Column(nullable = false)
     private Role role;
 
-
+    @ManyToOne
+    @JoinColumn(name = "managed_by_employee_id")
+    private UserAccount  managedBy;
 }

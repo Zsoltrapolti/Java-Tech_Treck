@@ -17,3 +17,6 @@ public interface InvoiceRecordRepository extends JpaRepository<InvoiceRecord, Lo
 
     List<InvoiceRecord> findByBuyerIdAndIssuedAtBetween(Long clientId, LocalDateTime start, LocalDateTime end);
 }
+    List<InvoiceRecord> findByBuyerAndStatus(UserAccount buyer, PaymentStatus status);
+    List<InvoiceRecord> findByBuyer_ManagedBy(UserAccount managedBy);
+}

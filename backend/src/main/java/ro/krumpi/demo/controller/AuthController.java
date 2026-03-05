@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import ro.krumpi.demo.config.JwtService;
@@ -11,11 +12,14 @@ import ro.krumpi.demo.dto.account.LoginRequestDTO;
 import ro.krumpi.demo.dto.account.RegisterRequestDTO;
 import ro.krumpi.demo.dto.account.UserAccountDTO;
 import ro.krumpi.demo.mapper.UserAccountMapper;
+import ro.krumpi.demo.model.auth.Role;
 import ro.krumpi.demo.model.auth.UserAccount;
 
 import io.swagger.v3.oas.annotations.Operation;
+import ro.krumpi.demo.model.employee.Employee;
 import ro.krumpi.demo.service.UserAccountService;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -45,16 +49,19 @@ public class AuthController {
         );
 
         SecurityContextHolder.getContext().setAuthentication(auth);
-
         String token = jwtService.generateToken(
-                (org.springframework.security.core.userdetails.UserDetails)
-                        auth.getPrincipal()
+                (org.springframework.security.core.userdetails.UserDetails) auth.getPrincipal()
         );
 
-        return ResponseEntity.ok(Map.of(
-                "token", token,
-                "type", "Bearer"
-        ));
+        UserAccount user = userService.findByUsername(dto.username());
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("type", "Bearer");
+        response.put("id", user.getId());
+        response.put("role", user.getRole().name());
+
+        return ResponseEntity.ok(response);
     }
 
 

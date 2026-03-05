@@ -43,6 +43,12 @@ export function Header() {
                     </>
                 )}
 
+                {(role === "EMPLOYEE") && (
+                    <>
+                        <NavButton to="/assign-clients">Manage Clients</NavButton>
+                    </>
+                )}
+
                 {/* --- ADMIN ONLY LINKS --- */}
                 {role === "ADMIN" && (
                     <>

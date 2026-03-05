@@ -24,7 +24,6 @@ public class InvoiceNotificationScheduler {
     @Scheduled(cron = "0 0 9 * * *")
     @Transactional
     public void processOverdueInvoices() {
-        log.info("Verific facturile scadente pentru care nu s-a trimis notificare...");
 
         List<InvoiceRecord> overdueInvoices = invoiceRepository
                 .findAllByStatusAndDueDateBeforeAndReminderSentFalse(
@@ -33,7 +32,6 @@ public class InvoiceNotificationScheduler {
                 );
 
         if (overdueInvoices.isEmpty()) {
-            log.info("Nu sunt facturi scadente noi.");
             return;
         }
 
@@ -53,10 +51,9 @@ public class InvoiceNotificationScheduler {
                 invoice.setReminderSent(true);
                 invoiceRepository.save(invoice);
 
-                log.info("Notificare trimisă cu succes pentru factura {}", invoice.getSeriesNumber());
 
             } catch (Exception e) {
-                log.error("Eroare la trimiterea emailului pentru factura {}: {}", invoice.getSeriesNumber(), e.getMessage());
+                log.error("Eroarr {}: {}", invoice.getSeriesNumber(), e.getMessage());
             }
         }
     }
