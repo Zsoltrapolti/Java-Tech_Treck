@@ -5,7 +5,7 @@ import type { EmployeeType } from "../types/Employee";
 import type { OrderType } from "../types/Order";
 import type { AccountType } from "../types/Account";
 import type { AccountRequestType } from "../types/AccountRequest";
-import type { OrderSummaryDTO, InvoiceDTO } from "../types/Invoice";
+import type {OrderSummaryDTO, InvoiceDTO, PaymentDTO} from "../types/Invoice";
 import type { ShoppingCartDTO } from "../types/ShoppingCart";
 import { showError } from "../utils/toast";
 import { jwtDecode } from "jwt-decode";
@@ -16,17 +16,7 @@ import type {CheckoutRequestDTO} from "../types/CheckoutRequestDTO.ts";
 import type { ClientBalanceDTO } from "../dto/shopping/ClientBalanceDTO";
 
 
-const BACKEND_URL = "http://localhost:8081/api";
-
-export interface PaymentDTO {
-    id: number;
-    invoiceId: number;
-    amount: number;
-    paymentMethod: string;
-    paymentDate: string;
-    status: string;
-}
-
+const BACKEND_URL = "/api";
 
 interface DecodedToken {
     exp: number;

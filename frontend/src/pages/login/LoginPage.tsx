@@ -1,4 +1,3 @@
-// language: typescript
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../api/backend";
@@ -21,15 +20,13 @@ export default function LoginPage() {
     const navigate = useNavigate();
     const { setRole } = useAuth();
 
-    // Use FormEvent<Element> to match the parent prop and return void.
     function handleSubmit(e: FormEvent<Element>): void {
         e.preventDefault();
         setError(null);
 
-        // run async logic in an IIFE so the outer handler stays synchronous
         void (async () => {
             try {
-                const role = await login(username, password);
+                const role = (await login(username, password)) as "ADMIN" | "EMPLOYEE" | "USER";
                 setRole(role);
 
                 switch (role) {

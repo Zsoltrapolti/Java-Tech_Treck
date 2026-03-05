@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { fetchUnassignedClients, fetchMyClients, claimClient } from '../../api/backend';
 import { showSuccess, showError } from '../../utils/toast';
 
@@ -12,31 +12,40 @@ export function AssignClientsPage() {
     const [unassigned, setUnassigned] = useState<UserAccountClient[]>([]);
     const [myClients, setMyClients] = useState<UserAccountClient[]>([]);
 
-    const loadClients = async () => {
-        try {
-            const freeClients = await fetchUnassignedClients();
-            const mine = await fetchMyClients();
-            setUnassigned(freeClients);
-            setMyClients(mine);
-        } catch (error) {
-            if (error instanceof Error) {
-                showError(error.message);
-            } else {
-                showError("Could not load clients");
-            }
-        }
-    };
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
 
     useEffect(() => {
-        loadClients();
-    }, []);
+        let isMounted = true;
+
+        const loadData = async () => {
+            try {
+                const freeClients = await fetchUnassignedClients();
+                const mine = await fetchMyClients();
+
+                if (isMounted) {
+                    setUnassigned(freeClients);
+                    setMyClients(mine);
+                }
+            } catch (error) {
+                if (isMounted) {
+                    showError(error instanceof Error ? error.message : "Could not load clients");
+                }
+            }
+        };
+
+        void loadData();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [refreshTrigger]);
 
     const handleClaim = async (clientId: number) => {
         try {
-            const employeeId = Number(localStorage.getItem("userId"));
-            await claimClient(employeeId, clientId);
+            await claimClient(clientId);
             showSuccess("Client claimed successfully!");
-            loadClients();
+
+            setRefreshTrigger(prev => prev + 1);
         } catch (error) {
             showError(error instanceof Error ? error.message : "Error claiming client");
         }
@@ -127,7 +136,7 @@ export function AssignClientsPage() {
         <div style={styles.container}>
             <div style={styles.column}>
                 <h2 style={styles.title}>
-                     Available Clients
+                    Available Clients
                 </h2>
                 {unassigned.length === 0 ? (
                     <p style={{color: '#999', textAlign: 'center'}}>No unassigned clients found.</p>
@@ -163,7 +172,7 @@ export function AssignClientsPage() {
                                 <span style={styles.username}>{c.username}</span>
                             </div>
                             <div style={styles.statusBadge}>
-                                 Assigned
+                                Assigned
                             </div>
                         </div>
                     ))

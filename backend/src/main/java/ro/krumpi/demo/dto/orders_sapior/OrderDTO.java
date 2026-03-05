@@ -29,5 +29,4 @@ public class OrderDTO {
     @Valid
     private List<OrderItemDTO> items;
 
-
 }

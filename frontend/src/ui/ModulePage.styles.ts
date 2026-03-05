@@ -256,3 +256,38 @@ export const OutlinedButton = styled(Button)(() => ({
     },
 }));
 
+export const ModuleSectionWrapper = styled(Box)(() => ({
+    width: '100%',
+    maxWidth: '1200px', // Aliniat cu tabelul
+    margin: '0 auto 40px auto',
+    display: 'flex',
+    flexDirection: 'column',
+}));
+
+export const ModuleSectionTitle = styled(Typography)(({ theme }) => ({
+    color: '#2C6E49',
+    fontSize: '1.5rem',
+    fontWeight: 700,
+    marginBottom: theme.spacing(2),
+    marginTop: theme.spacing(4),
+    textAlign: 'left',
+}));
+
+export const EmptyStateBox = styled(Box)(({ theme }) => ({
+    padding: theme.spacing(3),
+    backgroundColor: '#f9f9f9',
+    fontStyle: 'italic',
+    color: '#666',
+    border: '1px solid #ddd',
+    borderRadius: '8px',
+    textAlign: 'center',
+    width: '100%',
+}));
+
+export const StatusMessage = styled(Typography)<{ error?: boolean }>(({ error }) => ({
+    textAlign: 'center',
+    marginTop: '50px',
+    fontSize: '1.25rem',
+    color: error ? '#c0392b' : '#1e5b32',
+    fontWeight: 600
+}));

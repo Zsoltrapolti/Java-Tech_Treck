@@ -34,3 +34,12 @@ export interface OrderSummaryDTO {
     totalToPay: number;
     status: "PENDING_PAYMENT" | "PAID" | "CANCELLED";
 }
+
+export interface PaymentDTO {
+    id: number;
+    invoiceId: number;
+    amount: number;
+    paymentMethod: string;
+    paymentDate: string;
+    status: string;
+}
