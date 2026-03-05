@@ -39,6 +39,7 @@ export function Header() {
                     <>
                         <NavButton to="/stock">Stock</NavButton>
                         <NavButton to="/orders">All Orders</NavButton>
+                        <NavButton to="/client-balance">Clients Balance</NavButton>
                     </>
                 )}
 

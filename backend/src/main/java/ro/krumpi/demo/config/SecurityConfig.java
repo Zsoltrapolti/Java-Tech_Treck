@@ -61,6 +61,10 @@ public class SecurityConfig {
                         // Public Endpoints
                         .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
                         .requestMatchers("/api/account-requests/**").permitAll()
+
+                        //accesul pt. bilant la admin & employees
+                        .requestMatchers(HttpMethod.GET, "/api/invoices/balance").hasAnyRole("EMPLOYEE", "ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/admin/accounts").hasAnyRole("EMPLOYEE", "ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 

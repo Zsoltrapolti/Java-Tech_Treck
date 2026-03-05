@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ro.krumpi.demo.dto.shopping.CheckoutRequestDTO;
+import ro.krumpi.demo.dto.shopping.ClientBalanceDTO;
 import ro.krumpi.demo.dto.shopping.InvoiceDTO;
 import ro.krumpi.demo.dto.shopping.OrderSummaryDTO;
 import ro.krumpi.demo.mapper.InvoiceMapper;
@@ -15,6 +16,8 @@ import ro.krumpi.demo.service.EmailService;
 import ro.krumpi.demo.service.InvoiceService;
 
 import java.security.Principal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -29,11 +32,67 @@ public class InvoiceController {
 
     @Operation(summary = "Place Order (Checkout)")
     @PostMapping("/checkout")
-    public ResponseEntity<InvoiceDTO> performCheckout(
+    public ResponseEntity<OrderSummaryDTO> performCheckout(
             @RequestBody CheckoutRequestDTO checkoutData,
             Principal principal) {
 
         InvoiceRecord pendingOrder = checkoutService.checkout(principal.getName(), checkoutData);
+
+        OrderSummaryDTO summary = new OrderSummaryDTO(
+                pendingOrder.getId(),
+                "Order " + pendingOrder.getSeriesNumber(),
+                pendingOrder.getTotalGross(),
+                pendingOrder.getStatus().name()
+        );
+        return ResponseEntity.ok(summary);
+    }
+
+    @Operation(
+            summary = "Get Client Tax Balance",
+            description = "Returns the financial balance for a specific client within a date range."
+    )
+    @GetMapping("/balance")
+    public ResponseEntity<ClientBalanceDTO> getClientBalance(
+            @RequestParam Long clientId,
+            @RequestParam String startDate,
+            @RequestParam String endDate) {
+
+        LocalDateTime start = LocalDate.parse(startDate).atStartOfDay();
+        LocalDateTime end = LocalDate.parse(endDate).atTime(23, 59, 59);
+
+        List<InvoiceRecord> invoices = invoiceRepository.findByBuyerIdAndIssuedAtBetween(clientId, start, end);
+
+        double totalInvoiced = 0.0;
+        double totalPaid = 0.0;
+        double totalPending = 0.0;
+
+        for (InvoiceRecord inv : invoices) {
+            double gross = inv.getTotalGross() != null ? inv.getTotalGross() : 0.0;
+            totalInvoiced += gross;
+
+            if (inv.getStatus() == PaymentStatus.PAID) {
+                totalPaid += gross;
+            } else {
+                totalPending += gross;
+            }
+        }
+
+        List<OrderSummaryDTO> invoiceDTOs = invoices.stream()
+                .map(inv -> new OrderSummaryDTO(
+                        inv.getId(),
+                        "Order " + inv.getSeriesNumber(),
+                        inv.getTotalGross(),
+                        inv.getStatus().name()
+                ))
+                .toList();
+
+        String username = invoices.isEmpty() ? "Unknown" : invoices.get(0).getBuyer().getUsername();
+
+        ClientBalanceDTO balance = new ClientBalanceDTO(
+                clientId, username, totalInvoiced, totalPaid, totalPending, invoiceDTOs
+        );
+
+        return ResponseEntity.ok(balance);
         return ResponseEntity.ok(InvoiceMapper.toDTO(pendingOrder));
     }
 
@@ -42,7 +101,12 @@ public class InvoiceController {
     public ResponseEntity<InvoiceDTO> getInvoiceData(@PathVariable Long id) {
         InvoiceRecord inv = invoiceRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Invoice not found"));
-        return ResponseEntity.ok(InvoiceMapper.toDTO(inv));
+
+        if (inv.getStatus() != PaymentStatus.PAID) {
+            throw new RuntimeException("Tax invoice is unavailable. The order has not been paid yet.");
+        }
+        InvoiceDTO dto = InvoiceMapper.toDTO(inv);
+        return ResponseEntity.ok(dto);
     }
 
     @Operation(summary = "Get all my orders")
@@ -93,6 +157,7 @@ public class InvoiceController {
 
         return ResponseEntity.ok(overdueList);
     }
+}
 
     @Operation(summary = "Get my pending invoices")
     @GetMapping("/my-pending")
