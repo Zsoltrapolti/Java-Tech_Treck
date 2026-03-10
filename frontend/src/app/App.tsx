@@ -26,10 +26,13 @@ import CheckoutPage from "../pages/products/CheckoutPage.tsx";
 import PaymentWaitingPage from "../pages/products/PaymentWaitingPage.tsx";
 import PayInvoicePage from "../pages/products/PayInvoicePage.tsx";
 import UserOrderEditPage from "../pages/orders/UserOrderEditPage.tsx";
+import OrdersPage from "../pages/orders/UserOrdersPage.tsx";
 import {AssignClientsPage} from "../pages/employees/AssignClientsPage.tsx";
-import { HistoryPage } from '../pages/orders/HistoryPage';
 import MyInvoicesPage from "../pages/orders/MyInvoicesPage";
 import ClientBalancePage from "../pages/orders/ClientBalancePage";
+import { HistoryPage } from "../pages/orders/HistoryPage.tsx";
+import MyLeavesPage from "../pages/employees/MyLeavesPage.tsx";
+import ManageLeavesPage from "../pages/employees/ManageLeavesPage.tsx"
 
 function App() {
     return (
@@ -65,6 +68,7 @@ function App() {
                        <Route path="/stock" element={<StockListPage />} />
                        <Route path="/stock/new" element={<StockAddPage />} />
                        <Route path="/stock/:id/edit" element={<StockEditPage />} />
+                       <Route path="/my-leaves" element={<MyLeavesPage />} />
 
                        {/* Order Management */}
                        <Route path="/orders" element={<OrdersPage />} />
@@ -84,6 +88,7 @@ function App() {
                         <Route path="/accounts" element={<AccountsPage />} />
                         <Route path="/accounts/:id/edit" element={<AccountsEditPage />} />
                         <Route path="/account-requests" element={<AccountRequestsPage />} />
+                        <Route path="/manage-leaves" element={<ManageLeavesPage />} />
                     </Route>
 
                     <Route path="/unauthorized" element={<UnauthorizedPage />} />

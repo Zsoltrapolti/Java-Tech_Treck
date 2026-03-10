@@ -14,7 +14,7 @@ import React from 'react';
 import { InvoiceDocument } from '../components/pdf/InvoiceDocument';
 import type {CheckoutRequestDTO} from "../types/CheckoutRequestDTO.ts";
 import type { ClientBalanceDTO } from "../dto/shopping/ClientBalanceDTO";
-
+import type { LeaveRequestType, LeaveRequestDTO } from "../types/Leave";
 
 const BACKEND_URL = "http://localhost:8081/api";
 
@@ -393,6 +393,7 @@ export async function fetchMyInvoices(): Promise<OrderSummaryDTO[]> {
     return resp.json();
 }
 
+
 export async function fetchInvoiceDetails(id: number): Promise<InvoiceDTO> {
     const resp = await authFetch(`${BACKEND_URL}/invoices/${id}`);
     if (!resp.ok) {
@@ -400,6 +401,10 @@ export async function fetchInvoiceDetails(id: number): Promise<InvoiceDTO> {
         throw new Error(error.message || "Failed to fetch invoice details");
     }
     return resp.json();
+}
+
+export async function fetchInvoiceById(id: number): Promise<InvoiceDTO> {
+    return fetchInvoiceDetails(id);
 }
 
 export async function fetchMyCart(): Promise<ShoppingCartDTO> {
@@ -512,6 +517,90 @@ export async function fetchClientBalance(clientId: number, startDate: string, en
         method: "GET"
     });
 
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function modifyClientOrder(orderId: number, updatedData: CheckoutRequestDTO): Promise<InvoiceDTO> {
+    const resp = await authFetch(`${BACKEND_URL}/invoices/${orderId}/modify`, {
+        method: "PUT",
+        body: JSON.stringify(updatedData)
+    });
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function claimClient(clientId: number): Promise<void> {
+    const resp = await authFetch(`${BACKEND_URL}/employees/claim-client/${clientId}`, {
+        method: "PUT"
+    });
+    if (!resp.ok) await handleError(resp);
+}
+
+export async function unclaimClient(clientId: number): Promise<void> {
+    const resp = await authFetch(`${BACKEND_URL}/employees/unclaim-client/${clientId}`, {
+        method: "PUT"
+    });
+    if (!resp.ok) await handleError(resp);
+}
+
+export async function fetchMyClients(): Promise<AccountType[]> {
+    const resp = await authFetch(`${BACKEND_URL}/employees/my-clients`, { method: "GET" });
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function fetchUnassignedClients(): Promise<AccountType[]> {
+    const resp = await authFetch(`${BACKEND_URL}/employees/unassigned-clients`, { method: "GET" });
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function submitLeaveRequest(dto: LeaveRequestDTO): Promise<LeaveRequestType> {
+    const resp = await authFetch(`${BACKEND_URL}/leave/request`, {
+        method: "POST",
+        body: JSON.stringify(dto)
+    });
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function fetchEmployeeLeaves(employeeId: number): Promise<LeaveRequestType[]> {
+    const resp = await authFetch(`${BACKEND_URL}/leave/employee/${employeeId}`, {
+        method: "GET"
+    });
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function cancelLeaveRequest(requestId: number): Promise<string> {
+    const resp = await authFetch(`${BACKEND_URL}/leave/${requestId}/cancel`, {
+        method: "PUT"
+    });
+    if (!resp.ok) await handleError(resp);
+    return resp.text();
+}
+
+export async function approveLeaveRequest(requestId: number): Promise<string> {
+    const resp = await authFetch(`${BACKEND_URL}/leave/${requestId}/approve`, {
+        method: "PUT"
+    });
+    if (!resp.ok) await handleError(resp);
+    return resp.text();
+}
+
+export async function updateEmployeeTotalLeaveDays(employeeId: number, newTotal: number): Promise<EmployeeType> {
+    const resp = await authFetch(`${BACKEND_URL}/leave/employee/${employeeId}/total-days?newTotal=${newTotal}`, {
+        method: "PUT"
+    });
+    if (!resp.ok) await handleError(resp);
+    return resp.json();
+}
+
+export async function fetchAllLeaveRequests(): Promise<LeaveRequestType[]> {
+    const resp = await authFetch(`${BACKEND_URL}/leave/all`, {
+        method: "GET"
+    });
     if (!resp.ok) await handleError(resp);
     return resp.json();
 }

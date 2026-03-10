@@ -14,6 +14,7 @@ import ro.krumpi.demo.repository.InvoiceRecordRepository;
 import ro.krumpi.demo.repository.UserAccountRepository;
 import ro.krumpi.demo.service.EmailService;
 import ro.krumpi.demo.service.InvoiceService;
+import ro.krumpi.demo.model.shopping.PaymentStatus;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -93,7 +94,6 @@ public class InvoiceController {
         );
 
         return ResponseEntity.ok(balance);
-        return ResponseEntity.ok(InvoiceMapper.toDTO(pendingOrder));
     }
 
     @Operation(summary = "Get invoice by ID")
@@ -157,7 +157,6 @@ public class InvoiceController {
 
         return ResponseEntity.ok(overdueList);
     }
-}
 
     @Operation(summary = "Get my pending invoices")
     @GetMapping("/my-pending")
