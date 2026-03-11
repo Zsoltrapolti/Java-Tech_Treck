@@ -48,12 +48,7 @@ export default function OrdersEditPage() {
                 throw new Error("Responsible employee is required");
             }
 
-            await updateOrder({
-                id: order.id,
-                customerName: order.customerName,
-                responsibleEmployeeId: order.responsibleEmployeeId,
-                items: order.items,
-            });
+            await updateOrder(order);
 
             navigate("/orders");
         } catch (e) {
@@ -70,8 +65,7 @@ export default function OrdersEditPage() {
                 <EditSelect
                     select
                     value={order.status}
-                    onChange={e => setOrder({ ...order, status: e.target.value as OrderStatus })}
-                >
+                    onChange={e => setOrder({ ...order, status: e.target.value as any })} >
                     <MenuItem value="PENDING">Pending</MenuItem>
                     <MenuItem value="UPCOMING">Upcoming</MenuItem>
                     <MenuItem value="DONE">Done</MenuItem>

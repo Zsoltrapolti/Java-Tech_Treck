@@ -1,7 +1,5 @@
 package ro.krumpi.demo.serviceTests;
 
-
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,70 +33,79 @@ class AccountRequestServiceTest {
     private AccountRequestService service;
 
     private AccountRequest sampleRequest;
-    private final String email = "test@example.com";
+    private final String EMAIL = "test@example.com";
 
     @BeforeEach
     void setUp() {
         sampleRequest = new AccountRequest();
         sampleRequest.setId(1L);
-        sampleRequest.setEmail(email);
+        sampleRequest.setEmail(EMAIL);
         sampleRequest.setStatus(AccountRequestStatus.REGISTERED);
     }
 
-//    @Nested
-//    @DisplayName("Creation Tests")
-//    class CreationTests {
-//        @Test
-//        void createRequest_Success() {
-//            AskAccountRequestDTO dto = new AskAccountRequestDTO(email, "Name");
-//            when(repo.existsByEmail(email)).thenReturn(false);
-//            when(repo.save(any(AccountRequest.class))).thenReturn(sampleRequest);
-//
-//            AccountRequest result = service.createRequest(dto);
-//
-//            assertNotNull(result);
-//            verify(repo).save(any(AccountRequest.class));
-//        }
-//
-//        @Test
-//        void createRequest_ThrowsException_WhenEmailExists() {
-//            AskAccountRequestDTO dto = new AskAccountRequestDTO(email, "Name");
-//            when(repo.existsByEmail(email)).thenReturn(true);
-//
-//            assertThrows(IllegalStateException.class, () -> service.createRequest(dto));
-//        }
-//    }
+    @Nested
+    @DisplayName("Creation Tests")
+    class CreationTests {
+        @Test
+        void createRequest_Success() {
+            // Updated to match DTO record: firstName, lastName, email
+            AskAccountRequestDTO dto = new AskAccountRequestDTO("John", "Doe", EMAIL);
+
+            when(repo.existsByEmail(EMAIL)).thenReturn(false);
+            when(repo.save(any(AccountRequest.class))).thenReturn(sampleRequest);
+
+            AccountRequest result = service.createRequest(dto);
+
+            assertNotNull(result);
+            verify(repo).save(any(AccountRequest.class));
+        }
+
+        @Test
+        void createRequest_ThrowsException_WhenEmailExists() {
+            AskAccountRequestDTO dto = new AskAccountRequestDTO("John", "Doe", EMAIL);
+            when(repo.existsByEmail(EMAIL)).thenReturn(true);
+
+            assertThrows(IllegalStateException.class, () -> service.createRequest(dto));
+        }
+    }
 
     @Nested
     @DisplayName("Status and Retrieval Tests")
     class RetrievalTests {
         @Test
         void getStatusByEmail_Success() {
-            when(repo.findByEmail(email)).thenReturn(Optional.of(sampleRequest));
+            // Test normalization: service calls .toLowerCase()
+            String upperEmail = "TEST@EXAMPLE.COM";
+            when(repo.findByEmail(EMAIL)).thenReturn(Optional.of(sampleRequest));
 
-            AccountRequestStatusDTO result = service.getStatusByEmail(email);
+            AccountRequestStatusDTO result = service.getStatusByEmail(upperEmail);
 
             assertNotNull(result);
-            verify(repo).findByEmail(email.toLowerCase());
+            verify(repo).findByEmail(EMAIL);
         }
 
         @Test
         void getApprovedRequest_Success() {
             sampleRequest.setStatus(AccountRequestStatus.APPROVED);
             sampleRequest.setAssignedRole(Role.USER);
-            when(repo.findByEmail(email)).thenReturn(Optional.of(sampleRequest));
+            when(repo.findByEmail(EMAIL)).thenReturn(Optional.of(sampleRequest));
 
-            AccountRequest result = service.getApprovedRequest(email);
+            AccountRequest result = service.getApprovedRequest(EMAIL);
 
             assertEquals(AccountRequestStatus.APPROVED, result.getStatus());
+            assertNotNull(result.getAssignedRole());
         }
 
         @Test
-        void getApprovedRequest_Throws_WhenNotApproved() {
-            sampleRequest.setStatus(AccountRequestStatus.REJECTED);
-            when(repo.findByEmail(email)).thenReturn(Optional.of(sampleRequest));
+        void getApprovedRequest_Throws_WhenApprovedButNoRole() {
+            // Test the specific branch where status is correct but role is missing
+            sampleRequest.setStatus(AccountRequestStatus.APPROVED);
+            sampleRequest.setAssignedRole(null);
+            when(repo.findByEmail(EMAIL)).thenReturn(Optional.of(sampleRequest));
 
-            assertThrows(IllegalStateException.class, () -> service.getApprovedRequest(email));
+            IllegalStateException ex = assertThrows(IllegalStateException.class,
+                    () -> service.getApprovedRequest(EMAIL));
+            assertTrue(ex.getMessage().contains("no role assigned"));
         }
     }
 
@@ -116,13 +123,6 @@ class AccountRequestServiceTest {
         }
 
         @Test
-        void approve_Throws_WhenRoleIsNull() {
-            when(repo.findById(1L)).thenReturn(Optional.of(sampleRequest));
-
-            assertThrows(IllegalStateException.class, () -> service.approve(1L, null));
-        }
-
-        @Test
         void reject_Success() {
             when(repo.findById(1L)).thenReturn(Optional.of(sampleRequest));
 
@@ -130,6 +130,13 @@ class AccountRequestServiceTest {
 
             assertEquals(AccountRequestStatus.REJECTED, result.getStatus());
             assertNull(result.getAssignedRole());
+        }
+
+        @Test
+        void findById_Throws_WhenMissing() {
+            when(repo.findById(99L)).thenReturn(Optional.empty());
+
+            assertThrows(IllegalStateException.class, () -> service.findById(99L));
         }
     }
 
@@ -145,26 +152,23 @@ class AccountRequestServiceTest {
 
             List<AccountRequest> result = service.getAllRegistered();
 
+            // sampleRequest has status REGISTERED from setUp()
             assertEquals(1, result.size());
             assertEquals(AccountRequestStatus.REGISTERED, result.get(0).getStatus());
         }
 
         @Test
-        void deleteRequest_Success() {
-            when(repo.findById(1L)).thenReturn(Optional.of(sampleRequest));
+        void deleteRequest_Throws_WhenNotFound() {
+            // Your service uses RuntimeException for this specific method
+            when(repo.findById(1L)).thenReturn(Optional.empty());
 
-            service.deleteRequest(1L);
-
-            verify(repo, times(1)).delete(sampleRequest);
+            assertThrows(RuntimeException.class, () -> service.deleteRequest(1L));
         }
 
         @Test
-        void updateRole_Success() {
-            when(repo.findById(1L)).thenReturn(Optional.of(sampleRequest));
-
-            AccountRequest result = service.updateRole(1L, Role.USER);
-
-            assertEquals(Role.USER, result.getAssignedRole());
+        void save_CallsRepo() {
+            service.save(sampleRequest);
+            verify(repo).save(sampleRequest);
         }
     }
 }

@@ -7,11 +7,11 @@ import {
 } from "../../ui/ModulePage.styles.ts";
 
 export function ModuleDataTable({
-    rows,
-    columns,
-    onEdit,
-    onDelete,
-    editLabel
+                              rows,
+                              columns,
+                              onEdit,
+                              onDelete,
+                              editLabel
 }: {
     rows: any[],
     columns: { label: string, key: string }[],

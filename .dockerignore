@@ -1,0 +1,23 @@
+# Backend build
+backend/target/
+backend/node_modules/
+
+# Frontend build
+frontend/dist/
+frontend/node_modules/
+
+# Node modules locale
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Git
+.git/
+.gitignore
+
+# Fișiere de mediu
+.env
+.env.*.local

@@ -25,6 +25,7 @@ import PaymentSuccessPage from "../pages/products/PaymentSuccessPage.tsx";
 import CheckoutPage from "../pages/products/CheckoutPage.tsx";
 import PaymentWaitingPage from "../pages/products/PaymentWaitingPage.tsx";
 import PayInvoicePage from "../pages/products/PayInvoicePage.tsx";
+import {HistoryPage} from "../pages/orders/HistoryPage.tsx";
 import UserOrderEditPage from "../pages/orders/UserOrderEditPage.tsx";
 import OrdersPage from "../pages/orders/UserOrdersPage.tsx";
 import {AssignClientsPage} from "../pages/employees/AssignClientsPage.tsx";
@@ -57,9 +58,12 @@ function App() {
                         <Route path="/my-products" element={<MyProductsListPage />} />
                         <Route path="/payment-success" element={<PaymentSuccessPage />} />
                         <Route path="/checkout" element={<CheckoutPage />} />
+                        <Route path="/payment-waiting" element={<PaymentWaitingPage />} />
+                        <Route path="/pay-invoice/:id" element={<PayInvoicePage />} />
 
                         <Route path="/my-orders" element={<HistoryPage />} />
                         <Route path="/my-invoices" element={<MyInvoicesPage />} />
+
                     </Route>
 
                     {/* EMPLOYEE & ADMIN ROUTES */}
