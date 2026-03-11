@@ -3,4 +3,6 @@ export interface EmployeeType{
     firstName: string;
     lastName: string;
     role: string;
+    totalLeaveDays?: number;
+    usedLeaveDays?: number;
 }

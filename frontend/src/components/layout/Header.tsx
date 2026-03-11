@@ -34,7 +34,7 @@ export function Header() {
                     </>
                 )}
 
-                {/* --- EMPLOYEE / ADMIN LINKS --- */}
+                {/* --- RUTE COMUNE (EMPLOYEE & ADMIN) --- */}
                 {(role === "EMPLOYEE" || role === "ADMIN") && (
                     <>
                         <NavButton to="/stock">Stock</NavButton>
@@ -43,8 +43,10 @@ export function Header() {
                     </>
                 )}
 
+                {/* --- EMPLOYEE ONLY LINKS --- */}
                 {(role === "EMPLOYEE") && (
                     <>
+                        <NavButton to="/my-leaves">My Leaves</NavButton>
                         <NavButton to="/assign-clients">Manage Clients</NavButton>
                     </>
                 )}
@@ -52,6 +54,7 @@ export function Header() {
                 {/* --- ADMIN ONLY LINKS --- */}
                 {role === "ADMIN" && (
                     <>
+                        <NavButton to="/manage-leaves">Manage Leaves</NavButton>
                         <NavButton to="/employees">Employees</NavButton>
                         <NavButton to="/accounts">All Accounts</NavButton>
                         <NavButton to="/account-requests">Account Requests</NavButton>

@@ -90,6 +90,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/orders", "/api/orders/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/orders/*/deliver").hasRole("ADMIN")
 
+
+
+                        .requestMatchers(HttpMethod.GET, "/api/employees", "/api/employees/**").hasAnyRole("EMPLOYEE", "ADMIN")
                         .requestMatchers("/api/employees/**").hasRole("ADMIN")
                         .requestMatchers("/api/employees/unassigned-clients").hasAnyRole("EMPLOYEE", "ADMIN")
                         .requestMatchers("/api/employees/*/my-clients").hasAnyRole("EMPLOYEE", "ADMIN")

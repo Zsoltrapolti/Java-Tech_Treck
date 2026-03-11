@@ -17,4 +17,10 @@ public class Employee {
     private String firstName;
     private String lastName;
     private String role;
+
+    @Column(nullable = false, columnDefinition = "integer default 21")
+    private Integer totalLeaveDays = 21;
+
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private Integer usedLeaveDays = 0;
 }

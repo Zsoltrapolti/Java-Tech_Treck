@@ -23,4 +23,7 @@ public class EmployeeDTO {
 
     @NotBlank(message = "Role must not be empty")
     private String role;
+
+    private Integer totalLeaveDays;
+    private Integer usedLeaveDays;
 }

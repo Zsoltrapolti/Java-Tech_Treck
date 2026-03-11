@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {deleteOrder, fetchOrders, fetchAllUserOrders, fetchInvoiceById} from "../../api/backend";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../components/form/AuthContext"; // ✅ ADAUGĂ ASTA
+import { useAuth } from "../../components/form/AuthContext";
 
 import {
     ModulePageContainer,
