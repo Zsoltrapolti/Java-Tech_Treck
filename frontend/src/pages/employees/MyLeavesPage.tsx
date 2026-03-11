@@ -122,7 +122,6 @@ export default function MyLeavesPage() {
                         { label: "Requested Days", key: "days" },
                         { label: "Status", key: "status" }
                     ]}
-                    onEdit={(id) => console.log("Cannot edit leave requests directly", id)}
                     onDelete={handleCancel}
                 />
             </ModuleTableContainer>

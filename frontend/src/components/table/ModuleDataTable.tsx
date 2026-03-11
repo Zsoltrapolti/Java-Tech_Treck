@@ -15,7 +15,7 @@ export function ModuleDataTable({
 }: {
     rows: any[],
     columns: { label: string, key: string }[],
-    onEdit: (id: number) => void,
+    onEdit?: (id: number) => void,
     onDelete?: (id: number) => void,
     editLabel?: string
 }) {
@@ -29,8 +29,7 @@ export function ModuleDataTable({
                         </ModuleTableHeader>
                     ))}
 
-                    <ModuleTableHeader>{editLabel || "Edit"}</ModuleTableHeader>
-
+                    {onEdit && (<ModuleTableHeader>{editLabel || "Edit"}</ModuleTableHeader>)}
                     {onDelete && <ModuleTableHeader>Delete</ModuleTableHeader>}
                 </TableRow>
             </TableHead>
@@ -44,11 +43,12 @@ export function ModuleDataTable({
                             </ModuleTableCell>
                         ))}
 
+                        {onEdit && (
                         <ModuleTableCell>
                             <EditButton onClick={() => onEdit(row.id)}>
-                                {editLabel || "Edit"}
+                               Edit
                             </EditButton>
-                        </ModuleTableCell>
+                        </ModuleTableCell>)}
 
                         {onDelete && (
                             <ModuleTableCell>
