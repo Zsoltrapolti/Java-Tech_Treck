@@ -1,0 +1,98 @@
+# la CTRL + C containerele se opresc insa nu se sterg, daca vrem sa le stergem folosim docker-compose down
+# intre experimente pt un clean sheet folosim docker-compose down -v pentru a sterge containerele si volumele,
+# astfel incat sa nu mai avem date vechi care sa interfereze cu noile teste.
+
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# EXPERIMENT 1
+# daca nu folosim nimic nici volumes nici bind mount, la CTRL + C se salveaza datele deoarece acestea sunt stocate in containerul db,
+# iar containerul nu este sters, deci datele raman intacte, daca folosim docker-compose down, atunci containerul db se sterge,
+# iar datele stocate in acesta se pierd, deoarece nu sunt salvate intr-un volum sau intr-un alt loc permanent
+
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: catalina
+      POSTGRES_DB: testdocker
+    ports:
+      - "5432:5432"
+
+  app:
+    image: maven:3.9.6-eclipse-temurin-21-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    command: mvn clean compile exec:java -Dexec.mainClass="lab.Main"
+
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# EXPERIMENT 2
+# daca adaugam volumes atunci datele se salveaza in volumul seif_date, care este un volum Docker
+# si nu se pierd chiar daca containerul db se sterge, deoarece volumul este independent de container si poate fi reutilizat
+# sau montat in alte containere. daca nu adaugam volumes, atunci datele se pierd deoarece acestea sunt stocate in containerul db,
+# iar daca containerul se sterge, atunci datele se pierd odata cu acesta.
+
+
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: catalina
+      POSTGRES_DB: testdocker
+    ports:
+      - "5432:5432"
+    volumes:
+      - seif_date:/var/lib/postgresql/data
+
+  app:
+    image: maven:3.9.6-eclipse-temurin-21-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    command: mvn clean compile exec:java -Dexec.mainClass="lab.Main"
+
+volumes:
+  seif_date:
+
+
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+# EXPERIMENT 3
+# daca folosim bind mount, atunci datele se salveaza in folderul date_live de pe gazda, si nu se pierd
+# chiar daca containerul db se sterge, deoarece datele sunt stocate pe gazda si nu in container.
+# In acest caz, datele sunt persistente si pot fi accesate chiar daca containerul se sterge sau se recreeaza.
+# daca nu folosim bind mount, atunci datele se pierd deoarece acestea sunt stocate in containerul db, iar daca containerul se sterge,
+# atunci datele se pierd odata cu acesta.
+
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: catalina
+      POSTGRES_DB: testdocker
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./date_live:/var/lib/postgresql/data
+      -
+  app:
+    image: maven:3.9.6-eclipse-temurin-21-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    command: mvn clean compile exec:java -Dexec.mainClass="lab.Main"
