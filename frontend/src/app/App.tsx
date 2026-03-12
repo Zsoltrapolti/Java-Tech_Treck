@@ -31,7 +31,6 @@ import OrdersPage from "../pages/orders/UserOrdersPage.tsx";
 import {AssignClientsPage} from "../pages/employees/AssignClientsPage.tsx";
 import MyInvoicesPage from "../pages/orders/MyInvoicesPage";
 import ClientBalancePage from "../pages/orders/ClientBalancePage";
-import { HistoryPage } from "../pages/orders/HistoryPage.tsx";
 import MyLeavesPage from "../pages/employees/MyLeavesPage.tsx";
 import ManageLeavesPage from "../pages/employees/ManageLeavesPage.tsx"
 
