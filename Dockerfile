@@ -46,6 +46,7 @@ WORKDIR /app
 
 # Copiem .jar-ul construit
 COPY --from=backend-build /app/backend/target/demo-0.0.1-SNAPSHOT.jar app.jar
+
 # Expunem portul 8081
 EXPOSE 8081
 
