@@ -23,8 +23,8 @@ export function AssignClientsPage() {
                 const mine = await fetchMyClients();
 
                 if (isMounted) {
-                    setUnassigned(freeClients);
-                    setMyClients(mine);
+                    setUnassigned(freeClients as any);
+                    setMyClients(mine as any);
                 }
             } catch (error) {
                 if (isMounted) {
