@@ -58,24 +58,36 @@ public class LeaveService {
             throw new RuntimeException("Nu poți anula o cerere care a început deja sau începe azi!");
         }
 
+        if (request.getStatus() == LeaveStatus.APPROVED) {
+            Employee employee = request.getEmployee();
+
+            employee.setUsedLeaveDays(employee.getUsedLeaveDays() - request.getRequestedDays());
+            employeeRepository.save(employee);
+        }
+
         request.setStatus(LeaveStatus.CANCELLED);
         leaveRepository.save(request);
     }
 
     public void approveLeaveRequest(Long requestId) {
         LeaveRequest request = leaveRepository.findById(requestId)
-                .orElseThrow(() -> new RuntimeException("Cererea nu a fost găsită!"));
+                .orElseThrow(() -> new RuntimeException("Request not found!"));
 
-        if (request.getStatus() != LeaveStatus.PENDING) {
-            throw new RuntimeException("Doar cererile în așteptare pot fi aprobate!");
+        if (request.getStatus() == LeaveStatus.APPROVED) {
+            throw new RuntimeException("This request is already approved!");
+        }
+
+        Employee employee = request.getEmployee();
+
+        int remainingDays = employee.getTotalLeaveDays() - employee.getUsedLeaveDays();
+        if (request.getRequestedDays() > remainingDays) {
+            throw new RuntimeException("Not enough leave days! Remaining: " + remainingDays);
         }
 
         request.setStatus(LeaveStatus.APPROVED);
-
-        Employee employee = request.getEmployee();
         employee.setUsedLeaveDays(employee.getUsedLeaveDays() + request.getRequestedDays());
-        employeeRepository.save(employee);
 
+        employeeRepository.save(employee);
         leaveRepository.save(request);
     }
 

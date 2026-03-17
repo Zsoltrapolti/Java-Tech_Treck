@@ -28,7 +28,8 @@ export function ModuleDataTable({
                             {col.label}
                         </ModuleTableHeader>
                     ))}
-                    {onEdit && <ModuleTableHeader>{editLabel || "Edit"}</ModuleTableHeader>}
+
+                    {onEdit && (<ModuleTableHeader>{editLabel || "Edit"}</ModuleTableHeader>)}
                     {onDelete && <ModuleTableHeader>Delete</ModuleTableHeader>}
                 </TableRow>
             </TableHead>
@@ -43,12 +44,11 @@ export function ModuleDataTable({
                         ))}
 
                         {onEdit && (
-                            <ModuleTableCell>
-                                <EditButton onClick={() => onEdit(row.id)}>
-                                    {editLabel || "Edit"}
-                                </EditButton>
-                            </ModuleTableCell>
-                        )}
+                        <ModuleTableCell>
+                            <EditButton onClick={() => onEdit(row.id)}>
+                               Edit
+                            </EditButton>
+                        </ModuleTableCell>)}
 
                         {onDelete && (
                             <ModuleTableCell>
