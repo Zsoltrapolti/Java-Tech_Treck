@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.fail;
         "spring.datasource.driver-class-name=org.h2.Driver",
         "spring.jpa.database-platform=org.hibernate.dialect.H2Dialect",
         "spring.flyway.enabled=false",
-        "spring.jpa.hibernate.ddl-auto=create-drop"
+        "spring.jpa.hibernate.ddl-auto=create-drop",
         "jwt.secret=AceastaParolaFalsaEstePentruTeste123!"
 })
 @ActiveProfiles("test")
