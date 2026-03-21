@@ -7,16 +7,27 @@ pipeline {
         stage('1. Testare Backend (Java)') {
             steps {
                 dir('backend') {
-                    echo "PORNIM TESTELE PENTRU BACKEND"
-                    bat 'mvn clean test'
+                    echo " PORNIM TESTELE JAVA "
+                    mvn clean test
                 }
             }
         }
 
-        stage('2. Construire Imagine Docker') {
+        stage('2. Analiza Calitate Cod (SonarQube)') {
+            withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+            dir('backend') {
+                echo "TRIMITEM CODUL LA SONARQUBE "
+                bat "mvn sonar:sonar " +
+                    "-Dsonar.projectKey=Krumpi-Project-Shared " +
+                    "-Dsonar.host.url=http://localhost:9000 " +
+                    "-Dsonar.login=${SONAR_TOKEN}"
+            }
+        }
+
+        stage('3. Construire Imagine Docker') {
             steps {
-                echo "TESTELE AU TRECUT CU SUCCES, CONSTRUIM IMAGINEA DOCKER"
-                bat 'docker build -t krumpi-app:latest .'
+                echo " TESTE TRECUTE! CONSTRUIM IMAGINEA "
+                docker build -t krumpi-app:latest .
             }
         }
     }

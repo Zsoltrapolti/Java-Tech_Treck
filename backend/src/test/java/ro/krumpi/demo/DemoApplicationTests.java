@@ -19,6 +19,6 @@ class DemoApplicationTests {
 
     @Test
     void contextLoads() {
-        //fail("Am stricat testul intentionat pentru Jenkins");
+//        fail("Am stricat testul intentionat pentru Jenkins");
     }
 }
