@@ -26,9 +26,6 @@ import CheckoutPage from "../pages/products/CheckoutPage.tsx";
 import PaymentWaitingPage from "../pages/products/PaymentWaitingPage.tsx";
 import PayInvoicePage from "../pages/products/PayInvoicePage.tsx";
 import {HistoryPage} from "../pages/orders/HistoryPage.tsx";
-import UserOrderEditPage from "../pages/orders/UserOrderEditPage.tsx";
-import OrdersPage from "../pages/orders/UserOrdersPage.tsx";
-import {AssignClientsPage} from "../pages/employees/AssignClientsPage.tsx";
 import MyInvoicesPage from "../pages/orders/MyInvoicesPage";
 import ClientBalancePage from "../pages/orders/ClientBalancePage";
 import MyLeavesPage from "../pages/employees/MyLeavesPage.tsx";
@@ -74,7 +71,7 @@ function App() {
                        <Route path="/my-leaves" element={<MyLeavesPage />} />
 
                        {/* Order Management */}
-                       <Route path="/orders" element={<OrdersPage />} />
+                       <Route path="/orders" element={<UserOrdersPage />} />
                        <Route path="/orders/new" element={<OrdersAddPage />} />
                        <Route path="/orders/:id/edit" element={<OrdersEditPage />} />
                        <Route path="/client-balance" element={<ClientBalancePage />} />

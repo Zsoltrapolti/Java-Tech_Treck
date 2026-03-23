@@ -23,8 +23,15 @@ export function AssignClientsPage() {
                 const mine = await fetchMyClients();
 
                 if (isMounted) {
-                    setUnassigned(freeClients);
-                    setMyClients(mine);
+                   setUnassigned(freeClients.map((c: any) => ({
+                       ...c,
+                       username: c.username || c.email || `Client #${c.id}`
+                   })));
+
+                   setMyClients(mine.map((c: any) => ({
+                       ...c,
+                       username: c.username || c.email || `Client #${c.id}`
+                   })));
                 }
             } catch (error) {
                 if (isMounted) {
