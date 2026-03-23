@@ -55,7 +55,7 @@ export default function UserOrdersPage() {
 
                 const message = statusMessages[invoice.status || ''] ||
                     `Cannot edit order #${invoice.number} with status: ${invoice.status}. Only PENDING_PAYMENT orders can be modified.`;
-
+                
                 showError(new Error(message));
             }
         } catch (error) {

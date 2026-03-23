@@ -68,6 +68,31 @@ This project wants to digitalize the internal workflows of the company *Krumpi, 
 
 ```
 
+
+---
+
+
+## Jenkins
+
+- necesar Docker Desktop pornit
+- accesam Jenkins la:
+
+```bash
+
+  http://localhost:8080
+
+```
+- mergem la Manage Jenkins -> Tools -> Add Maven. Pune numele Maven-Jenkins și bifează Install automatically. (doar prima data cand rulam)
+
+- creem proiect New Item -> Nume proiect -> Pipeline. La Definition: selectează Pipeline script from SCM. La SCM: selectează Git și pune link-ul proiectului. Save.
+
+- Build Now în meniul proiectului.
+
+- pastram fail("Am stricat testul intentionat pentru Jenkins"); din clasa de testare DemoApplicationTests pentru a vedea cum se comporta Jenkins la un build failed.
+
+- daca vrem sa vedem logurile din Jenkins, mergem la proiectul nostru -> Build History -> build-ul curent -> Console Output. Aici putem vedea toate logurile generate de build, inclusiv erorile care au cauzat fail-ul testului.
+
+- comentam linia cu fail din DemoApplicationTests pentru a vedea cum se comporta Jenkins la un build successful.
 ---
 
 
