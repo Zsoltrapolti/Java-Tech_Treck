@@ -14,6 +14,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   app:
+    image: krumpi_app:${APP_VERSION}-b${BUILD_NUMBER}
     build:
       context: .
       dockerfile: Dockerfile
@@ -21,6 +22,7 @@ services:
     ports:
       - "8081:8081"
     environment:
+      SERVER_PORT: 8081
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/krumpi_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: catalina

@@ -22,7 +22,7 @@ export default function UserOrdersPage() {
 
     useEffect(() => {
         loadData();
-    }, []);
+    }, []);``
 
     const loadData = () => {
         fetchOrders().then(setOrders).catch(e => console.error(e));
@@ -53,7 +53,7 @@ export default function UserOrdersPage() {
                     'OVERDUE': `Order #${invoice.number} is overdue and cannot be edited.`
                 };
 
-                const message = statusMessages[invoice.status || 'UNKNOWN'] ||
+                const message = statusMessages[invoice.status || ''] ||
                     `Cannot edit order #${invoice.number} with status: ${invoice.status}. Only PENDING_PAYMENT orders can be modified.`;
                 
                 showError(new Error(message));
