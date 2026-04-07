@@ -1,0 +1,74 @@
+2026-03-23 16:56:40 [background-preinit] INFO  o.h.validator.internal.util.Version - HV000001: Hibernate Validator 8.0.1.Final
+2026-03-23 16:56:40 [main] INFO  r.k.d.c.HistoryControllerTest - Starting HistoryControllerTest using Java 21.0.9 with PID 16952 (started by CĆTĆLINA$ in C:\Users\ungur\OneDrive\Documente\cata\proiecte personale\ntt\proiect\Java-Tech_Treck\backend)
+2026-03-23 16:56:40 [main] DEBUG r.k.d.c.HistoryControllerTest - Running with Spring Boot v3.3.4, Spring v6.1.13
+2026-03-23 16:56:40 [main] INFO  r.k.d.c.HistoryControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-03-23 16:56:49 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: bc47992d-249f-46c2-9001-0034e46b7014
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-03-23 16:56:49 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-03-23 16:56:50 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-03-23 16:56:50 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-03-23 16:56:50 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 5 ms
+2026-03-23 16:56:50 [main] INFO  r.k.d.c.HistoryControllerTest - Started HistoryControllerTest in 11.731 seconds (process running for 16.499)
+2026-03-23 16:56:51 [main] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [ro.krumpi.demo.controllerTests.OrderControllerTest]: OrderControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-03-23 16:56:51 [main] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration ro.krumpi.demo.DemoApplication for test class ro.krumpi.demo.controllerTests.OrderControllerTest
+2026-03-23 16:56:51 [main] INFO  r.k.d.c.OrderControllerTest - Starting OrderControllerTest using Java 21.0.9 with PID 16952 (started by CĆTĆLINA$ in C:\Users\ungur\OneDrive\Documente\cata\proiecte personale\ntt\proiect\Java-Tech_Treck\backend)
+2026-03-23 16:56:51 [main] DEBUG r.k.d.c.OrderControllerTest - Running with Spring Boot v3.3.4, Spring v6.1.13
+2026-03-23 16:56:51 [main] INFO  r.k.d.c.OrderControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-03-23 16:56:52 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: 345037a6-e2b1-45c0-b472-8982643b7a02
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-03-23 16:56:52 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-03-23 16:56:52 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-03-23 16:56:52 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-03-23 16:56:52 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 0 ms
+2026-03-23 16:56:52 [main] INFO  r.k.d.c.OrderControllerTest - Started OrderControllerTest in 1.299 seconds (process running for 18.604)
+2026-03-23 16:56:52 [main] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [ro.krumpi.demo.controllerTests.ProductControllerTest]: ProductControllerTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-03-23 16:56:52 [main] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration ro.krumpi.demo.DemoApplication for test class ro.krumpi.demo.controllerTests.ProductControllerTest
+2026-03-23 16:56:52 [main] INFO  r.k.d.c.ProductControllerTest - Starting ProductControllerTest using Java 21.0.9 with PID 16952 (started by CĆTĆLINA$ in C:\Users\ungur\OneDrive\Documente\cata\proiecte personale\ntt\proiect\Java-Tech_Treck\backend)
+2026-03-23 16:56:52 [main] DEBUG r.k.d.c.ProductControllerTest - Running with Spring Boot v3.3.4, Spring v6.1.13
+2026-03-23 16:56:52 [main] INFO  r.k.d.c.ProductControllerTest - No active profile set, falling back to 1 default profile: "default"
+2026-03-23 16:56:53 [main] WARN  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration - 
+
+Using generated security password: 1273ed0a-428e-4cc8-98e6-a719f32a9b5f
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-03-23 16:56:53 [main] INFO  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-03-23 16:56:53 [main] INFO  o.s.b.t.m.w.SpringBootMockServletContext - Initializing Spring TestDispatcherServlet ''
+2026-03-23 16:56:53 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Initializing Servlet ''
+2026-03-23 16:56:53 [main] INFO  o.s.t.w.s.TestDispatcherServlet - Completed initialization in 0 ms
+2026-03-23 16:56:53 [main] INFO  r.k.d.c.ProductControllerTest - Started ProductControllerTest in 0.747 seconds (process running for 19.568)
+2026-03-23 16:56:53 [main] INFO  o.s.t.c.s.AnnotationConfigContextLoaderUtils - Could not detect default configuration classes for test class [ro.krumpi.demo.DemoApplicationTests]: DemoApplicationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-03-23 16:56:53 [main] INFO  o.s.b.t.c.SpringBootTestContextBootstrapper - Found @SpringBootConfiguration ro.krumpi.demo.DemoApplication for test class ro.krumpi.demo.DemoApplicationTests
+2026-03-23 16:56:53 [main] INFO  ro.krumpi.demo.DemoApplicationTests - Starting DemoApplicationTests using Java 21.0.9 with PID 16952 (started by CĆTĆLINA$ in C:\Users\ungur\OneDrive\Documente\cata\proiecte personale\ntt\proiect\Java-Tech_Treck\backend)
+2026-03-23 16:56:53 [main] DEBUG ro.krumpi.demo.DemoApplicationTests - Running with Spring Boot v3.3.4, Spring v6.1.13
+2026-03-23 16:56:53 [main] INFO  ro.krumpi.demo.DemoApplicationTests - The following 1 profile is active: "test"
+2026-03-23 16:56:55 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-03-23 16:56:55 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate - Finished Spring Data repository scanning in 235 ms. Found 10 JPA repository interfaces.
+2026-03-23 16:56:56 [main] INFO  o.h.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-03-23 16:56:56 [main] INFO  org.hibernate.Version - HHH000412: Hibernate ORM core version 6.5.3.Final
+2026-03-23 16:56:56 [main] INFO  o.h.c.i.RegionFactoryInitiator - HHH000026: Second-level cache disabled
+2026-03-23 16:56:57 [main] INFO  o.s.o.j.p.SpringPersistenceUnitInfo - No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-03-23 16:56:57 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Starting...
+2026-03-23 16:56:58 [main] INFO  com.zaxxer.hikari.pool.HikariPool - HikariPool-1 - Added connection conn0: url=jdbc:h2:mem:testdb user=POSTGRES
+2026-03-23 16:56:58 [main] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Start completed.
+2026-03-23 16:56:59 [main] WARN  org.hibernate.dialect.Dialect - HHH000511: The 2.2.224 version for [org.hibernate.dialect.PostgreSQLDialect] is no longer supported, hence certain features may not work properly. The minimum supported version is 12.0.0. Check the community dialects project for available legacy versions.
+2026-03-23 16:56:59 [main] WARN  org.hibernate.orm.deprecation - HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-03-23 16:57:02 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator - HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-23 16:57:03 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-23 16:57:04 [main] INFO  o.s.s.c.a.a.c.InitializeAuthenticationProviderBeanManagerConfigurer$InitializeAuthenticationProviderManagerConfigurer - Global AuthenticationManager configured with AuthenticationProvider bean with name authenticationProvider
+2026-03-23 16:57:04 [main] WARN  o.s.s.c.a.a.c.InitializeUserDetailsBeanManagerConfigurer$InitializeUserDetailsManagerConfigurer - Global AuthenticationManager configured with an AuthenticationProvider bean. UserDetailsService beans will not be used for username/password login. Consider removing the AuthenticationProvider bean. Alternatively, consider using the UserDetailsService in a manually instantiated DaoAuthenticationProvider.
+2026-03-23 16:57:04 [main] INFO  o.s.d.j.r.query.QueryEnhancerFactory - Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-23 16:57:06 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration - spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-03-23 16:57:07 [main] INFO  ro.krumpi.demo.DemoApplicationTests - Started DemoApplicationTests in 14.099 seconds (process running for 33.797)
+2026-03-23 16:57:09 [main] ERROR r.k.d.s.InvoiceNotificationScheduler - Eroarr INV-2026-001: SMTP Server Down
+2026-03-23 16:57:09 [SpringApplicationShutdownHook] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-03-23 16:57:10 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown initiated...
+2026-03-23 16:57:10 [SpringApplicationShutdownHook] INFO  com.zaxxer.hikari.HikariDataSource - HikariPool-1 - Shutdown completed.
