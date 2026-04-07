@@ -1,6 +1,28 @@
 version: '3.8'
 
 services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: Dockerfile.jenkins
+    container_name: jenkins_krumpi
+    user: root
+    ports:
+      - "8082:8080"
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - ci-net
+
+  sonarqube:
+    image: sonarqube:lts-community
+    container_name: sonarqube_krumpi
+    ports:
+      - "9000:9000"
+    networks:
+      - ci-net
+
   db:
     image: postgres:15-alpine
     container_name: krumpi_db
@@ -12,9 +34,10 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - ci-net
 
   app:
-    image: krumpi_app:${APP_VERSION}-b${BUILD_NUMBER}
     build:
       context: .
       dockerfile: Dockerfile
@@ -22,12 +45,17 @@ services:
     ports:
       - "8081:8081"
     environment:
-      SERVER_PORT: 8081
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/krumpi_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: catalina
     depends_on:
       - db
+    networks:
+      - ci-net
 
 volumes:
   postgres_data:
+  jenkins_data:
+
+networks:
+  ci-net:
