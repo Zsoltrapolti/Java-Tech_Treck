@@ -18,7 +18,7 @@ pipeline {
                 withSonarQubeEnv('sonarqube') {
                     dir('backend') {
                         echo "TRIMITEM CODUL LA SONARQUBE"
-                           sh "mvn sonar:sonar -Dsonar.projectKey=Krumpi-Project-Shared -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login=${SONAR_TOKEN}"
+                           sh "mvn sonar:sonar -Dsonar.projectKey=Krumpi-Project"
                         }
                     }
 
