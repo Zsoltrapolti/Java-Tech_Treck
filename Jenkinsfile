@@ -15,7 +15,7 @@ pipeline {
 
         stage('2. Analiza Calitate Cod (SonarQube)') {
             steps {
-                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                withSonarQubeEnv('sonarqube') {
                     dir('backend') {
                         echo "TRIMITEM CODUL LA SONARQUBE"
                            sh "mvn sonar:sonar -Dsonar.projectKey=Krumpi-Project-Shared -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login=${SONAR_TOKEN}"
