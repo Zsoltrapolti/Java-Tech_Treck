@@ -74,22 +74,35 @@ This project wants to digitalize the internal workflows of the company *Krumpi, 
 
 ## Jenkins
 
-- necesar Docker Desktop pornit
-- accesam Jenkins la:
+- Necesar Docker Desktop pornit
+- Pornire infrastructura din root-ul proiectului:
 
 ```bash
 
-  http://localhost:8080
+docker-compose -f docker-compose-infra.yml up -d --build
 
 ```
-- mergem la Manage Jenkins -> Tools -> Add Maven. Pune numele Maven-Jenkins și bifează Install automatically. (doar prima data cand rulam)
-- tot la Manage Jenkins mergem la Credidentials -> Add Credidentials -> Secrret text si lipiti aici token-ul Sonarqube si la ID sonar-token (doar prima data cand rulam)
-- creem proiect New Item -> Nume proiect -> Pipeline. La Definition: selectează Pipeline script from SCM. La SCM: selectează Git și pune link-ul proiectului. Save.
-- ne asiguram din Docker Desktop ca serverul SonarQube ruleaza pe portul 9000
-- Build Now în meniul proiectului.
-- pastram fail("Am stricat testul intentionat pentru Jenkins"); din clasa de testare DemoApplicationTests pentru a vedea cum se comporta Jenkins la un build failed.
-- daca vrem sa vedem logurile din Jenkins, mergem la proiectul nostru -> Build History -> build-ul curent -> Console Output. Aici putem vedea toate logurile generate de build, inclusiv erorile care au cauzat fail-ul testului.
-- comentam linia cu fail din DemoApplicationTests pentru a vedea cum se comporta Jenkins la un build successful.
+- Accesare Jenkins:
+
+```bash
+
+http://localhost:8082
+
+```
+- Se ia parola initiala Jenkins (ruleaza in terminal): 
+
+```bash
+
+docker logs jenkins_krumpi
+  
+```
+
+- Lipeste parola in browser pe pagina de login Jenkins pentru a debloca interfata.
+- Selecteaza "Install Suggested Plugins" si asteapta finalizarea.
+- In Jenkins: Manage Jenkins -> Tools -> Maven -> Add Maven (Name: Maven-Jenkins).
+- In SonarQube: My Account -> Security -> Generate Token.
+- In Jenkins: Manage Jenkins -> System -> Add SonarQube (URL: http://sonarqube:9000, Token: adauga-l ca Secret Text cu ID sonar-token).
+- In Jenkins: New Item -> Pipeline -> Pipeline script from SCM -> Git -> Repository URL -> Branch: */main -> Script Path: Jenkinsfile.
 
 ---
 

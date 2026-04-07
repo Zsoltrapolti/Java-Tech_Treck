@@ -8,26 +8,35 @@ pipeline {
             steps {
                 dir('backend') {
                     echo " PORNIM TESTELE JAVA "
-                    mvn clean test
+                    sh "mvn clean test"
                 }
             }
         }
 
         stage('2. Analiza Calitate Cod (SonarQube)') {
-            withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-            dir('backend') {
-                echo "TRIMITEM CODUL LA SONARQUBE "
-                bat "mvn sonar:sonar " +
-                    "-Dsonar.projectKey=Krumpi-Project-Shared " +
-                    "-Dsonar.host.url=http://localhost:9000 " +
-                    "-Dsonar.login=${SONAR_TOKEN}"
+            steps {
+                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                    dir('backend') {
+                        echo "TRIMITEM CODUL LA SONARQUBE"
+                           sh "mvn sonar:sonar -Dsonar.projectKey=Krumpi-Project-Shared -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login=${SONAR_TOKEN}"
+                        }
+                    }
+
+                timeout(time: 2, unit: 'MINUTES') {
+                    script {
+                        def qg = waitForQualityGate()
+                        if (qg.status != 'OK') {
+                           error "Pipeline oprit! Quality Gate a picat: ${qg.status}"
+                        }
+                    }
+                }
             }
         }
 
         stage('3. Construire Imagine Docker') {
             steps {
                 echo " TESTE TRECUTE! CONSTRUIM IMAGINEA "
-                docker build -t krumpi-app:latest .
+                    sh "docker build -t krumpi-app:latest ."
             }
         }
     }
