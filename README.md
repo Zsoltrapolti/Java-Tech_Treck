@@ -100,7 +100,8 @@ docker logs jenkins_krumpi
 - Lipeste parola in browser pe pagina de login Jenkins pentru a debloca interfata.
 - Selecteaza "Install Suggested Plugins" si asteapta finalizarea.
 - In Jenkins: Manage Jenkins -> Tools -> Maven -> Add Maven (Name: Maven-Jenkins).
-- - In Jenkins: Manage Jenkins -> Plugins -> SonarQube Scanner for Jenkins -> Install
+- In Jenkins: Manage Jenkins -> Plugins -> SonarQube Scanner for Jenkins -> Install
+- In SonarQube: Administartion -> Webhooks -> Create ( URL: http://jenkins_krumpi:8080/sonarqube-webhook/, Name: Jenkins)
 - In SonarQube: My Account -> Security -> Generate Token.
 - In Jenkins: Manage Jenkins -> System -> Add SonarQube (URL: http://sonarqube:9000, Token: adauga-l ca Secret Text cu ID sonar-token).
 - In Jenkins: New Item -> Pipeline -> Pipeline script from SCM -> Git -> Repository URL -> Branch: */main -> Script Path: Jenkinsfile.
