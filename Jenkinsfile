@@ -15,14 +15,14 @@ pipeline {
 
         stage('2. Analiza Calitate Cod (SonarQube)') {
             steps {
-                withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+                withSonarQubeEnv('sonarqube') {
                     dir('backend') {
                         echo "TRIMITEM CODUL LA SONARQUBE"
-                           sh "mvn sonar:sonar -Dsonar.projectKey=Krumpi-Project-Shared -Dsonar.host.url=http://sonarqube:9000 -Dsonar.login=${SONAR_TOKEN}"
+                           sh "mvn sonar:sonar -Dsonar.projectKey=Krumpi-Project -Dsonar.host.url=http://sonarqube:9000"
                         }
                     }
 
-                timeout(time: 2, unit: 'MINUTES') {
+                timeout(time: 10, unit: 'MINUTES') {
                     script {
                         def qg = waitForQualityGate()
                         if (qg.status != 'OK') {

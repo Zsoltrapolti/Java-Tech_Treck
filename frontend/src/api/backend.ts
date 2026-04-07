@@ -13,7 +13,6 @@ import { pdf } from '@react-pdf/renderer';
 import React from 'react';
 import { InvoiceDocument } from '../components/pdf/InvoiceDocument';
 import type {CheckoutRequestDTO} from "../types/CheckoutRequestDTO.ts";
-// import type { ClientBalanceDTO } from "../dto/shopping/ClientBalanceDTO";
 import type { LeaveRequestType, LeaveRequestDTO } from "../types/Leave";
 
 const BACKEND_URL = "/api";
