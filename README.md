@@ -251,6 +251,81 @@ You are now connected to database "krumpi_db" as user "postgres". (you have to s
 
 **<img width="309" height="224" alt="image" src="https://github.com/user-attachments/assets/9ba93b83-3e66-4e5f-8744-9ffd01a1f776" />
 
+The application exposes a RESTful API, documented via OpenAPI/Swagger, which allows standardized interaction with the PostgreSQL database. The API is structured into several domain controllers for managing the Krumpi workflow:
+1.  Authentication & Account Management
+
+    POST /api/auth/register: Registers a new user in the system.
+
+    POST /api/auth/login: Authenticates the user.
+
+    GET /api/auth/me: Returns the data of the currently logged-in user.
+
+    POST /api/account-requests: Creates a request for a new account.
+
+    GET /api/account-requests/status: Checks the status of an account request.
+
+2.  Products & Shopping Cart
+
+    GET /api/products: Returns the list of all available stock.
+
+    GET /api/products/{id}: Retrieves the details of a single product.
+
+    POST /api/products: Adds a new product to the catalog.
+
+    PUT /api/products/{id}: Modifies the details of an existing product.
+
+    DELETE /api/products/{id}: Removes a product from the stock.
+
+    POST /api/cart/items: Adds a product to the shopping cart.
+
+    GET /api/cart: Returns the cart contents for the current user.
+
+    DELETE /api/cart/items/{cartItemId}: Removes a product from the cart.
+
+   3. Orders & Invoices
+
+    GET /api/orders / POST /api/orders: Fetch all orders or create new ones.
+
+    GET /api/orders/{id} / PUT /api/orders/{id} / DELETE /api/orders/{id}: CRUD operations for a specific order.
+
+    POST /api/orders/{id}/confirm / deliver / cancel: Modifies the order status.
+
+    POST /api/invoices/checkout: Places a final order from the cart (Checkout) by filling in delivery/card details.
+
+    GET /api/invoices: Returns all orders/invoices for the current user.
+
+    POST /api/invoices/{id}/send-email: Sends a specific invoice to the client's email.
+
+4. Payments & History
+
+    POST /api/payments: Processes a payment for an invoice.
+
+    POST /api/payments/cancel/{invoiceId}: Cancels a payment.
+
+    GET /api/history/orders / GET /api/history/payments: Retrieves transaction and order history.
+
+5.  HR & Leave Management
+
+    GET /api/employees / POST /api/employees: Fetch and create new employees.
+
+    POST /api/leave/request: Submits a new leave request.
+
+    PUT /api/leave/{requestId}/approve / cancel: Approves or cancels a leave request.
+
+    GET /api/leave/all: Returns all leave requests in the system.
+
+6.  Administration & Client Management
+
+    GET /api/admin/accounts: Lists all accounts in the system.
+
+    PUT /api/admin/accounts/{id}/role: Changes the role of an account (e.g., from User to Admin/Employee).
+
+    PUT /api/admin/account-requests/{id}/review: Reviews and approves/rejects a new account request.
+
+    GET /api/client-management/unassigned-clients: Finds clients that do not have an assigned Account Manager yet.
+
+    POST /api/client-management/claim-client/{clientId}: Assigns a client to an employee.
+
 
 
 ## 📌 Trello Board
