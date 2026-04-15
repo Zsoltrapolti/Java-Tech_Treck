@@ -9,24 +9,6 @@ jenkins:
     loggedInUsersCanDoAnything:
       allowAnonymousRead: false
 
-  jobs:
-    - script: >
-        pipelineJob('Krumpi-App-Pipeline') {
-          definition {
-            cpsScm {
-              scm {
-                git {
-                  remote {
-                    url('https://github.com/Zsoltrapolti/Java-Tech_Treck.git')
-                  }
-                  branches('*/main')
-                }
-              }
-              scriptPath('Jenkinsfile')
-            }
-          }
-        }
-
 tool:
   maven:
     installations:
