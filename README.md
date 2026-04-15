@@ -75,12 +75,11 @@ This project wants to digitalize the internal workflows of the company *Krumpi, 
 ## Jenkins
 
 - Necesar Docker Desktop pornit
-- Pornire infrastructura din root-ul proiectului:
+- Pornire din root-ul proiectului:
 
 ```bash
 
-docker-compose -f docker-compose-infra.yml up -d --build
-
+docker-compose up -d --build
 ```
 - Accesare Jenkins:
 

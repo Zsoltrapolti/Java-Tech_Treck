@@ -1,0 +1,8 @@
+kubernetes
+workflow-aggregator
+git
+configuration-as-code
+sonar
+job-dsl
+docker-workflow
+pipeline-stage-view
