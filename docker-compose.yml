@@ -12,7 +12,7 @@ services:
     environment:
       - JENKINS_ADMIN_PASSWORD=admin
        # aici va veti pune singuri tokenul generat in SonarQube pentru a-l putea folosi in Jenkins
-      - SONAR_TOKEN= squ_d02e96cbb21c6b5eb1d7aeba33a7eb74df751baf
+      - SONAR_TOKEN=squ_16e4a6a4b11f66dc8c6060d474b8fe0be702cf89
     volumes:
       - jenkins_data:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
@@ -21,7 +21,7 @@ services:
 
   sonarqube:
     image: sonarqube:lts-community
-    container_name: sonarqube_krumpi
+    container_name: sonarqube-krumpi
     ports:
       - "9000:9000"
     networks:
