@@ -1,0 +1,55 @@
+jenkins:
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "${JENKINS_ADMIN_PASSWORD}"
+  authorizationStrategy:
+    loggedInUsersCanDoAnything:
+      allowAnonymousRead: false
+
+  jobs:
+    - script: >
+        pipelineJob('Krumpi-App-Pipeline') {
+          definition {
+            cpsScm {
+              scm {
+                git {
+                  remote {
+                    url('https://github.com/Zsoltrapolti/Java-Tech_Treck.git')
+                  }
+                  branches('*/main')
+                }
+              }
+              scriptPath('Jenkinsfile')
+            }
+          }
+        }
+
+tool:
+  maven:
+    installations:
+      - name: "Maven-Jenkins"
+        properties:
+          - installSource:
+              installers:
+                - maven:
+                    id: "3.9.5"
+
+unclassified:
+  sonarGlobalConfiguration:
+    server:
+      - name: "sonarqube"
+        serverUrl: "http://sonarqube_krumpi:9000"
+        credentialsId: "sonar-token"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - string:
+              scope: GLOBAL
+              id: "sonar-token"
+              secret: "${SONAR_TOKEN}"
+              description: "Token pentru SonarQube"

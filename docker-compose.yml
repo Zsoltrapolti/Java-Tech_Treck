@@ -9,6 +9,10 @@ services:
     user: root
     ports:
       - "8082:8080"
+    environment:
+      - JENKINS_ADMIN_PASSWORD=admin
+       # aici va veti pune singuri tokenul generat in SonarQube pentru a-l putea folosi in Jenkins
+      - SONAR_TOKEN= squ_d02e96cbb21c6b5eb1d7aeba33a7eb74df751baf
     volumes:
       - jenkins_data:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
