@@ -251,8 +251,10 @@ You are now connected to database "krumpi_db" as user "postgres". (you have to s
 
 **<img width="309" height="224" alt="image" src="https://github.com/user-attachments/assets/9ba93b83-3e66-4e5f-8744-9ffd01a1f776" />
 
+
+## API Documentation
 The application exposes a RESTful API, documented via OpenAPI/Swagger, which allows standardized interaction with the PostgreSQL database. The API is structured into several domain controllers for managing the Krumpi workflow:
-1.  Authentication & Account Management
+1.Authentication & Account Management
 
     POST /api/auth/register: Registers a new user in the system.
 
@@ -264,7 +266,7 @@ The application exposes a RESTful API, documented via OpenAPI/Swagger, which all
 
     GET /api/account-requests/status: Checks the status of an account request.
 
-2.  Products & Shopping Cart
+2.Products & Shopping Cart
 
     GET /api/products: Returns the list of all available stock.
 
@@ -296,7 +298,7 @@ The application exposes a RESTful API, documented via OpenAPI/Swagger, which all
 
     POST /api/invoices/{id}/send-email: Sends a specific invoice to the client's email.
 
-4. Payments & History
+4.Payments & History
 
     POST /api/payments: Processes a payment for an invoice.
 
@@ -304,7 +306,7 @@ The application exposes a RESTful API, documented via OpenAPI/Swagger, which all
 
     GET /api/history/orders / GET /api/history/payments: Retrieves transaction and order history.
 
-5.  HR & Leave Management
+5.HR & Leave Management
 
     GET /api/employees / POST /api/employees: Fetch and create new employees.
 
@@ -314,7 +316,7 @@ The application exposes a RESTful API, documented via OpenAPI/Swagger, which all
 
     GET /api/leave/all: Returns all leave requests in the system.
 
-6.  Administration & Client Management
+6.Administration & Client Management
 
     GET /api/admin/accounts: Lists all accounts in the system.
 
