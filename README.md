@@ -89,21 +89,19 @@ docker-compose -f docker-compose.yml up -d --build
 http://localhost:8082
 
 ```
-- Se ia parola initiala Jenkins (ruleaza in terminal): 
+- Te loghezi direct cu utilizatorul admin și parola admin
+
+- Accesare SonarQube:
 
 ```bash
 
-docker logs jenkins_krumpi
-  
-```
+http://localhost:9000
 
-- Lipeste parola in browser pe pagina de login Jenkins pentru a debloca interfata.
-- Selecteaza "Install Suggested Plugins" si asteapta finalizarea.
-- In Jenkins: Manage Jenkins -> Tools -> Maven -> Add Maven (Name: Maven-Jenkins).
-- In Jenkins: Manage Jenkins -> Plugins -> SonarQube Scanner for Jenkins -> Install
-- In SonarQube: Administartion -> Webhooks -> Create ( URL: http://jenkins_krumpi:8080/sonarqube-webhook/, Name: Jenkins)
-- In SonarQube: My Account -> Security -> Generate Token.
-- In Jenkins: Manage Jenkins -> System -> Add SonarQube (URL: http://sonarqube:9000, Token: adauga-l ca Secret Text cu ID sonar-token).
+```
+- Logare inițială: admin / admin si schimba parola daca cere
+- In SonarQube: My Account -> Security -> Generate Token - copiaza token.
+- in Sonarqube: Administration -> Webhooks -> Create -> URL: http://jenkins-krumpi:8080/sonarqube-webhook/ 
+- Actualiizare, rulam: docker-compose up -d jenkins
 - In Jenkins: New Item -> Pipeline -> Pipeline script from SCM -> Git -> Repository URL -> Branch: */main -> Script Path: Jenkinsfile.
 
 ---

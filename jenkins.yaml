@@ -21,9 +21,9 @@ tool:
 
 unclassified:
   sonarGlobalConfiguration:
-    server:
+    installations:
       - name: "sonarqube"
-        serverUrl: "http://sonarqube_krumpi:9000"
+        serverUrl: "http://sonarqube-krumpi:9000"
         credentialsId: "sonar-token"
 
 credentials:
